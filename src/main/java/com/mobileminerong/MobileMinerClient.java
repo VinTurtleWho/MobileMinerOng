@@ -6,14 +6,12 @@ import com.mobileminerong.planning.task.DiagnosticTestTask;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 
-import org.lwjgl.glfw.GLFW;
-
 
 public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
 
-    private boolean diagnosticKeyWasDown = false;
+    private int tickCounter = 0;
 
 
     @Override
@@ -40,23 +38,18 @@ public class MobileMinerClient implements ClientModInitializer {
             );
 
 
-            boolean keyDown =
-                    GLFW.glfwGetKey(
-                            client.getWindow().getHandle(),
-                            GLFW.GLFW_KEY_O
-                    ) == GLFW.GLFW_PRESS;
+            tickCounter++;
 
 
+            // Temporary diagnostic test every 200 ticks (10 seconds)
+            if (tickCounter >= 200) {
 
-            if (keyDown && !diagnosticKeyWasDown) {
+                tickCounter = 0;
 
                 new DiagnosticTestTask()
                         .onStart(BOT_CONTEXT);
 
             }
-
-
-            diagnosticKeyWasDown = keyDown;
 
         });
     }
