@@ -33,7 +33,7 @@ public class BlockScanner {
         }
 
         // Sort closest to player
-        validOres.sort(Comparator.comparingDouble(p -> p.distSqr(client.player.position())));
+        validOres.sort(Comparator.comparingDouble(p -> p.distSqr(client.player.blockPosition())));
         return validOres;
     }
 
