@@ -7,7 +7,7 @@ import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.pathfinding.AStarPathfinder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,19 +22,19 @@ public class DiagnosticTestTask implements BotTask {
         if (client.player == null) return;
 
         DebugLogger.info("DIAGNOSTIC", "--- STARTING DIAGNOSTIC RUN ---");
-        client.player.sendMessage(Text.of("§a[MobileMinerOng] --- RUNNING DIAGNOSTIC TEST ---"), false);
+        client.player.sendMessage(Component.of("§a[MobileMinerOng] --- RUNNING DIAGNOSTIC TEST ---"), false);
 
         // 1. Perception: Zone
         ScoreboardParser.updateZone(ctx);
         String zoneMsg = "Current Zone: " + ctx.getCurrentZone();
         DebugLogger.info("DIAGNOSTIC", zoneMsg);
-        client.player.sendMessage(Text.of("§b[1/5 Perception] §f" + zoneMsg), false);
+        client.player.sendMessage(Component.of("§b[1/5 Perception] §f" + zoneMsg), false);
 
         // 2. Perception: Ores
         List<BlockPos> ores = BlockScanner.findTargetOres(ctx, 10);
         String oreMsg = "Found " + ores.size() + " target ores within 10 blocks.";
         DebugLogger.info("DIAGNOSTIC", oreMsg);
-        client.player.sendMessage(Text.of("§b[2/5 Perception] §f" + oreMsg), false);
+        client.player.sendMessage(Component.of("§b[2/5 Perception] §f" + oreMsg), false);
 
         if (!ores.isEmpty()) {
             BlockPos targetOre = ores.get(0);
@@ -45,24 +45,24 @@ public class DiagnosticTestTask implements BotTask {
             List<BlockPos> path = AStarPathfinder.findPath(ctx, playerPos, targetOre, 500);
             String pathMsg = "Path to (" + targetOre.toShortString() + "): " + path.size() + " nodes generated.";
             DebugLogger.info("DIAGNOSTIC", pathMsg);
-            client.player.sendMessage(Text.of("§b[3/5 Pathfinder] §f" + pathMsg), false);
+            client.player.sendMessage(Component.of("§b[3/5 Pathfinder] §f" + pathMsg), false);
 
             // 4. Control
             Vec3 targetVec = targetOre.toCenterPos();
             RotationController.lookAt(ctx, targetVec);
             DebugLogger.info("DIAGNOSTIC", "Rotating toward vector: " + targetVec);
-            client.player.sendMessage(Text.of("§b[4/5 Control] §fRotating toward target ore..."), false);
+            client.player.sendMessage(Component.of("§b[4/5 Control] §fRotating toward target ore..."), false);
 
             // 5. Verification
-            float currentYaw = client.player.getYaw();
-            float currentPitch = client.player.getPitch();
+            float currentYaw = client.player.getYRot();
+            float currentPitch = client.player.getXRot();
             String rotMsg = "Rotations set -> Yaw: " + (int)currentYaw + " Pitch: " + (int)currentPitch;
             DebugLogger.info("DIAGNOSTIC", rotMsg);
-            client.player.sendMessage(Text.of("§b[5/5 Verification] §f" + rotMsg), false);
+            client.player.sendMessage(Component.of("§b[5/5 Verification] §f" + rotMsg), false);
         } else {
             String warning = "No ores found nearby to target.";
             DebugLogger.warn("DIAGNOSTIC", warning);
-            client.player.sendMessage(Text.of("§c[Diagnostic] Place any Wool, Terracotta, Quartz, or Prismarine block nearby to test aim & pathfinding!"), false);
+            client.player.sendMessage(Component.of("§c[Diagnostic] Place any Wool, Terracotta, Quartz, or Prismarine block nearby to test aim & pathfinding!"), false);
         }
 
         DebugLogger.info("DIAGNOSTIC", "--- DIAGNOSTIC RUN COMPLETE ---");

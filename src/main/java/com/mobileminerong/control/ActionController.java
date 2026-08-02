@@ -7,14 +7,14 @@ import net.minecraft.client.KeyMapping;
 public class ActionController {
 
     public static void setKey(KeyMapping key, boolean pressed) {
-        key.setPressed(pressed);
+        key.setDown(pressed);
     }
 
     public static void selectHotbarSlot(BotContext ctx, int slot) {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         if (slot >= 0 && slot < 9) {
-            client.player.getInventory().selectedSlot = slot;
+            client.player.getInventory().selected = slot;
             ctx.setLastAction("Selected Hotbar Slot: " + slot);
         }
     }
@@ -22,13 +22,13 @@ public class ActionController {
     public static void stopAllInputs() {
         Minecraft client = Minecraft.getInstance();
         if (client == null) return;
-        client.options.forwardKey.setPressed(false);
-        client.options.backKey.setPressed(false);
-        client.options.leftKey.setPressed(false);
-        client.options.rightKey.setPressed(false);
-        client.options.jumpKey.setPressed(false);
-        client.options.sneakKey.setPressed(false);
-        client.options.attackKey.setPressed(false);
-        client.options.useKey.setPressed(false);
+        client.options.keyUp.setDown(false);
+        client.options.keyDown.setDown(false);
+        client.options.keyLeft.setDown(false);
+        client.options.keyRight.setDown(false);
+        client.options.keyJump.setDown(false);
+        client.options.keyShift.setDown(false);
+        client.options.keyAttack.setDown(false);
+        client.options.keyUse.setDown(false);
     }
 }

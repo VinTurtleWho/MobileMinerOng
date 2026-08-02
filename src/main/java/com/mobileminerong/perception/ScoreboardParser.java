@@ -16,10 +16,10 @@ public class ScoreboardParser {
         if (client.world == null) return;
 
         Scoreboard scoreboard = client.world.getScoreboard();
-        Objective objective = scoreboard.getObjectiveForSlot(DisplaySlot.SIDEBAR);
+        Objective objective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
 
         if (objective != null) {
-            Collection<PlayerScoreEntry> entries = scoreboard.getScoreboardEntries(objective);
+            Collection<PlayerScoreEntry> entries = scoreboard.getPlayerScores(objective);
             for (PlayerScoreEntry entry : entries) {
                 String name = entry.owner();
                 if (name.contains("Zone:") || name.contains("㏿")) {

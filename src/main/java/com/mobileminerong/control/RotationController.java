@@ -13,7 +13,7 @@ public class RotationController {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        Vec3 eyesPos = client.player.getEyePos();
+        Vec3 eyesPos = client.player.getEyePosition();
         double diffX = targetPos.x - eyesPos.x;
         double diffY = targetPos.y - eyesPos.y;
         double diffZ = targetPos.z - eyesPos.z;
@@ -22,8 +22,8 @@ public class RotationController {
         float targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0f);
         float targetPitch = Mth.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)));
 
-        float currentYaw = client.player.getYaw();
-        float currentPitch = client.player.getPitch();
+        float currentYaw = client.player.getYRot();
+        float currentPitch = client.player.getXRot();
 
         // Calculate angular delta
         float deltaYaw = Mth.wrapDegrees(targetYaw - currentYaw);
@@ -36,8 +36,8 @@ public class RotationController {
         float newYaw = currentYaw + clampedDeltaYaw;
         float newPitch = Mth.clamp(currentPitch + clampedDeltaPitch, -90.0f, 90.0f);
 
-        client.player.setYaw(newYaw);
-        client.player.setPitch(newPitch);
+        client.player.setYRot(newYaw);
+        client.player.setXRot(newPitch);
         ctx.setRotations(newYaw, newPitch);
         ctx.setLastAction("Rotating -> Yaw: " + (int)newYaw + " Pitch: " + (int)newPitch);
     }

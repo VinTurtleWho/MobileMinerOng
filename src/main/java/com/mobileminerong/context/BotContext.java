@@ -41,8 +41,8 @@ public class BotContext {
     public synchronized Vec3 getPlayerPos() { return playerPos; }
     public synchronized void setPlayerPos(Vec3 pos) { this.playerPos = pos; }
 
-    public synchronized float getYaw() { return yaw; }
-    public synchronized float getPitch() { return pitch; }
+    public synchronized float getYRot() { return yaw; }
+    public synchronized float getXRot() { return pitch; }
     public synchronized void setRotations(float yaw, float pitch) {
         this.yaw = yaw;
         this.pitch = pitch;

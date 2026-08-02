@@ -7,7 +7,6 @@ import com.mobileminerong.state.PriorityTaskEngine;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
@@ -15,7 +14,6 @@ import org.lwjgl.glfw.GLFW;
 public class MobileMinerClient implements ClientModInitializer {
     private static final BotContext BOT_CONTEXT = new BotContext();
     private static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
-    private static KeyMapping diagnosticKey;
 
     @Override
     public void onInitializeClient() {
@@ -23,11 +21,8 @@ public class MobileMinerClient implements ClientModInitializer {
         DebugLogger.info("CLIENT", "Initializing MobileMinerOng Framework Architecture...");
 
         // Keybind 'G' for diagnostic test
-        diagnosticKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.mobileminerong.test",
-            InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_G,
-            "category.mobileminerong"
         ));
 
         // Lifecycle Hook: Safely close log file on client shutdown
@@ -42,10 +37,10 @@ public class MobileMinerClient implements ClientModInitializer {
 
             // Sync live context
             BOT_CONTEXT.setPlayerPos(client.player.getPos());
-            BOT_CONTEXT.setRotations(client.player.getYaw(), client.player.getPitch());
+            BOT_CONTEXT.setRotations(client.player.getYRot(), client.player.getXRot());
 
             // Handle Keypress
-            while (diagnosticKey.wasPressed()) {
+            if (com.mojang.blaze3d.platform.InputConstants.isKeyDown(client.getWindow().getWindow(), 71)) {
                 DebugLogger.info("KEYBIND", "Key 'G' pressed. Registering DiagnosticTestTask...");
                 TASK_ENGINE.registerTask(new DiagnosticTestTask());
             }

@@ -39,14 +39,14 @@ public class BlockScanner {
 
     private static boolean isTargetOre(BlockState state) {
         // Dwarven Mines Mithril & Titanium ores
-        return state.isOf(Blocks.PRISMARINE) ||
-               state.isOf(Blocks.DARK_PRISMARINE) ||
-               state.isOf(Blocks.PRISMARINE_BRICKS) ||
-               state.isOf(Blocks.CYAN_TERRACOTTA) ||
-               state.isOf(Blocks.LIGHT_BLUE_WOOL) ||
-               state.isOf(Blocks.BLUE_WOOL) ||
-               state.isOf(Blocks.GRAY_WOOL) ||
-               state.isOf(Blocks.SMOOTH_QUARTZ) ||
-               state.isOf(Blocks.QUARTZ_BLOCK);
+        return state.is(Blocks.PRISMARINE) ||
+               state.is(Blocks.DARK_PRISMARINE) ||
+               state.is(Blocks.PRISMARINE_BRICKS) ||
+               state.is(Blocks.CYAN_TERRACOTTA) ||
+               state.is(Blocks.LIGHT_BLUE_WOOL) ||
+               state.is(Blocks.BLUE_WOOL) ||
+               state.is(Blocks.GRAY_WOOL) ||
+               state.is(Blocks.SMOOTH_QUARTZ) ||
+               state.is(Blocks.QUARTZ_BLOCK);
     }
 }
