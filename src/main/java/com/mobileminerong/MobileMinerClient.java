@@ -3,18 +3,18 @@ package com.mobileminerong;
 import com.mobileminerong.command.MacroCommandHandler;
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.debug.DebugLogger;
+import com.mobileminerong.planning.task.DiagnosticTestTask;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
-
 import net.minecraft.client.Minecraft;
 
 public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
 
-    private int tickCounter = 0;
+    private static int debugTimer = 0;
 
     @Override
     public void onInitializeClient() {
@@ -27,9 +27,18 @@ public class MobileMinerClient implements ClientModInitializer {
         );
 
 
-        /*
-         * Tick loop
-         */
+        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
+
+            if(message.startsWith("!macro")) {
+
+                return !MacroCommandHandler.handle(message);
+
+            }
+
+            return true;
+        });
+
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
 
             if(client.player == null || client.level == null)
@@ -39,52 +48,24 @@ public class MobileMinerClient implements ClientModInitializer {
             updateContext(client);
 
 
-            tickCounter++;
+            if(MacroCommandHandler.isDebugEnabled()) {
 
+                debugTimer++;
 
-            /*
-             * Temporary automatic diagnostic
-             * Remove later after commands work
-             */
-            if(tickCounter >= 100) {
+                // 20 ticks = 1 second
+                if(debugTimer >= 20) {
 
-                tickCounter = 0;
+                    debugTimer = 0;
 
-                DebugLogger.debug(
-                    "TICK",
-                    "Context alive"
-                );
-
+                    DebugLogger.info(
+                        "DEBUG",
+                        buildDebugReport()
+                    );
+                }
             }
 
         });
-
-
-
-        /*
-         * Chat command system
-         *
-         * Example:
-         *
-         * !macro debug
-         * !macro debug off
-         *
-         */
-        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
-
-            if(message.startsWith("!macro")) {
-
-                return !MacroCommandHandler.handle(message);
-
-            }
-
-
-            return true;
-
-        });
-
     }
-
 
 
     private void updateContext(Minecraft client) {
@@ -93,17 +74,25 @@ public class MobileMinerClient implements ClientModInitializer {
             client.player.position()
         );
 
-
         BOT_CONTEXT.setRotations(
             client.player.getYRot(),
             client.player.getXRot()
         );
 
-
-        BOT_CONTEXT.setLastAction(
-            "Context updated"
-        );
-
     }
 
+
+    private String buildDebugReport(){
+
+        return
+        "\n===== MOBILEMINER DEBUG =====" +
+        "\nState: " + BOT_CONTEXT.getCurrentState() +
+        "\nPosition: " + BOT_CONTEXT.getPlayerPos() +
+        "\nYaw: " + BOT_CONTEXT.getYRot() +
+        "\nPitch: " + BOT_CONTEXT.getXRot() +
+        "\nTarget: " + BOT_CONTEXT.getCurrentTargetBlock() +
+        "\nLast Action: " + BOT_CONTEXT.getLastAction() +
+        "\nZone: " + BOT_CONTEXT.getCurrentZone() +
+        "\n============================";
+    }
 }
