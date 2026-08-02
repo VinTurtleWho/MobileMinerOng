@@ -18,7 +18,7 @@ public class MobileMinerClient implements ClientModInitializer {
             BOT_CONTEXT.setRotations(client.player.getYRot(), client.player.getXRot());
 
             if (com.mojang.blaze3d.platform.InputConstants.isKeyDown(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 71)) {
-                DiagnosticTestTask.runDiagnostic(client);
+                new DiagnosticTestTask().onStart(BOT_CONTEXT);
             }
         });
     }
