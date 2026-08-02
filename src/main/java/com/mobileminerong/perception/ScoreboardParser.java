@@ -16,7 +16,7 @@ public class ScoreboardParser {
         if (client.world == null) return;
 
         Scoreboard scoreboard = client.world.getScoreboard();
-        ScoreboardObjective objective = scoreboard.getNullableObjectiveBySlot(ScoreboardDisplaySlot.SIDEBAR);
+        ScoreboardObjective objective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
 
         if (objective != null) {
             Collection<ScoreboardEntry> entries = scoreboard.getScoreboardEntries(objective);
