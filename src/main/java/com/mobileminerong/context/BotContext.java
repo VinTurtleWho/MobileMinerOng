@@ -1,14 +1,14 @@
 package com.mobileminerong.context;
 
 import com.mobileminerong.state.BotState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 public class BotContext {
     private BotState currentState = BotState.IDLE;
     
     // Perception & Position
-    private Vec3d playerPos = Vec3d.ZERO;
+    private Vec3 playerPos = Vec3.ZERO;
     private float yaw = 0f;
     private float pitch = 0f;
     
@@ -38,8 +38,8 @@ public class BotContext {
         }
     }
 
-    public synchronized Vec3d getPlayerPos() { return playerPos; }
-    public synchronized void setPlayerPos(Vec3d pos) { this.playerPos = pos; }
+    public synchronized Vec3 getPlayerPos() { return playerPos; }
+    public synchronized void setPlayerPos(Vec3 pos) { this.playerPos = pos; }
 
     public synchronized float getYaw() { return yaw; }
     public synchronized float getPitch() { return pitch; }

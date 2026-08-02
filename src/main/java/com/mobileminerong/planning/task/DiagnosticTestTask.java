@@ -6,10 +6,10 @@ import com.mobileminerong.debug.DebugLogger;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.pathfinding.AStarPathfinder;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class DiagnosticTestTask implements BotTask {
 
     @Override
     public void onStart(BotContext ctx) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
         DebugLogger.info("DIAGNOSTIC", "--- STARTING DIAGNOSTIC RUN ---");
@@ -48,7 +48,7 @@ public class DiagnosticTestTask implements BotTask {
             client.player.sendMessage(Text.of("§b[3/5 Pathfinder] §f" + pathMsg), false);
 
             // 4. Control
-            Vec3d targetVec = targetOre.toCenterPos();
+            Vec3 targetVec = targetOre.toCenterPos();
             RotationController.lookAt(ctx, targetVec);
             DebugLogger.info("DIAGNOSTIC", "Rotating toward vector: " + targetVec);
             client.player.sendMessage(Text.of("§b[4/5 Control] §fRotating toward target ore..."), false);

@@ -1,20 +1,20 @@
 package com.mobileminerong.planning.pathfinding;
 
 import com.mobileminerong.context.BotContext;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 public class AStarPathfinder {
 
     public static List<BlockPos> findPath(BotContext ctx, BlockPos start, BlockPos target, int maxIterations) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.world == null) return Collections.emptyList();
 
-        World world = client.world;
+        Level world = client.world;
         PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
         Map<BlockPos, Node> allNodes = new HashMap<>();
         Set<BlockPos> closedSet = new HashSet<>();
@@ -75,7 +75,7 @@ public class AStarPathfinder {
         return Math.sqrt(a.getSquaredDistance(b));
     }
 
-    private static List<BlockPos> getNeighbors(World world, BlockPos pos) {
+    private static List<BlockPos> getNeighbors(Level world, BlockPos pos) {
         List<BlockPos> neighbors = new ArrayList<>();
         BlockPos[] candidates = new BlockPos[]{
             pos.north(), pos.south(), pos.east(), pos.west(),
@@ -91,7 +91,7 @@ public class AStarPathfinder {
         return neighbors;
     }
 
-    public static boolean isWalkable(World world, BlockPos pos) {
+    public static boolean isWalkable(Level world, BlockPos pos) {
         BlockState feet = world.getBlockState(pos);
         BlockState head = world.getBlockState(pos.up());
         BlockState floor = world.getBlockState(pos.down());

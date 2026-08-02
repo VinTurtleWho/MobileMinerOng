@@ -1,10 +1,10 @@
 package com.mobileminerong.perception;
 
 import com.mobileminerong.context.BotContext;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ import java.util.List;
 public class BlockScanner {
 
     public static List<BlockPos> findTargetOres(BotContext ctx, int radius) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         List<BlockPos> validOres = new ArrayList<>();
         if (client.world == null || client.player == null) return validOres;
 
