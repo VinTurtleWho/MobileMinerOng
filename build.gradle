@@ -11,6 +11,10 @@ repositories {
 
 dependencies {
 minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    
+// THIS IS THE LINE IT WAS CRYING ABOUT:
+mappings loom.officialMojangMappings()
+    
 modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
