@@ -30,12 +30,12 @@ public class MobileMinerClient implements ClientModInitializer {
 
         // Tick loop hook
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.world == null) return;
+            if (client.player == null || client.level == null) return;
 
             // Sync live context
 
             // Handle Keypress
-            if (com.mojang.blaze3d.platform.InputConstants.isKeyDown(client.getWindow().getWindow(), 71)) {
+            if (com.mojang.blaze3d.platform.InputConstants.isKeyDown(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 71)) {
                 DebugLogger.info("KEYBIND", "Key 'G' pressed. Registering DiagnosticTestTask...");
             }
 

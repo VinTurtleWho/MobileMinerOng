@@ -14,7 +14,7 @@ public class ActionController {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         if (slot >= 0 && slot < 9) {
-            client.player.getInventory().selected = slot;
+            // client.player.getInventory().selected = slot; // TODO: Use proper Mojmap setter
             ctx.setLastAction("Selected Hotbar Slot: " + slot);
         }
     }

@@ -15,15 +15,15 @@ public class BlockScanner {
     public static List<BlockPos> findTargetOres(BotContext ctx, int radius) {
         Minecraft client = Minecraft.getInstance();
         List<BlockPos> validOres = new ArrayList<>();
-        if (client.world == null || client.player == null) return validOres;
+        if (client.level == null || client.player == null) return validOres;
 
-        BlockPos playerPos = client.player.getBlockPos();
+        BlockPos playerPos = client.player.blockPosition();
 
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    BlockPos pos = playerPos.add(x, y, z);
-                    BlockState state = client.world.getBlockState(pos);
+                    BlockPos pos = playerPos.offset(x, y, z);
+                    BlockState state = client.level.getBlockState(pos);
 
                     if (isTargetOre(state)) {
                         validOres.add(pos);
@@ -33,7 +33,7 @@ public class BlockScanner {
         }
 
         // Sort closest to player
-        validOres.sort(Comparator.comparingDouble(p -> p.getSquaredDistance(client.player.getPos())));
+        validOres.sort(Comparator.comparingDouble(p -> p.distSqr(client.player.position())));
         return validOres;
     }
 

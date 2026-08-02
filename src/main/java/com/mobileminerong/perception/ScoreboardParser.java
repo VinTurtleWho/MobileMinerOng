@@ -13,20 +13,5 @@ public class ScoreboardParser {
 
     public static void updateZone(BotContext ctx) {
         Minecraft client = Minecraft.getInstance();
-        if (client.world == null) return;
+        if (client.level == null) return;
 
-        Scoreboard scoreboard = client.world.getScoreboard();
-        Objective objective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-
-        if (objective != null) {
-            Collection<PlayerScoreEntry> entries = scoreboard.getPlayerScores(objective);
-            for (PlayerScoreEntry entry : entries) {
-                String name = entry.owner();
-                if (name.contains("Zone:") || name.contains("㏿")) {
-                    ctx.setCurrentZone(name.replaceAll("§[0-9a-fk-or]", "").trim());
-                    return;
-                }
-            }
-        }
-    }
-}

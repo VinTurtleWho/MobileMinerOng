@@ -12,9 +12,9 @@ public class AStarPathfinder {
 
     public static List<BlockPos> findPath(BotContext ctx, BlockPos start, BlockPos target, int maxIterations) {
         Minecraft client = Minecraft.getInstance();
-        if (client.world == null) return Collections.emptyList();
+        if (client.level == null) return Collections.emptyList();
 
-        Level world = client.world;
+        Level world = client.level;
         PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
         Map<BlockPos, Node> allNodes = new HashMap<>();
         Set<BlockPos> closedSet = new HashSet<>();
@@ -31,7 +31,7 @@ public class AStarPathfinder {
             iterations++;
             Node current = openSet.poll();
 
-            if (current.pos.equals(target) || current.pos.getSquaredDistance(target) <= 2.25) {
+            if (current.pos.equals(target) || current.pos.distSqr(target) <= 2.25) {
                 return retracePath(current);
             }
 
@@ -40,7 +40,7 @@ public class AStarPathfinder {
             for (BlockPos neighborPos : getNeighbors(world, current.pos)) {
                 if (closedSet.contains(neighborPos)) continue;
 
-                double newGCost = current.gCost + Math.sqrt(current.pos.getSquaredDistance(neighborPos));
+                double newGCost = current.gCost + Math.sqrt(current.pos.distSqr(neighborPos));
                 Node neighbor = allNodes.getOrDefault(neighborPos, new Node(neighborPos));
 
                 if (newGCost < neighbor.gCost || !openSet.contains(neighbor)) {
@@ -72,15 +72,15 @@ public class AStarPathfinder {
     }
 
     private static double heuristic(BlockPos a, BlockPos b) {
-        return Math.sqrt(a.getSquaredDistance(b));
+        return Math.sqrt(a.distSqr(b));
     }
 
     private static List<BlockPos> getNeighbors(Level world, BlockPos pos) {
         List<BlockPos> neighbors = new ArrayList<>();
         BlockPos[] candidates = new BlockPos[]{
             pos.north(), pos.south(), pos.east(), pos.west(),
-            pos.north().up(), pos.south().up(), pos.east().up(), pos.west().up(),
-            pos.north().down(), pos.south().down(), pos.east().down(), pos.west().down()
+            pos.north().above(), pos.south().above(), pos.east().above(), pos.west().above(),
+            pos.north().below(), pos.south().below(), pos.east().below(), pos.west().below()
         };
 
         for (BlockPos candidate : candidates) {
@@ -93,12 +93,12 @@ public class AStarPathfinder {
 
     public static boolean isWalkable(Level world, BlockPos pos) {
         BlockState feet = world.getBlockState(pos);
-        BlockState head = world.getBlockState(pos.up());
-        BlockState floor = world.getBlockState(pos.down());
+        BlockState head = world.getBlockState(pos.above());
+        BlockState floor = world.getBlockState(pos.below());
 
-        boolean feetClear = feet.isAir() || !feet.isFullCube(world, pos);
-        boolean headClear = head.isAir() || !head.isFullCube(world, pos.up());
-        boolean floorSolid = !floor.isAir() && floor.isFullCube(world, pos.down());
+        boolean feetClear = feet.isAir() || !feet.isCollisionShapeFullBlock(world, pos);
+        boolean headClear = head.isAir() || !head.isCollisionShapeFullBlock(world, pos.above());
+        boolean floorSolid = !floor.isAir() && floor.isCollisionShapeFullBlock(world, pos.below());
 
         return feetClear && headClear && floorSolid;
     }
