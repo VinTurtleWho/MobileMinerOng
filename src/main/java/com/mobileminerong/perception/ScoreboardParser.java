@@ -13,5 +13,7 @@ public class ScoreboardParser {
 
     public static void updateZone(BotContext ctx) {
         Minecraft client = Minecraft.getInstance();
-        if (client.level == null) return;
+        if (client.level == null) return java.util.Collections.emptyList();
 
+    }
+}
