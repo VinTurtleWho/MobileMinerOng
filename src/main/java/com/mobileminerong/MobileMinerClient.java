@@ -1,37 +1,39 @@
 package com.mobileminerong;
 
+import com.mobileminerong.command.MacroCommandHandler;
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.debug.DebugLogger;
-import com.mobileminerong.planning.task.DiagnosticTestTask;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 
+import net.minecraft.client.Minecraft;
 
 public class MobileMinerClient implements ClientModInitializer {
 
-
     public static final BotContext BOT_CONTEXT = new BotContext();
 
-
     private int tickCounter = 0;
-    private boolean diagnosticRunning = false;
-
 
     @Override
     public void onInitializeClient() {
 
-
         DebugLogger.init();
 
+        DebugLogger.info(
+            "SYSTEM",
+            "MobileMinerOng initialized"
+        );
 
+
+        /*
+         * Tick loop
+         */
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
 
-
-            if (client.player == null || client.level == null) {
+            if(client.player == null || client.level == null)
                 return;
-            }
 
 
             updateContext(client);
@@ -40,29 +42,44 @@ public class MobileMinerClient implements ClientModInitializer {
             tickCounter++;
 
 
-            // Temporary automatic diagnostic
-            // Runs every 5 seconds
-            if (tickCounter >= 100 && !diagnosticRunning) {
-
+            /*
+             * Temporary automatic diagnostic
+             * Remove later after commands work
+             */
+            if(tickCounter >= 100) {
 
                 tickCounter = 0;
 
-                diagnosticRunning = true;
-
-
-                DebugLogger.info(
-                    "SYSTEM",
-                    "Starting automatic diagnostic test"
+                DebugLogger.debug(
+                    "TICK",
+                    "Context alive"
                 );
 
+            }
 
-                new DiagnosticTestTask()
-                    .onStart(BOT_CONTEXT);
+        });
 
 
-                diagnosticRunning = false;
+
+        /*
+         * Chat command system
+         *
+         * Example:
+         *
+         * !macro debug
+         * !macro debug off
+         *
+         */
+        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
+
+            if(message.startsWith("!macro")) {
+
+                return !MacroCommandHandler.handle(message);
 
             }
+
+
+            return true;
 
         });
 
@@ -71,7 +88,6 @@ public class MobileMinerClient implements ClientModInitializer {
 
 
     private void updateContext(Minecraft client) {
-
 
         BOT_CONTEXT.setPlayerPos(
             client.player.position()
