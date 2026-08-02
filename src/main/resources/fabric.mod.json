@@ -3,7 +3,7 @@
   "id": "mobileminerong",
   "version": "${version}",
   "name": "MobileMinerOng",
-  "description": "High-level autonomous macro framework for Hypixel Skyblock",
+  "description": "High-level autonomous macro framework",
   "authors": ["VinTurtleWho"],
   "contact": {},
   "license": "MIT",
@@ -14,8 +14,8 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.16.0",
-    "minecraft": "*",
-    "java": ">=21"
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.1.2",
+    "java": ">=25"
   }
 }
