@@ -3,18 +3,23 @@ package com.mobileminerong;
 import com.mobileminerong.command.MacroCommandHandler;
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.debug.DebugLogger;
-import com.mobileminerong.planning.task.DiagnosticTestTask;
+import com.mobileminerong.perception.BlockScanner;
+import com.mobileminerong.perception.ScoreboardParser;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+
+import java.util.List;
 
 public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
 
     private static int debugTimer = 0;
+    private static int perceptionTimer = 0;
 
     @Override
     public void onInitializeClient() {
@@ -48,6 +53,18 @@ public class MobileMinerClient implements ClientModInitializer {
             updateContext(client);
 
 
+            perceptionTimer++;
+
+            // Run perception once per second
+            if(perceptionTimer >= 20) {
+
+                perceptionTimer = 0;
+
+                updatePerception();
+
+            }
+
+
             if(MacroCommandHandler.isDebugEnabled()) {
 
                 debugTimer++;
@@ -61,10 +78,13 @@ public class MobileMinerClient implements ClientModInitializer {
                         "DEBUG",
                         buildDebugReport()
                     );
+
                 }
+
             }
 
         });
+
     }
 
 
@@ -74,6 +94,7 @@ public class MobileMinerClient implements ClientModInitializer {
             client.player.position()
         );
 
+
         BOT_CONTEXT.setRotations(
             client.player.getYRot(),
             client.player.getXRot()
@@ -82,17 +103,76 @@ public class MobileMinerClient implements ClientModInitializer {
     }
 
 
+
+    private void updatePerception() {
+
+        try {
+
+            ScoreboardParser.updateZone(
+                BOT_CONTEXT
+            );
+
+
+            List<BlockPos> targets =
+                BlockScanner.findTargetOres(
+                    BOT_CONTEXT,
+                    10
+                );
+
+
+            if(!targets.isEmpty()) {
+
+                BOT_CONTEXT.setCurrentTargetBlock(
+                    targets.get(0)
+                );
+
+
+                BOT_CONTEXT.setLastAction(
+                    "Target detected"
+                );
+
+
+                DebugLogger.debug(
+                    "PERCEPTION",
+                    "Found target: " + targets.get(0)
+                );
+
+
+            } else {
+
+                BOT_CONTEXT.setLastAction(
+                    "No targets found"
+                );
+
+            }
+
+
+        } catch(Exception e) {
+
+            DebugLogger.error(
+                "PERCEPTION",
+                e.toString()
+            );
+
+        }
+
+    }
+
+
+
     private String buildDebugReport(){
 
         return
-        "\n===== MOBILEMINER DEBUG =====" +
-        "\nState: " + BOT_CONTEXT.getCurrentState() +
-        "\nPosition: " + BOT_CONTEXT.getPlayerPos() +
-        "\nYaw: " + BOT_CONTEXT.getYRot() +
-        "\nPitch: " + BOT_CONTEXT.getXRot() +
-        "\nTarget: " + BOT_CONTEXT.getCurrentTargetBlock() +
-        "\nLast Action: " + BOT_CONTEXT.getLastAction() +
-        "\nZone: " + BOT_CONTEXT.getCurrentZone() +
-        "\n============================";
+            "\n===== MOBILEMINER DEBUG =====" +
+            "\nState: " + BOT_CONTEXT.getCurrentState() +
+            "\nPosition: " + BOT_CONTEXT.getPlayerPos() +
+            "\nYaw: " + BOT_CONTEXT.getYRot() +
+            "\nPitch: " + BOT_CONTEXT.getXRot() +
+            "\nTarget: " + BOT_CONTEXT.getCurrentTargetBlock() +
+            "\nLast Action: " + BOT_CONTEXT.getLastAction() +
+            "\nZone: " + BOT_CONTEXT.getCurrentZone() +
+            "\n============================";
+
     }
+
 }
