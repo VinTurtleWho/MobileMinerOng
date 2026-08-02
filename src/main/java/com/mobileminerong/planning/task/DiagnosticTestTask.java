@@ -2,7 +2,7 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.control.RotationController;
-import com.mobileminerong.debug.DebugLogger;
+import com.mobileminerong.diagnostic.DiagnosticManager;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.pathfinding.AStarPathfinder;
@@ -21,19 +21,19 @@ public class DiagnosticTestTask implements BotTask {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        DebugLogger.info("DIAGNOSTIC", "--- STARTING DIAGNOSTIC RUN ---");
+        DiagnosticManager.event("Diagnostic run started");
         client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] --- RUNNING DIAGNOSTIC TEST ---"));
 
         // 1. Perception: Zone
         ScoreboardParser.updateZone(ctx);
         String zoneMsg = "Current Zone: " + ctx.getCurrentZone();
-        DebugLogger.info("DIAGNOSTIC", zoneMsg);
+        DiagnosticManager.report("ENVIRONMENT", zoneMsg);
         client.player.sendSystemMessage(Component.literal("§b[1/5 Perception] §f" + zoneMsg));
 
         // 2. Perception: Ores
         List<BlockPos> ores = BlockScanner.findTargetOres(ctx, 10);
         String oreMsg = "Found " + ores.size() + " target ores within 10 blocks.";
-        DebugLogger.info("DIAGNOSTIC", oreMsg);
+        DiagnosticManager.report("PERCEPTION", oreMsg);
         client.player.sendSystemMessage(Component.literal("§b[2/5 Perception] §f" + oreMsg));
 
         if (!ores.isEmpty()) {
@@ -44,28 +44,28 @@ public class DiagnosticTestTask implements BotTask {
             BlockPos playerPos = client.player.blockPosition();
             List<BlockPos> path = AStarPathfinder.findPath(ctx, playerPos, targetOre, 500);
             String pathMsg = "Path to (" + targetOre.toShortString() + "): " + path.size() + " nodes generated.";
-            DebugLogger.info("DIAGNOSTIC", pathMsg);
+            DiagnosticManager.report("PATHFINDING", pathMsg);
             client.player.sendSystemMessage(Component.literal("§b[3/5 Pathfinder] §f" + pathMsg));
 
             // 4. Control
             Vec3 targetVec = targetOre.getCenter();
             RotationController.lookAt(ctx, targetVec);
-            DebugLogger.info("DIAGNOSTIC", "Rotating toward vector: " + targetVec);
+            DiagnosticManager.debug("ROTATION", "Target vector: " + targetVec);
             client.player.sendSystemMessage(Component.literal("§b[4/5 Control] §fRotating toward target ore..."));
 
             // 5. Verification
             float currentYaw = client.player.getYRot();
             float currentPitch = client.player.getXRot();
             String rotMsg = "Rotations set -> Yaw: " + (int)currentYaw + " Pitch: " + (int)currentPitch;
-            DebugLogger.info("DIAGNOSTIC", rotMsg);
+            DiagnosticManager.report("ROTATION", rotMsg);
             client.player.sendSystemMessage(Component.literal("§b[5/5 Verification] §f" + rotMsg));
         } else {
             String warning = "No ores found nearby to target.";
-            DebugLogger.warn("DIAGNOSTIC", warning);
+            DiagnosticManager.warn(warning);
             client.player.sendSystemMessage(Component.literal("§c[Diagnostic] Place any Wool, Terracotta, Quartz, or Prismarine block nearby to test aim & pathfinding!"));
         }
 
-        DebugLogger.info("DIAGNOSTIC", "--- DIAGNOSTIC RUN COMPLETE ---");
+        DiagnosticManager.event("Diagnostic run complete");
         finished = true;
     }
 
@@ -77,7 +77,7 @@ public class DiagnosticTestTask implements BotTask {
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
-        DebugLogger.error("DIAGNOSTIC", "Diagnostic failed: " + reason);
+        DiagnosticManager.error("Diagnostic failed: " + reason);
     }
 
     @Override
