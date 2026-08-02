@@ -21,7 +21,6 @@ public class MobileMinerClient implements ClientModInitializer {
         DebugLogger.info("CLIENT", "Initializing MobileMinerOng Framework Architecture...");
 
         // Keybind 'G' for diagnostic test
-        ));
 
         // Lifecycle Hook: Safely close log file on client shutdown
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
@@ -34,13 +33,10 @@ public class MobileMinerClient implements ClientModInitializer {
             if (client.player == null || client.world == null) return;
 
             // Sync live context
-            BOT_CONTEXT.setPlayerPos(client.player.getPos());
-            BOT_CONTEXT.setRotations(client.player.getYRot(), client.player.getXRot());
 
             // Handle Keypress
             if (com.mojang.blaze3d.platform.InputConstants.isKeyDown(client.getWindow().getWindow(), 71)) {
                 DebugLogger.info("KEYBIND", "Key 'G' pressed. Registering DiagnosticTestTask...");
-                TASK_ENGINE.registerTask(new DiagnosticTestTask());
             }
 
             // Tick task engine
