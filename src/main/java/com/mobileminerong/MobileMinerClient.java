@@ -21,8 +21,6 @@ public class MobileMinerClient implements ClientModInitializer {
         DebugLogger.info("CLIENT", "Initializing MobileMinerOng Framework Architecture...");
 
         // Keybind 'G' for diagnostic test
-            "key.mobileminerong.test",
-            GLFW.GLFW_KEY_G,
         ));
 
         // Lifecycle Hook: Safely close log file on client shutdown
