@@ -23,6 +23,8 @@ public class BotContext {
     
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
+    private int currentMana = 0;
+    private int maxMana = 0;
     
     // Diagnostics & Flags
     private String lastAction = "NONE";
@@ -69,6 +71,12 @@ public class BotContext {
 
     public synchronized String getCurrentZone() { return currentZone; }
     public synchronized void setCurrentZone(String zone) { this.currentZone = zone; }
+
+    public synchronized int getCurrentMana() { return currentMana; }
+    public synchronized void setMana(int current, int max) { 
+        this.currentMana = current; 
+        this.maxMana = max; 
+    }
 
     public synchronized String getLastAction() { return lastAction; }
     public synchronized void setLastAction(String action) { this.lastAction = action; }
