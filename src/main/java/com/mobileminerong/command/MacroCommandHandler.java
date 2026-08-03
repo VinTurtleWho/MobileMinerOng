@@ -23,7 +23,7 @@ public class MacroCommandHandler {
                 case "target":
                     if (args.length >= 3 && args[2].equalsIgnoreCase("player")) {
                         if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
-                            targetPlayer = null;
+                            ctx.setTargetPlayer(null);
                             client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
                         } else {
                             // Find nearest player logic

@@ -6,6 +6,7 @@ import com.mobileminerong.debug.DebugLogger;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.task.DiagnosticTestTask;
+import com.mobileminerong.planning.task.ShadowBotTask;
 import com.mobileminerong.planning.task.TargetSearchTask;
 import com.mobileminerong.state.PriorityTaskEngine;
 
