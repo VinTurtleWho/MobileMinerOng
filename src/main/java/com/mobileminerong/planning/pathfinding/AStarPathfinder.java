@@ -98,8 +98,18 @@ public class AStarPathfinder {
     }
 
     private static boolean isStraightLineWalkable(Level world, BlockPos start, BlockPos end) {
-        // Simple raycast approximation
-        return true; // TODO: Implement actual raycasting logic against world collision
+        Vec3 startVec = Vec3.atCenterOf(start);
+        Vec3 endVec = Vec3.atCenterOf(end);
+        
+        // Raycast to check for block collisions
+        net.minecraft.world.phys.HitResult hitResult = world.clip(new net.minecraft.world.level.ClipContext(
+                startVec, endVec,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE,
+                null
+        ));
+        
+        return hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
     }
 
     private static double heuristic(BlockPos a, BlockPos b) {
