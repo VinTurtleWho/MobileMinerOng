@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MobileMinerClient implements ClientModInitializer {
 
@@ -132,7 +133,7 @@ public class MobileMinerClient implements ClientModInitializer {
                 BOT_CONTEXT.setCurrentTargetBlock(
                     targets.get(0)
                 );
-
+                BOT_CONTEXT.updatePerceptionHealth(true);
 
                 DebugLogger.debug(
                     "PERCEPTION",
@@ -140,10 +141,12 @@ public class MobileMinerClient implements ClientModInitializer {
                 );
 
 
+            } else {
+                BOT_CONTEXT.updatePerceptionHealth(true);
             }
 
         } catch(Exception e) {
-
+            BOT_CONTEXT.updatePerceptionHealth(false);
             DebugLogger.error(
                 "PERCEPTION",
                 e.toString()
@@ -156,18 +159,28 @@ public class MobileMinerClient implements ClientModInitializer {
 
 
     private String buildDebugReport(){
+        String stateHistory = BOT_CONTEXT.getStateHistory().stream()
+            .map(e -> String.format("...->%s (%s)", e.state(), e.reason()))
+            .collect(Collectors.joining("\n"));
 
         return
-            "\n===== MOBILEMINER DEBUG =====" +
-            "\nState: " + BOT_CONTEXT.getCurrentState() + " (" + BOT_CONTEXT.getStateChangeReason() + ")" +
-            "\nPosition: " + BOT_CONTEXT.getPlayerPos() +
-            "\nYaw: " + BOT_CONTEXT.getYRot() +
-            "\nPitch: " + BOT_CONTEXT.getXRot() +
-            "\nTarget: " + BOT_CONTEXT.getCurrentTargetBlock() +
-            "\nLast Action: " + BOT_CONTEXT.getLastAction() +
-            "\nZone: " + BOT_CONTEXT.getCurrentZone() +
-            "\nTick Duration: " + BOT_CONTEXT.getLastTickDuration() + "ms" +
-            "\nPerception Failures: " + BOT_CONTEXT.getPerceptionFailures() +
+            "\n===== MOBILEMINER DIAGNOSTIC =====" +
+            "\nBOT" +
+            "\n- State: " + BOT_CONTEXT.getCurrentState() + " (" + BOT_CONTEXT.getStateChangeReason() + ")" +
+            "\n- Active Task: " + (TASK_ENGINE.getActiveTask() != null ? TASK_ENGINE.getActiveTask().getName() : "None") +
+            "\nTASK" +
+            "\n- Pool Size: " + TASK_ENGINE.getTaskPoolSize() +
+            "\n- Last Completed: " + (TASK_ENGINE.getLastCompletedTask() != null ? TASK_ENGINE.getLastCompletedTask().getName() : "None") +
+            "\n- Last Failed: " + (TASK_ENGINE.getLastFailedTask() != null ? TASK_ENGINE.getLastFailedTask().getName() + " (" + TASK_ENGINE.getLastFailureReason() + ")" : "None") +
+            "\nPLAYER" +
+            "\n- Pos: " + BOT_CONTEXT.getPlayerPos() +
+            "\nPERCEPTION" +
+            "\n- Target: " + BOT_CONTEXT.getCurrentTargetBlock() +
+            "\n- Failures: " + BOT_CONTEXT.getPerceptionFailures() +
+            "\nENGINE" +
+            "\n- Last Tick: " + BOT_CONTEXT.getLastTickDurationMicros() + "µs" +
+            "\nRECENT STATE TRANSITIONS" +
+            "\n" + stateHistory +
             "\n============================";
 
     }

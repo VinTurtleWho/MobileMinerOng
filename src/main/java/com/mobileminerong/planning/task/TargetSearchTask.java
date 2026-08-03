@@ -2,6 +2,7 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.state.BotState;
+import com.mobileminerong.MobileMinerClient;
 
 public class TargetSearchTask implements BotTask {
 
@@ -25,6 +26,7 @@ public class TargetSearchTask implements BotTask {
             if (ctx.getCurrentTargetBlock() != null) {
                 ctx.setState(BotState.MOVING_TO_TARGET, "Target acquired, transitioning to move");
                 finished = true;
+                ctx.addTaskEvent(getName(), "COMPLETED", "Target found");
             }
         } catch (Exception e) {
             onFailure(ctx, "Error checking target: " + e.getMessage());
@@ -39,6 +41,8 @@ public class TargetSearchTask implements BotTask {
     @Override
     public void onFailure(BotContext ctx, String reason) {
         ctx.setState(BotState.ERROR, "Target search failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+        ctx.addTaskEvent(getName(), "FAILED", reason);
         finished = true;
     }
 

@@ -3,6 +3,8 @@ package com.mobileminerong.planning.task;
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.diagnostic.DiagnosticManager;
 import com.mobileminerong.state.BotState;
+import com.mobileminerong.state.PriorityTaskEngine;
+import com.mobileminerong.MobileMinerClient;
 
 public class DiagnosticTestTask implements BotTask {
 
@@ -17,7 +19,7 @@ public class DiagnosticTestTask implements BotTask {
         long now = System.currentTimeMillis();
         if(now - lastRun < COOLDOWN) {
             ctx.setState(BotState.IDLE, "Diagnostic on cooldown");
-            finished = true; // Mark finished to stop engine loop
+            finished = true; 
             return;
         }
 
@@ -46,6 +48,8 @@ public class DiagnosticTestTask implements BotTask {
     @Override
     public void onFailure(BotContext ctx, String reason){
         ctx.setState(BotState.ERROR, "Diagnostic Failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+        ctx.addTaskEvent(getName(), "FAILED", reason);
         DiagnosticManager.error("Diagnostic failed: " + reason);
         finished = true;
     }

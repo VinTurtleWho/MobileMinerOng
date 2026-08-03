@@ -6,6 +6,8 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BotContext {
     private BotState currentState = BotState.IDLE;
@@ -21,24 +23,21 @@ public class BotContext {
     
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
-    private int currentMana = 0;
-    private int maxMana = 0;
-    private int currentHealth = 0;
-    private int maxHealth = 0;
-    private int speedStat = 100;
     
     // Diagnostics & Flags
-    private int stuckTicks = 0;
     private String lastAction = "NONE";
     private String stateChangeReason = "Initialization";
     
     // Observability
+    public record StateEvent(BotState state, String reason, long timestamp) {}
     private final Deque<StateEvent> stateHistory = new ArrayDeque<>(10);
+    
     private long lastPerceptionUpdate = 0;
     private int perceptionFailures = 0;
-    private long lastTickDuration = 0;
-
-    public record StateEvent(BotState state, String reason, long timestamp) {}
+    private long lastTickDurationNano = 0;
+    
+    public record TaskEvent(String name, String status, String reason, long timestamp) {}
+    private final Deque<TaskEvent> taskHistory = new ArrayDeque<>(10);
 
     // Getters and Setters
     public synchronized BotState getCurrentState() { return currentState; }
@@ -71,16 +70,6 @@ public class BotContext {
     public synchronized String getCurrentZone() { return currentZone; }
     public synchronized void setCurrentZone(String zone) { this.currentZone = zone; }
 
-    public synchronized int getCurrentMana() { return currentMana; }
-    public synchronized void setMana(int current, int max) { 
-        this.currentMana = current; 
-        this.maxMana = max; 
-    }
-
-    public synchronized int getStuckTicks() { return stuckTicks; }
-    public synchronized void incrementStuckTicks() { this.stuckTicks++; }
-    public synchronized void resetStuckTicks() { this.stuckTicks = 0; }
-
     public synchronized String getLastAction() { return lastAction; }
     public synchronized void setLastAction(String action) { this.lastAction = action; }
     public synchronized String getStateChangeReason() { return stateChangeReason; }
@@ -90,7 +79,15 @@ public class BotContext {
         this.lastPerceptionUpdate = System.currentTimeMillis();
         if (!success) this.perceptionFailures++;
     }
-    public synchronized void setLastTickDuration(long duration) { this.lastTickDuration = duration; }
-    public synchronized long getLastTickDuration() { return lastTickDuration; }
+    public synchronized void setLastTickDurationNano(long durationNano) { this.lastTickDurationNano = durationNano; }
+    public synchronized long getLastTickDurationMicros() { return lastTickDurationNano / 1000; }
     public synchronized int getPerceptionFailures() { return perceptionFailures; }
+    public synchronized long getLastPerceptionUpdate() { return lastPerceptionUpdate; }
+
+    public synchronized void addTaskEvent(String name, String status, String reason) {
+        if (taskHistory.size() >= 10) taskHistory.removeFirst();
+        taskHistory.addLast(new TaskEvent(name, status, reason, System.currentTimeMillis()));
+    }
+    public synchronized List<StateEvent> getStateHistory() { return new ArrayList<>(stateHistory); }
+    public synchronized List<TaskEvent> getTaskHistory() { return new ArrayList<>(taskHistory); }
 }
