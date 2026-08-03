@@ -20,6 +20,7 @@ public class MovementTask implements BotTask {
     private boolean finished = false;
     private Vec3 lastPos;
     private int stuckTicks = 0;
+    private int pathCooldown = 0; // Cooldown timer
     private final RotationController rotationController = new RotationController();
 
     public MovementTask(BlockPos targetPos) {
@@ -49,6 +50,9 @@ public class MovementTask implements BotTask {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
+        // Reduce cooldown
+        if (pathCooldown > 0) pathCooldown--;
+
         // Stuck detection
         if (client.player.position().distanceToSqr(lastPos) < 0.01) {
             stuckTicks++;
@@ -57,7 +61,16 @@ public class MovementTask implements BotTask {
             lastPos = client.player.position();
         }
 
-        if (stuckTicks > 60) {
+        if (stuckTicks > 60 && pathCooldown == 0) {
+            // Attempt to re-path only if cooldown allows
+            this.path = AStarPathfinder.findPath(ctx, client.player.blockPosition(), targetPos, 1000);
+            currentIndex = 0;
+            pathCooldown = 100; // 5 seconds cooldown
+            stuckTicks = 0;
+            return;
+        }
+
+        if (stuckTicks > 120) {
             onFailure(ctx, "Bot stuck for too long");
             return;
         }

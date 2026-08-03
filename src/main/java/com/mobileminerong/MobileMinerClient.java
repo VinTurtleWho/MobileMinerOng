@@ -9,9 +9,11 @@ import com.mobileminerong.planning.task.DiagnosticTestTask;
 import com.mobileminerong.planning.task.ShadowBotTask;
 import com.mobileminerong.planning.task.TargetSearchTask;
 import com.mobileminerong.state.PriorityTaskEngine;
+import com.mobileminerong.util.ChatLogger;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,6 +45,7 @@ public class MobileMinerClient implements ClientModInitializer {
 
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
 
+            ChatLogger.log("[SENT] " + message);
             if(message.startsWith("!macro")) {
 
                 return !MacroCommandHandler.handle(message, BOT_CONTEXT);
@@ -50,6 +53,10 @@ public class MobileMinerClient implements ClientModInitializer {
             }
 
             return true;
+        });
+
+        ClientReceiveMessageEvents.GAME.register((client, message, overlay) -> {
+            ChatLogger.log("[RECEIVED] " + message.getString());
         });
 
 
