@@ -91,4 +91,6 @@ public class BotContext {
         if (!success) this.perceptionFailures++;
     }
     public synchronized void setLastTickDuration(long duration) { this.lastTickDuration = duration; }
+    public synchronized long getLastTickDuration() { return lastTickDuration; }
+    public synchronized int getPerceptionFailures() { return perceptionFailures; }
 }

@@ -159,13 +159,15 @@ public class MobileMinerClient implements ClientModInitializer {
 
         return
             "\n===== MOBILEMINER DEBUG =====" +
-            "\nState: " + BOT_CONTEXT.getCurrentState() +
+            "\nState: " + BOT_CONTEXT.getCurrentState() + " (" + BOT_CONTEXT.getStateChangeReason() + ")" +
             "\nPosition: " + BOT_CONTEXT.getPlayerPos() +
             "\nYaw: " + BOT_CONTEXT.getYRot() +
             "\nPitch: " + BOT_CONTEXT.getXRot() +
             "\nTarget: " + BOT_CONTEXT.getCurrentTargetBlock() +
             "\nLast Action: " + BOT_CONTEXT.getLastAction() +
             "\nZone: " + BOT_CONTEXT.getCurrentZone() +
+            "\nTick Duration: " + BOT_CONTEXT.getLastTickDuration() + "ms" +
+            "\nPerception Failures: " + BOT_CONTEXT.getPerceptionFailures() +
             "\n============================";
 
     }
