@@ -2,10 +2,10 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.state.BotState;
-import com.mobileminerong.MobileMinerClient;
 import com.mobileminerong.planning.pathfinding.AStarPathfinder;
 import com.mobileminerong.control.ActionController;
 import com.mobileminerong.control.RotationController;
+import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -14,30 +14,34 @@ import java.util.List;
 
 public class MovementTask implements BotTask {
 
+    private final BlockPos targetPos;
     private List<BlockPos> path;
-    private int currentWaypointIndex = 0;
+    private int currentIndex = 0;
+    private boolean finished = false;
     private Vec3 lastPos;
     private int stuckTicks = 0;
     private final RotationController rotationController = new RotationController();
 
+    public MovementTask(BlockPos targetPos) {
+        this.targetPos = targetPos;
+    }
+
     @Override
     public void onStart(BotContext ctx) {
-        ctx.setState(BotState.MOVING_TO_TARGET, "Calculating path...");
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) {
-            onFailure(ctx, "Player null");
+            onFailure(ctx, "No player context");
             return;
         }
 
-        path = AStarPathfinder.findPath(ctx, client.player.blockPosition(), ctx.getCurrentTargetBlock(), 1000);
+        this.path = AStarPathfinder.findPath(ctx, client.player.blockPosition(), targetPos, 1000);
         if (path.isEmpty()) {
-            onFailure(ctx, "No path found");
+            onFailure(ctx, "No path found to " + targetPos);
             return;
         }
 
-        currentWaypointIndex = 0;
-        lastPos = client.player.position();
-        stuckTicks = 0;
+        ctx.setState(BotState.MOVING_TO_TARGET, "Moving to " + targetPos);
+        this.lastPos = client.player.position();
     }
 
     @Override
@@ -46,55 +50,50 @@ public class MovementTask implements BotTask {
         if (client.player == null) return;
 
         // Stuck detection
-        Vec3 currentPos = client.player.position();
-        if (currentPos.distanceToSqr(lastPos) < 0.01) {
+        if (client.player.position().distanceToSqr(lastPos) < 0.01) {
             stuckTicks++;
         } else {
             stuckTicks = 0;
-            lastPos = currentPos;
+            lastPos = client.player.position();
         }
 
         if (stuckTicks > 60) {
-            onFailure(ctx, "Stuck detected");
+            onFailure(ctx, "Bot stuck for too long");
             return;
         }
 
-        if (currentWaypointIndex >= path.size()) {
+        if (currentIndex >= path.size()) {
+            finished = true;
             ActionController.stopAllInputs();
             ctx.setState(BotState.AIMING, "Reached destination");
-            return; 
-        }
-
-        BlockPos target = path.get(currentWaypointIndex);
-        Vec3 targetVec = Vec3.atCenterOf(target);
-        double distSqr = currentPos.distanceToSqr(targetVec);
-
-        // Improved waypoint check: check if passed or very close
-        if (distSqr < 0.5) {
-            currentWaypointIndex++;
             return;
         }
 
-        // Rotate
-        rotationController.setTarget(targetVec, client.player.getYRot(), client.player.getXRot());
-        boolean aligned = rotationController.tick(ctx);
+        BlockPos currentWaypoint = path.get(currentIndex);
+        Vec3 waypointVec = Vec3.atCenterOf(currentWaypoint);
 
-        // Only move forward if reasonably aligned
-        if (aligned || distSqr > 1.0) {
-            client.options.keyUp.setDown(true);
-        } else {
-            client.options.keyUp.setDown(false);
+        // Advance waypoint if close
+        if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
+            currentIndex++;
+            return;
         }
+
+        // Move and Rotate
+        rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
+        rotationController.tick(ctx);
+        
+        client.options.keyUp.setDown(true);
     }
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return ctx.getCurrentState() == BotState.AIMING || ctx.getCurrentState() == BotState.ERROR;
+        return finished;
     }
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
         ActionController.stopAllInputs();
+        finished = true;
         ctx.setState(BotState.RECOVERING, "Movement failed: " + reason);
         MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
     }

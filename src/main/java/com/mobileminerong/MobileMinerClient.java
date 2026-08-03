@@ -32,6 +32,7 @@ public class MobileMinerClient implements ClientModInitializer {
         DebugLogger.init();
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
         TASK_ENGINE.registerTask(new TargetSearchTask());
+        TASK_ENGINE.registerTask(new ShadowBotTask());
 
         DebugLogger.info(
             "SYSTEM",
@@ -43,7 +44,7 @@ public class MobileMinerClient implements ClientModInitializer {
 
             if(message.startsWith("!macro")) {
 
-                return !MacroCommandHandler.handle(message);
+                return !MacroCommandHandler.handle(message, BOT_CONTEXT);
 
             }
 

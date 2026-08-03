@@ -2,54 +2,56 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.state.BotState;
-import com.mobileminerong.MobileMinerClient;
 import com.mobileminerong.control.RotationController;
+import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 public class AimingTask implements BotTask {
 
+    private final Vec3 targetVec;
     private final RotationController rotationController = new RotationController();
-    private int timeoutTicks = 0;
+    private int timeoutTicks = 40;
+    private boolean finished = false;
+
+    public AimingTask(BlockPos targetPos) {
+        // Target center of block
+        this.targetVec = Vec3.atCenterOf(targetPos);
+    }
 
     @Override
     public void onStart(BotContext ctx) {
-        ctx.setState(BotState.AIMING, "Aligning aim to target...");
+        ctx.setState(BotState.AIMING, "Aiming at " + targetVec);
         Minecraft client = Minecraft.getInstance();
-        if (client.player == null) {
-            onFailure(ctx, "Player null");
-            return;
+        if (client.player != null) {
+            rotationController.setTarget(targetVec, client.player.getYRot(), client.player.getXRot());
         }
-
-        Vec3 targetPos = Vec3.atCenterOf(ctx.getCurrentTargetBlock());
-        rotationController.setTarget(targetPos, client.player.getYRot(), client.player.getXRot());
-        
-        // Dynamically set timeout: rotation time + buffer
-        // RotationController defines totalTicks based on delta
-        // We need access to that value. Since it's an instance, we can calculate it again or expose it.
-        // For now, let's use a safe upper bound based on the rotation logic.
-        this.timeoutTicks = 100; // Sufficient buffer
     }
 
     @Override
     public void onTick(BotContext ctx) {
-        if (rotationController.tick(ctx)) {
-            ctx.setState(BotState.MINING, "Aligned to target");
-        }
-        
         timeoutTicks--;
         if (timeoutTicks <= 0) {
             onFailure(ctx, "Aiming timed out");
+            return;
+        }
+
+        boolean aligned = rotationController.tick(ctx);
+        if (aligned) {
+            finished = true;
+            ctx.setState(BotState.IDLE, "Aiming complete");
         }
     }
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return ctx.getCurrentState() == BotState.MINING || ctx.getCurrentState() == BotState.ERROR;
+        return finished;
     }
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
+        finished = true;
         ctx.setState(BotState.RECOVERING, "Aiming failed: " + reason);
         MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
     }

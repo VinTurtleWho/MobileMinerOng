@@ -20,6 +20,7 @@ public class BotContext {
     // Targets
     private BlockPos currentTargetBlock = null;
     private BlockPos lastSeenTargetBlock = null;
+    private net.minecraft.world.entity.player.Player targetPlayer = null;
     
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
@@ -68,6 +69,9 @@ public class BotContext {
         if (pos != null) this.lastSeenTargetBlock = pos;
         this.currentTargetBlock = pos; 
     }
+
+    public synchronized net.minecraft.world.entity.player.Player getTargetPlayer() { return targetPlayer; }
+    public synchronized void setTargetPlayer(net.minecraft.world.entity.player.Player player) { this.targetPlayer = player; }
 
     public synchronized String getCurrentZone() { return currentZone; }
     public synchronized void setCurrentZone(String zone) { this.currentZone = zone; }
