@@ -55,7 +55,7 @@ public class MobileMinerClient implements ClientModInitializer {
             return true;
         });
 
-        ClientReceiveMessageEvents.GAME.register((client, message, overlay) -> {
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             ChatLogger.log("[RECEIVED] " + message.getString());
         });
 
