@@ -7,15 +7,13 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: setup jdk
         uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'microsoft'
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
