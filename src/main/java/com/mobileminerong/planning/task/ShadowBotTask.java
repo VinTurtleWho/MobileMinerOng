@@ -27,11 +27,13 @@ public class ShadowBotTask implements BotTask {
 
         double dist = client.player.distanceTo(targetPlayer);
         Vec3 targetPos = targetPlayer.position();
+        BlockPos targetBlock = BlockPos.containing(targetPos.x, targetPos.y, targetPos.z);
 
         // If distance > 3, move to 2 blocks away
         if (dist > 3.0) {
-            // Very basic: move towards player position
-            BlockPos targetBlock = BlockPos.containing(targetPos.x, targetPos.y, targetPos.z);
+            // Stop aiming if it was active
+            aimingTask = null;
+
             if (movementTask == null || movementTask.isFinished(ctx)) {
                 movementTask = new MovementTask(targetBlock);
                 movementTask.onStart(ctx);
@@ -39,9 +41,14 @@ public class ShadowBotTask implements BotTask {
                 movementTask.onTick(ctx);
             }
         } else {
-            // If distance < 3, just aim at player
-            BlockPos targetBlock = BlockPos.containing(targetPos.x, targetPos.y, targetPos.z);
-            if (aimingTask == null || aimingTask.isFinished(ctx)) {
+            // Stop movement if it was active
+            if (movementTask != null) {
+                ActionController.stopAllInputs();
+                movementTask = null;
+            }
+
+            // Just aim
+            if (aimingTask == null) {
                 aimingTask = new AimingTask(targetBlock);
                 aimingTask.onStart(ctx);
             } else {
