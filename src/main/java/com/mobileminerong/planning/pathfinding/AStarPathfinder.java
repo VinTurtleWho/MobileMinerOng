@@ -131,6 +131,12 @@ public class AStarPathfinder {
         boolean headClear = head.isAir() || !head.isCollisionShapeFullBlock(world, pos.above());
         boolean floorSolid = !floor.isAir() && floor.isCollisionShapeFullBlock(world, pos.below());
 
-        return feetClear && headClear && floorSolid;
+        boolean walkable = feetClear && headClear && floorSolid;
+        
+        if (!walkable) {
+            com.mobileminerong.debug.DebugLogger.debug("PATHFINDER", "Blocked at: " + pos + " | Feet: " + feet.getBlock().getName().getString() + " | FloorSolid: " + floorSolid);
+        }
+
+        return walkable;
     }
 }
