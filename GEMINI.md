@@ -14,10 +14,12 @@ The project follows a standard Fabric mod structure.
 
 ## Development Philosophy
 
-- **Architecture**: The project uses a layered architecture: Perception -> Context -> Planning -> Execution.
+- **Architecture**: Layered: Perception -> Context -> Planning -> Execution.
 - **Modularity**: Avoid large monolithic classes ("god classes"). Prefer small, focused components.
-- **State**: `BotContext` is the central shared state container.
+- **State**: `BotContext` is the central shared state container. All bot tasks must read/write through this.
 - **Separation of Concerns**: Planning decides what should happen; execution performs actions.
+- **Task Pattern**: Tasks are stateful (`BotTask` interface). Tasks are either **persistent** (like `TargetSearchTask`) or **finite** (like `MovementTask` and `AimingTask`).
+- **Rotation Pattern**: Use `RotationController` as an **instance-based** state machine for smooth interpolation, rather than static utility methods.
 - **Process**: Explain architecture changes before editing files. Never make large refactors without first creating a plan.
 - **Patterns**: Preserve Fabric API patterns.
 

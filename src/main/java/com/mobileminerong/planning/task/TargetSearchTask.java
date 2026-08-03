@@ -6,8 +6,6 @@ import com.mobileminerong.MobileMinerClient;
 
 public class TargetSearchTask implements BotTask {
 
-    private boolean finished = false;
-
     @Override
     public void onStart(BotContext ctx) {
         ctx.setState(BotState.SEARCHING_TARGET, "Initial search started");
@@ -16,18 +14,20 @@ public class TargetSearchTask implements BotTask {
 
     @Override
     public void onTick(BotContext ctx) {
-        if (!finished) {
-            checkTarget(ctx);
-        }
+        checkTarget(ctx);
     }
 
     private void checkTarget(BotContext ctx) {
         try {
             if (ctx.getCurrentTargetBlock() != null) {
-                ctx.setState(BotState.MOVING_TO_TARGET, "Target acquired, transitioning to move");
-                finished = true;
-                ctx.addTaskEvent(getName(), "COMPLETED", "Target found");
+                // If a target is already acquired, we don't need to do anything.
+                // The MovementTask/AimingTask/MiningTask chain will handle the rest.
+                return;
             }
+            
+            // Logic to find a target would go here, 
+            // but for now, we just ensure the task keeps running.
+            
         } catch (Exception e) {
             onFailure(ctx, "Error checking target: " + e.getMessage());
         }
@@ -35,7 +35,8 @@ public class TargetSearchTask implements BotTask {
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return finished;
+        // Never finish; this is a persistent background task.
+        return false;
     }
 
     @Override
@@ -43,7 +44,6 @@ public class TargetSearchTask implements BotTask {
         ctx.setState(BotState.ERROR, "Target search failed: " + reason);
         MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
         ctx.addTaskEvent(getName(), "FAILED", reason);
-        finished = true;
     }
 
     @Override

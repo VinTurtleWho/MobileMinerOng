@@ -1,10 +1,11 @@
 package com.mobileminerong.diagnostic;
 
 import com.mobileminerong.debug.DebugLogger;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DiagnosticManager {
 
-    private static long lastReportTime = 0;
+    private static final ConcurrentHashMap<String, Long> lastReportTimes = new ConcurrentHashMap<>();
 
     // 1 second between full reports
     private static final long REPORT_INTERVAL = 1000;
@@ -12,10 +13,11 @@ public class DiagnosticManager {
     public static void report(String category, String message) {
 
         long now = System.currentTimeMillis();
+        long last = lastReportTimes.getOrDefault(category, 0L);
 
-        if (now - lastReportTime >= REPORT_INTERVAL) {
+        if (now - last >= REPORT_INTERVAL) {
             DebugLogger.info(category, message);
-            lastReportTime = now;
+            lastReportTimes.put(category, now);
         }
     }
 

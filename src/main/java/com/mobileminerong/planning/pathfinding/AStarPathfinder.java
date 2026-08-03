@@ -16,6 +16,7 @@ public class AStarPathfinder {
 
         Level world = client.level;
         PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
+        Set<BlockPos> openSetMembership = new HashSet<>();
         Map<BlockPos, Node> allNodes = new HashMap<>();
         Set<BlockPos> closedSet = new HashSet<>();
 
@@ -23,6 +24,7 @@ public class AStarPathfinder {
         startNode.gCost = 0;
         startNode.hCost = heuristic(start, target);
         openSet.add(startNode);
+        openSetMembership.add(start);
         allNodes.put(start, startNode);
 
         int iterations = 0;
@@ -30,9 +32,10 @@ public class AStarPathfinder {
         while (!openSet.isEmpty() && iterations < maxIterations) {
             iterations++;
             Node current = openSet.poll();
+            openSetMembership.remove(current.pos);
 
             if (current.pos.equals(target) || current.pos.distSqr(target) <= 2.25) {
-                return retracePath(current);
+                return smoothPath(retracePath(current), world);
             }
 
             closedSet.add(current.pos);
@@ -40,17 +43,18 @@ public class AStarPathfinder {
             for (BlockPos neighborPos : getNeighbors(world, current.pos)) {
                 if (closedSet.contains(neighborPos)) continue;
 
-                double newGCost = current.gCost + Math.sqrt(current.pos.distSqr(neighborPos));
+                double newGCost = current.gCost + current.pos.distSqr(neighborPos);
                 Node neighbor = allNodes.getOrDefault(neighborPos, new Node(neighborPos));
 
-                if (newGCost < neighbor.gCost || !openSet.contains(neighbor)) {
+                if (newGCost < neighbor.gCost || !openSetMembership.contains(neighborPos)) {
                     neighbor.gCost = newGCost;
                     neighbor.hCost = heuristic(neighborPos, target);
                     neighbor.parent = current;
 
                     allNodes.put(neighborPos, neighbor);
-                    if (!openSet.contains(neighbor)) {
+                    if (!openSetMembership.contains(neighborPos)) {
                         openSet.add(neighbor);
+                        openSetMembership.add(neighborPos);
                     }
                 }
             }
@@ -71,8 +75,35 @@ public class AStarPathfinder {
         return path;
     }
 
+    private static List<BlockPos> smoothPath(List<BlockPos> path, Level world) {
+        if (path.size() < 3) return path;
+
+        List<BlockPos> smoothed = new ArrayList<>();
+        smoothed.add(path.get(0));
+
+        int i = 0;
+        while (i < path.size() - 2) {
+            BlockPos p1 = path.get(i);
+            BlockPos p2 = path.get(i + 2);
+
+            if (isStraightLineWalkable(world, p1, p2)) {
+                i += 2;
+            } else {
+                smoothed.add(path.get(i + 1));
+                i++;
+            }
+        }
+        smoothed.add(path.get(path.size() - 1));
+        return smoothed;
+    }
+
+    private static boolean isStraightLineWalkable(Level world, BlockPos start, BlockPos end) {
+        // Simple raycast approximation
+        return true; // TODO: Implement actual raycasting logic against world collision
+    }
+
     private static double heuristic(BlockPos a, BlockPos b) {
-        return Math.sqrt(a.distSqr(b));
+        return a.distSqr(b);
     }
 
     private static List<BlockPos> getNeighbors(Level world, BlockPos pos) {

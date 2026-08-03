@@ -85,19 +85,15 @@ Decides which actions to take based on the parameters available in `BotContext`.
 
 * **`PriorityTaskEngine`**: Handles task sorting, context-sensitive preemption, and execution tick routing.
 * **`BotTask` Interface**: Defines behaviors using life-cycle phases (`onStart`, `onTick`, `isFinished`, `onFailure`).
-  Tasks define clear, numeric priorities using the following architectural scale:
-  * `100` = Failsafe / Emergency (e.g., `DiagnosticTestTask`)
-  * `80` = Hazard Recovery / Unstuck Routines
-  * `50` = Combat Defense / Aggression Checks
-  * `20` = SkyBlock Commissions / Progressive Objectives
-  * `10` = Standard Mining Loops
-* **Pathfinding (`AStarPathfinder` & `Node`)**: Formulates coordinate paths from a source to a target node. Evaluates floor solidity and block-height clearances with `isWalkable(...)` (verifying feet and head block collisions) to ensure safe navigation.
+  Tasks are either **persistent** (e.g., `TargetSearchTask`) or **finite** (e.g., `MovementTask`, `AimingTask`).
+  Tasks define clear, numeric priorities.
+* **Pathfinding (`AStarPathfinder` & `Node`)**: Formulates coordinate paths from a source to a target node.
 
 ### 3.4 Execution & Control Layer (`com.mobileminerong.control`)
 The control layer translates the strategic decisions of active tasks into actual client-side actions.
 
-* **`ActionController`**: Simulates inputs by programmatically altering the `down` state of Minecraft's key bindings (`KeyMapping`). It can clear inputs instantly during emergency preemption via `stopAllInputs()`.
-* **`RotationController`**: Computes angular yaw/pitch differences from eyes coordinates to three-dimensional coordinates using trigonometry (`atan2`). It clamps maximum angular changes to `MAX_DEGREES_PER_TICK` (22.5°) to emulate smooth, human-like head rotations across consecutive ticks.
+* **`ActionController`**: Simulates inputs by programmatically altering the `down` state of Minecraft's key bindings (`KeyMapping`). Includes functional hotbar slot selection.
+* **`RotationController`**: Now a **stateful instance class** (not static). Uses eased interpolation (`smoothstep`) and Gaussian jitter for humanized rotation. Computes angular yaw/pitch differences from eyes coordinates to three-dimensional coordinates using trigonometry (`atan2`).
 
 ---
 
