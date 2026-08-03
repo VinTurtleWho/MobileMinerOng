@@ -4,6 +4,9 @@ import com.mobileminerong.state.BotState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class BotContext {
     private BotState currentState = BotState.IDLE;
     
@@ -28,6 +31,14 @@ public class BotContext {
     private int stuckTicks = 0;
     private String lastAction = "NONE";
     private String stateChangeReason = "Initialization";
+    
+    // Observability
+    private final Deque<StateEvent> stateHistory = new ArrayDeque<>(10);
+    private long lastPerceptionUpdate = 0;
+    private int perceptionFailures = 0;
+    private long lastTickDuration = 0;
+
+    public record StateEvent(BotState state, String reason, long timestamp) {}
 
     // Getters and Setters
     public synchronized BotState getCurrentState() { return currentState; }
@@ -35,6 +46,9 @@ public class BotContext {
         if (this.currentState != state) {
             this.stateChangeReason = reason;
             this.currentState = state;
+            
+            if (stateHistory.size() >= 10) stateHistory.removeFirst();
+            stateHistory.addLast(new StateEvent(state, reason, System.currentTimeMillis()));
         }
     }
 
@@ -70,4 +84,11 @@ public class BotContext {
     public synchronized String getLastAction() { return lastAction; }
     public synchronized void setLastAction(String action) { this.lastAction = action; }
     public synchronized String getStateChangeReason() { return stateChangeReason; }
+
+    // Observability Getters/Setters
+    public synchronized void updatePerceptionHealth(boolean success) {
+        this.lastPerceptionUpdate = System.currentTimeMillis();
+        if (!success) this.perceptionFailures++;
+    }
+    public synchronized void setLastTickDuration(long duration) { this.lastTickDuration = duration; }
 }

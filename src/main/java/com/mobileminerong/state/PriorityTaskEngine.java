@@ -15,7 +15,10 @@ public class PriorityTaskEngine {
     }
 
     public void tick(BotContext ctx) {
+        long startTime = System.currentTimeMillis();
+        
         if (taskPool.isEmpty()) {
+            ctx.setLastTickDuration(System.currentTimeMillis() - startTime);
             return;
         }
 
@@ -37,5 +40,7 @@ public class PriorityTaskEngine {
                 activeTask.onTick(ctx);
             }
         }
+        
+        ctx.setLastTickDuration(System.currentTimeMillis() - startTime);
     }
 }
