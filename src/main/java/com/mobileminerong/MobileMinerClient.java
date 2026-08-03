@@ -5,6 +5,8 @@ import com.mobileminerong.context.BotContext;
 import com.mobileminerong.debug.DebugLogger;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
+import com.mobileminerong.planning.task.DiagnosticTestTask;
+import com.mobileminerong.state.PriorityTaskEngine;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,6 +19,7 @@ import java.util.List;
 public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
+    public static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
 
     private static int debugTimer = 0;
     private static int perceptionTimer = 0;
@@ -25,6 +28,7 @@ public class MobileMinerClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         DebugLogger.init();
+        TASK_ENGINE.registerTask(new DiagnosticTestTask());
 
         DebugLogger.info(
             "SYSTEM",
@@ -51,6 +55,7 @@ public class MobileMinerClient implements ClientModInitializer {
 
 
             updateContext(client);
+            TASK_ENGINE.tick(BOT_CONTEXT);
 
 
             perceptionTimer++;
