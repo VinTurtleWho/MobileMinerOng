@@ -89,7 +89,7 @@ public class MovementTask implements BotTask {
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return ctx.getState() == BotState.AIMING || ctx.getState() == BotState.ERROR;
+        return ctx.getCurrentState() == BotState.AIMING || ctx.getCurrentState() == BotState.ERROR;
     }
 
     @Override

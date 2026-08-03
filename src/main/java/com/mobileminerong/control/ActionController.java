@@ -1,6 +1,7 @@
 package com.mobileminerong.control;
 
 import com.mobileminerong.context.BotContext;
+import com.mobileminerong.mixin.accessor.InventoryAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 
@@ -14,7 +15,7 @@ public class ActionController {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         if (slot >= 0 && slot < 9) {
-            client.player.getInventory().selected = slot;
+            ((InventoryAccessor) client.player.getInventory()).setSelectedSlot(slot);
             ctx.setLastAction("Selected Hotbar Slot: " + slot);
         }
     }

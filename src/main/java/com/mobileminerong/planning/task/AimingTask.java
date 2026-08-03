@@ -45,7 +45,7 @@ public class AimingTask implements BotTask {
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return ctx.getState() == BotState.MINING || ctx.getState() == BotState.ERROR;
+        return ctx.getCurrentState() == BotState.MINING || ctx.getCurrentState() == BotState.ERROR;
     }
 
     @Override
