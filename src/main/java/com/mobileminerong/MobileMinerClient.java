@@ -6,6 +6,7 @@ import com.mobileminerong.debug.DebugLogger;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.task.DiagnosticTestTask;
+import com.mobileminerong.planning.task.TargetSearchTask;
 import com.mobileminerong.state.PriorityTaskEngine;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -29,6 +30,7 @@ public class MobileMinerClient implements ClientModInitializer {
 
         DebugLogger.init();
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
+        TASK_ENGINE.registerTask(new TargetSearchTask());
 
         DebugLogger.info(
             "SYSTEM",
