@@ -107,7 +107,7 @@ public class AStarPathfinder {
                 startVec, endVec,
                 net.minecraft.world.level.ClipContext.Block.COLLIDER,
                 net.minecraft.world.level.ClipContext.Fluid.NONE,
-                null
+                net.minecraft.world.phys.shapes.CollisionContext.of(null)
         ));
         
         return hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
