@@ -2,6 +2,7 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.diagnostic.DiagnosticManager;
+import com.mobileminerong.state.BotState;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -19,11 +20,13 @@ public class DiagnosticTestTask implements BotTask {
 
     @Override
     public void onStart(BotContext ctx) {
+        ctx.setState(BotState.RECOVERING, "Diagnostic Starting");
 
         long now = System.currentTimeMillis();
 
 
         if(now - lastRun < COOLDOWN) {
+            ctx.setState(BotState.IDLE, "Diagnostic on cooldown");
             return;
         }
 
@@ -34,8 +37,10 @@ public class DiagnosticTestTask implements BotTask {
         Minecraft client = Minecraft.getInstance();
 
 
-        if(client.player == null)
+        if(client.player == null) {
+            ctx.setState(BotState.ERROR, "Player null");
             return;
+        }
 
 
 
@@ -79,6 +84,7 @@ public class DiagnosticTestTask implements BotTask {
 
 
         finished=true;
+        ctx.setState(BotState.IDLE, "Diagnostic Finished");
 
     }
 
@@ -101,6 +107,7 @@ public class DiagnosticTestTask implements BotTask {
             BotContext ctx,
             String reason
     ){
+        ctx.setState(BotState.ERROR, "Diagnostic Failed: " + reason);
 
         DiagnosticManager.error(
                 "Diagnostic failed: "

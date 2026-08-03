@@ -132,25 +132,13 @@ public class MobileMinerClient implements ClientModInitializer {
                 );
 
 
-                BOT_CONTEXT.setLastAction(
-                    "Target detected"
-                );
-
-
                 DebugLogger.debug(
                     "PERCEPTION",
                     "Found target: " + targets.get(0)
                 );
 
 
-            } else {
-
-                BOT_CONTEXT.setLastAction(
-                    "No targets found"
-                );
-
             }
-
 
         } catch(Exception e) {
 

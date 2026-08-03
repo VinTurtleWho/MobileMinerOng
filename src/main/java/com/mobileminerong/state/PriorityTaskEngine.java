@@ -16,7 +16,6 @@ public class PriorityTaskEngine {
 
     public void tick(BotContext ctx) {
         if (taskPool.isEmpty()) {
-            ctx.setState(BotState.IDLE, "No registered tasks in pool");
             return;
         }
 
@@ -34,7 +33,6 @@ public class PriorityTaskEngine {
             if (activeTask.isFinished(ctx)) {
                 taskPool.remove(activeTask);
                 activeTask = null;
-                ctx.setState(BotState.IDLE, "Task completed");
             } else {
                 activeTask.onTick(ctx);
             }
