@@ -12,7 +12,7 @@ public class AimingTask implements BotTask {
 
     private final Vec3 targetVec;
     private final RotationController rotationController = new RotationController();
-    private int timeoutTicks = 40;
+    private int timeoutTicks = 200;
 
     public AimingTask(BlockPos targetPos) {
         this.targetVec = Vec3.atCenterOf(targetPos);

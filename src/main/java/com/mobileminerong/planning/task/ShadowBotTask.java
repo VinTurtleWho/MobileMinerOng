@@ -32,29 +32,34 @@ public class ShadowBotTask implements BotTask {
 
         // If distance > 3, move to 2 blocks away
         if (dist > 3.0) {
-            // Stop aiming if it was active
-            aimingTask = null;
-
-            if (movementTask == null || movementTask.isFinished(ctx)) {
-                movementTask = new MovementTask(targetBlock);
-                movementTask.onStart(ctx);
-            } else {
+            // Already moving?
+            if (movementTask != null && !movementTask.isFinished(ctx)) {
                 movementTask.onTick(ctx);
+                return;
             }
+
+            // Stop aiming if it was active
+            if (aimingTask != null) {
+                aimingTask = null;
+            }
+
+            movementTask = new MovementTask(targetBlock);
+            movementTask.onStart(ctx);
         } else {
-            // Stop movement if it was active
+            // If distance < 3, just aim at player
             if (movementTask != null) {
                 ActionController.stopAllInputs();
                 movementTask = null;
             }
 
-            // Just aim
-            if (aimingTask == null) {
-                aimingTask = new AimingTask(targetBlock);
-                aimingTask.onStart(ctx);
-            } else {
+            // Already aiming?
+            if (aimingTask != null) {
                 aimingTask.onTick(ctx);
+                return;
             }
+
+            aimingTask = new AimingTask(targetBlock);
+            aimingTask.onStart(ctx);
         }
     }
 
