@@ -31,6 +31,7 @@ public class MacroCommandHandler {
                                 ctx.setPendingPlayerSearch(true);
                                 client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
                             }
+                        }
                         break;
                     case "debug":
                         // ... (keep existing debug logic)
