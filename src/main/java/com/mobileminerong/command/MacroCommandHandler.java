@@ -2,10 +2,9 @@ package com.mobileminerong.command;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.debug.DebugLogger;
+import com.mobileminerong.state.MacroMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 
 public class MacroCommandHandler {
 
@@ -20,9 +19,6 @@ public class MacroCommandHandler {
             if (client.player == null) return;
 
             if (args.length >= 2) {
-import com.mobileminerong.state.MacroMode;
-
-// ... inside the handle method ...
                 switch (args[1]) {
                     case "mode":
                         if (args.length >= 3) {
@@ -57,9 +53,18 @@ import com.mobileminerong.state.MacroMode;
                         }
                         break;
                     case "target":
-                        // ... (existing target logic)
-
-                        // ... (keep existing debug logic)
+                        if (args.length >= 3 && args[2].equalsIgnoreCase("player")) {
+                            if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
+                                ctx.setTargetPlayer(null);
+                                ctx.setPendingPlayerSearch(false);
+                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
+                            } else {
+                                ctx.setPendingPlayerSearch(true);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
+                            }
+                        }
+                        break;
+                    case "debug":
                         if(args.length >= 3 && args[2].equalsIgnoreCase("off")){
                             debugMode = false;
                             DebugLogger.info("SYSTEM", "Debug disabled");
@@ -78,12 +83,7 @@ import com.mobileminerong.state.MacroMode;
         return true;
     }
 
-
-
     public static boolean isDebugEnabled(){
-
         return debugMode;
-
     }
-
 }

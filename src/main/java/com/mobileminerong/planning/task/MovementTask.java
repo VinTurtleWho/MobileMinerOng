@@ -20,8 +20,8 @@ public class MovementTask implements BotTask {
     private boolean finished = false;
     private Vec3 lastPos;
     private int stuckTicks = 0;
-    private int pathCooldown = 0; // Cooldown timer
-    private boolean rotationInitialized = false; // Add this flag
+    private int pathCooldown = 0; 
+    private boolean rotationInitialized = false; 
     private final RotationController rotationController = new RotationController();
 
     public MovementTask(BlockPos targetPos) {
@@ -53,54 +53,6 @@ public class MovementTask implements BotTask {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        // Stuck detection
-        if (client.player.position().distanceToSqr(lastPos) < 0.01) {
-            stuckTicks++;
-        } else {
-            stuckTicks = 0;
-            lastPos = client.player.position();
-        }
-
-        if (stuckTicks > 60) {
-            onFailure(ctx, "Stuck for 3 seconds");
-            return;
-        }
-
-        if (currentIndex >= path.size()) {
-            finished = true;
-            ActionController.stopAllInputs();
-            ctx.setState(BotState.AIMING, "Reached destination");
-            return;
-        }
-
-        BlockPos currentWaypoint = path.get(currentIndex);
-        Vec3 waypointVec = Vec3.atCenterOf(currentWaypoint);
-
-        // Advance waypoint if close enough
-        if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
-            currentIndex++;
-            rotationInitialized = false; // reset flag so setTarget fires for next waypoint
-            ActionController.stopAllInputs();
-            return;
-        }
-
-        // Initialize rotation for this waypoint only once
-        if (!rotationInitialized) {
-            rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
-            rotationInitialized = true;
-        }
-
-        // Tick rotation every tick
-        rotationController.tick(ctx);
-
-        // Only move forward once facing the right direction
-        if (rotationController.isAligned()) {
-            client.options.keyUp.setDown(true);
-        } else {
-            client.options.keyUp.setDown(false);
-        }
-    }
-
         // Reduce cooldown
         if (pathCooldown > 0) pathCooldown--;
 
@@ -112,17 +64,17 @@ public class MovementTask implements BotTask {
             lastPos = client.player.position();
         }
 
+        // Handle stuck state
         if (stuckTicks > 60 && pathCooldown == 0) {
-            // Attempt to re-path only if cooldown allows
             this.path = AStarPathfinder.findPath(ctx, client.player.blockPosition(), targetPos, 1000);
             currentIndex = 0;
-            pathCooldown = 100; // 5 seconds cooldown
+            pathCooldown = 100;
             stuckTicks = 0;
+            rotationInitialized = false;
             return;
         }
-
         if (stuckTicks > 120) {
-            onFailure(ctx, "Bot stuck for too long");
+            onFailure(ctx, "Stuck for too long");
             return;
         }
 
@@ -139,21 +91,21 @@ public class MovementTask implements BotTask {
         // Advance waypoint if close
         if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
             currentIndex++;
-            rotationInitialized = false; // Reset flag for next waypoint
+            rotationInitialized = false; 
             ActionController.stopAllInputs();
             return;
         }
 
-        // Initialize rotation for this waypoint only once
+        // Initialize rotation
         if (!rotationInitialized) {
             rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
             rotationInitialized = true;
         }
 
-        // Tick rotation every tick
+        // Tick rotation
         rotationController.tick(ctx);
         
-        // Only move forward once facing the right direction
+        // Move forward only when aligned
         if (rotationController.isAligned()) {
             client.options.keyUp.setDown(true);
         } else {
