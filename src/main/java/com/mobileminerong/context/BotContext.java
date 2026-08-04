@@ -24,13 +24,17 @@ public class BotContext {
     private BlockPos lastSeenTargetBlock = null; // RESTORED
     private String miningTargetId = null;
     private int miningToolSlot = 0;
+private net.minecraft.world.entity.player.Player targetPlayer = null;
+private net.minecraft.world.entity.Entity targetEntity = null; // Add this
+private String combatTargetId = null;
+private int combatToolSlot = 0;
 
-    private net.minecraft.world.entity.player.Player targetPlayer = null;
-    private String combatTargetId = null;
-    private int combatToolSlot = 0;
+private boolean pendingPlayerSearch = false; 
 
-    private boolean pendingPlayerSearch = false; 
+// ...
 
+public synchronized net.minecraft.world.entity.Entity getTargetEntity() { return targetEntity; }
+public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entity) { this.targetEntity = entity; }
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
     private int currentMana = 0;

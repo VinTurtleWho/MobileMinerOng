@@ -9,6 +9,7 @@ import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.task.DiagnosticTestTask;
 import com.mobileminerong.planning.task.TargetSearchTask;
 import com.mobileminerong.planning.task.MiningTask;
+import com.mobileminerong.planning.task.CombatFollowTask;
 import com.mobileminerong.state.PriorityTaskEngine;
 import com.mobileminerong.util.ChatLogger;
 import net.fabricmc.api.ClientModInitializer;
@@ -87,7 +88,7 @@ public class MobileMinerClient implements ClientModInitializer {
                     TASK_ENGINE.registerTask(new TargetSearchTask());
                     TASK_ENGINE.registerTask(new MiningTask());
                 } else if (lastMode == MacroMode.COMBAT) {
-                    // TODO: TASK_ENGINE.registerTask(new CombatFollowTask());
+                    TASK_ENGINE.registerTask(new CombatFollowTask());
                 }
                 client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
             }

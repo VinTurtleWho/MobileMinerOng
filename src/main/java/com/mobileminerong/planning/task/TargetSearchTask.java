@@ -19,15 +19,22 @@ public class TargetSearchTask implements BotTask {
 
     private void checkTarget(BotContext ctx) {
         try {
-            if (ctx.getCurrentTargetBlock() != null) {
-                // If a target is already acquired, we don't need to do anything.
-                // The MovementTask/AimingTask/MiningTask chain will handle the rest.
+            if (ctx.getMode() == com.mobileminerong.state.MacroMode.COMBAT) {
+                if (ctx.getTargetEntity() == null) {
+                    // Find nearest player or mob (simplified logic)
+                    net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
+                    if (client.level != null) {
+                        for (net.minecraft.world.entity.Entity entity : client.level.entitiesForRendering()) {
+                            if (entity instanceof net.minecraft.world.entity.player.Player && entity != client.player) {
+                                ctx.setTargetEntity(entity);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else if (ctx.getCurrentTargetBlock() != null) {
                 return;
             }
-            
-            // Logic to find a target would go here, 
-            // but for now, we just ensure the task keeps running.
-            
         } catch (Exception e) {
             onFailure(ctx, "Error checking target: " + e.getMessage());
         }

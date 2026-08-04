@@ -21,18 +21,26 @@ public class ActionController {
         }
     }
 
-    public static void startMining(BlockPos pos) {
+    public static void startAttack() {
         Minecraft client = Minecraft.getInstance();
         if (client.options != null) {
             client.options.keyAttack.setDown(true);
         }
     }
 
-    public static void stopMining() {
+    public static void stopAttack() {
         Minecraft client = Minecraft.getInstance();
         if (client.options != null) {
             client.options.keyAttack.setDown(false);
         }
+    }
+
+    public static void startMining(BlockPos pos) {
+        startAttack();
+    }
+
+    public static void stopMining() {
+        stopAttack();
     }
 
     public static void stopAllInputs() {
