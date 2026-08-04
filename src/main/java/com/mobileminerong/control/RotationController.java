@@ -55,12 +55,15 @@ public class RotationController {
         // Smoothstep: t * t * (3 - 2 * t)
         float smoothProgress = progress * progress * (3.0f - 2.0f * progress);
 
-        float yaw = Mth.lerp(smoothProgress, startYaw, targetYaw);
-        float pitch = Mth.lerp(smoothProgress, startPitch, targetPitch);
+        // Shortest-path angular lerping
+        float deltaYaw = Mth.wrapDegrees(targetYaw - startYaw);
+        float deltaPitch = Mth.wrapDegrees(targetPitch - startPitch);
+        float yaw = startYaw + smoothProgress * deltaYaw;
+        float pitch = startPitch + smoothProgress * deltaPitch;
 
-        // Add micro-jitter: ±0.05° to ±0.25°
-        float jitterYaw = (jitterRandom.nextFloat() * 0.2f - 0.1f) + (jitterRandom.nextBoolean() ? 0.15f : -0.15f);
-        float jitterPitch = (jitterRandom.nextFloat() * 0.2f - 0.1f) + (jitterRandom.nextBoolean() ? 0.15f : -0.15f);
+        // Add micro-jitter using Gaussian distribution (center 0, std 0.07)
+        float jitterYaw = (float)(jitterRandom.nextGaussian() * 0.07);
+        float jitterPitch = (float)(jitterRandom.nextGaussian() * 0.07);
 
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {
