@@ -21,6 +21,7 @@ public class MovementTask implements BotTask {
     private Vec3 lastPos;
     private int stuckTicks = 0;
     private int pathCooldown = 0; // Cooldown timer
+    private boolean rotationInitialized = false; // Add this flag
     private final RotationController rotationController = new RotationController();
 
     public MovementTask(BlockPos targetPos) {
@@ -41,6 +42,7 @@ public class MovementTask implements BotTask {
             return;
         }
 
+        this.rotationInitialized = false; // Reset flag
         ctx.setState(BotState.MOVING_TO_TARGET, "Moving to " + targetPos);
         this.lastPos = client.player.position();
     }
@@ -88,14 +90,26 @@ public class MovementTask implements BotTask {
         // Advance waypoint if close
         if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
             currentIndex++;
+            rotationInitialized = false; // Reset flag for next waypoint
+            ActionController.stopAllInputs();
             return;
         }
 
-        // Move and Rotate
-        rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
+        // Initialize rotation for this waypoint only once
+        if (!rotationInitialized) {
+            rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
+            rotationInitialized = true;
+        }
+
+        // Tick rotation every tick
         rotationController.tick(ctx);
         
-        client.options.keyUp.setDown(true);
+        // Only move forward once facing the right direction
+        if (rotationController.isAligned()) {
+            client.options.keyUp.setDown(true);
+        } else {
+            client.options.keyUp.setDown(false);
+        }
     }
 
     @Override

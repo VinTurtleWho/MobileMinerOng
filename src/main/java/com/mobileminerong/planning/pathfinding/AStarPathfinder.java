@@ -143,16 +143,12 @@ public class AStarPathfinder {
         BlockState head = world.getBlockState(pos.above());
         BlockState floor = world.getBlockState(pos.below());
 
-        boolean feetClear = feet.isAir() || !feet.isCollisionShapeFullBlock(world, pos);
-        boolean headClear = head.isAir() || !head.isCollisionShapeFullBlock(world, pos.above());
-        boolean floorSolid = !floor.isAir() && floor.isCollisionShapeFullBlock(world, pos.below());
+        // A position blocks passage if it has any collision shape at all (stairs, slabs, fences, etc.)
+        boolean feetClear = feet.getCollisionShape(world, pos).isEmpty();
+        boolean headClear = head.getCollisionShape(world, pos.above()).isEmpty();
+        // Floor must have collision to stand on
+        boolean floorSolid = !floor.getCollisionShape(world, pos.below()).isEmpty();
 
-        boolean walkable = feetClear && headClear && floorSolid;
-        
-        if (!walkable) {
-            com.mobileminerong.debug.DebugLogger.debug("PATHFINDER", "Blocked at: " + pos + " | Feet: " + feet.getBlock().getName().getString() + " | FloorSolid: " + floorSolid);
-        }
-
-        return walkable;
+        return feetClear && headClear && floorSolid;
     }
 }
