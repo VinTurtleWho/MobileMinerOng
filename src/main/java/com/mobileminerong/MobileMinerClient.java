@@ -14,11 +14,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,13 +25,6 @@ public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
     public static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
-    
-    public static final KeyMapping TOGGLE_SHADOW_KEY = new KeyMapping(
-        "key.mobileminerong.toggle_shadow",
-        net.minecraft.client.util.InputConstants.Type.KEYSYM,
-        GLFW.GLFW_KEY_O,
-        "category.mobileminerong.general"
-    );
 
     private static int debugTimer = 0;
     private static int perceptionTimer = 0;
@@ -42,7 +33,6 @@ public class MobileMinerClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         DebugLogger.init();
-        net.minecraft.client.KeyMapping.register(TOGGLE_SHADOW_KEY);
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
         TASK_ENGINE.registerTask(new TargetSearchTask());
         TASK_ENGINE.registerTask(new ShadowBotTask());
@@ -72,17 +62,6 @@ public class MobileMinerClient implements ClientModInitializer {
 
             if(client.player == null || client.level == null)
                 return;
-
-            if (TOGGLE_SHADOW_KEY.consumeClick()) {
-                if (BOT_CONTEXT.getTargetPlayer() != null || BOT_CONTEXT.isPendingPlayerSearch()) {
-                    BOT_CONTEXT.setTargetPlayer(null);
-                    BOT_CONTEXT.setPendingPlayerSearch(false);
-                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
-                } else {
-                    BOT_CONTEXT.setPendingPlayerSearch(true);
-                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
-                }
-            }
 
             // Deferred player search
             if (BOT_CONTEXT.isPendingPlayerSearch()) {
