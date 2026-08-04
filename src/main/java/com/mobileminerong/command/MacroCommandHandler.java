@@ -27,10 +27,15 @@ public class MacroCommandHandler {
                             client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
                         } else {
                             // Find nearest player logic
+                            if (client.level == null) {
+                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] World not loaded!"));
+                                return true;
+                            }
+                            
                             Player nearest = null;
                             double minDist = Double.MAX_VALUE;
                             for (Player p : client.level.players()) {
-                                if (p == client.player) continue;
+                                if (p == null || p == client.player) continue;
                                 double dist = p.distanceToSqr(client.player);
                                 if (dist < minDist) {
                                     minDist = dist;
