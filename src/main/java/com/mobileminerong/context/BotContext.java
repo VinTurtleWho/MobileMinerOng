@@ -53,9 +53,6 @@ public class BotContext {
 
     public synchronized int getCombatToolSlot() { return combatToolSlot; }
     public synchronized void setCombatToolSlot(int slot) { this.combatToolSlot = slot; }
-    // ...
-
-    private String stateChangeReason = "Initialization";
     
     // Observability
     public record StateEvent(BotState state, String reason, long timestamp) {}

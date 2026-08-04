@@ -19,7 +19,7 @@ The project follows a standard Fabric mod structure.
 - **Modularity**: Avoid large monolithic classes ("god classes"). Prefer small, focused components.
 - **State**: `BotContext` is the central shared state container. All bot tasks must read/write through this.
 - **Separation of Concerns**: Planning decides what should happen; execution performs actions.
-- **Task Pattern**: Tasks are stateful (`BotTask` interface). Tasks are either **persistent** (like `TargetSearchTask`, `ShadowBotTask`) or **finite** (like `MovementTask` and `AimingTask`).
+- **Task Pattern**: Tasks are stateful (`BotTask` interface). Tasks are either **persistent** (like `TargetSearchTask`) or **finite** (like `MovementTask` and `AimingTask`).
 - **Rotation Pattern**: Use `RotationController` as an **instance-based** state machine for smooth interpolation, rather than static utility methods.
 - **Process**: Explain architecture changes before editing files. Never make large refactors without first creating a plan.
 - **Patterns**: Preserve Fabric API patterns. Use Mixins for accessing private Minecraft internals via Accessor interfaces.
@@ -27,15 +27,16 @@ The project follows a standard Fabric mod structure.
 ## Current Development Status
 
 - The project has successfully stabilized its core movement and pathfinding engines (Phase 1 complete).
-- Core tasks (`MovementTask`, `AimingTask`, `ShadowBotTask`) are functional and collision-aware.
-- Ready to expand into specialized entity-tracking (`CombatFollowTask`) and block-mining (`MiningTask`) capabilities.
+- Core tasks (`MovementTask`, `AimingTask`) are functional and collision-aware.
+- **Feature Set**: Supports `MINER` and `COMBAT` modes, activated/deactivated via the 'O' keybind.
+- **Task System**: Supports dynamic task switching based on the current `MacroMode`.
 
 ## Building and Running
 
 The project uses Gradle for build management.
 
 - **Build**: `./gradlew build`
-- **Development Environment**: Follow the [Fabric Modding Wiki](https://fabricmc.net/wiki/) for setting up your IDE (IntelliJ IDEA is recommended).
+- **Development Environment**: Follow the [Fabric Modding Wiki](https://fabricmc.net/wiki/) for setting up your IDE.
 
 ## Development Conventions
 
@@ -46,3 +47,5 @@ The project uses Gradle for build management.
 - **Performance**: Path-heavy tasks must implement cooldown-based re-pathing to prevent tick-lag.
 - **Pathfinding & Collisions**: All pathfinding walkability checks must utilize voxel-based collision checks (`getCollisionShape`) rather than full-block queries. This ensures partial blocks like stairs, slabs, and fences are handled correctly.
 - **Movement Alignment**: Movement tasks must ensure the bot is fully rotated and aligned with the target/waypoint before applying forward/directional input keys.
+- **Modes**: Modes are managed by `MacroMode` and updated via command: `!macro mode [miner|combat|idle]`.
+- **Activation**: Toggle macro mode with 'O'.

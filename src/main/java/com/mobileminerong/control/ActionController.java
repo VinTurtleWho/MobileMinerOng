@@ -4,6 +4,7 @@ import com.mobileminerong.context.BotContext;
 import com.mobileminerong.mixin.accessor.InventoryAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.BlockPos;
 
 public class ActionController {
 

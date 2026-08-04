@@ -1,4 +1,7 @@
-0%.............90%.............100%
+Run ./gradlew build
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.5.1-bin.zip
+.............10%.............20%..............30%.............40%.............50%..............60%.............70%..............80%.............90%.............100%
 
 Welcome to Gradle 9.5.1!
 
@@ -12,109 +15,64 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 
 > Configure project :
 Fabric Loom: 1.17.17
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/state/BotState.java:13: error: enum MacroMode is public, should be declared in a file named MacroMode.java
 
-public enum MacroMode {
-       ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:58: error: variable stateChangeReason is already defined in class BotContext
+    private String stateChangeReason = "Initialization";
+                   ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/ActionController.java:23: error: cannot find symbol
+    public static void startMining(BlockPos pos) {
+                                   ^
+  symbol:   class BlockPos
+  location: class ActionController
 > Task :compileJava
 Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
                                                    ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:93: error: cannot find symbol
-        if (pos != null) this.lastSeenTargetBlock = pos;
-                             ^
-  symbol: variable lastSeenTargetBlock
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:112: error: cannot find symbol
-    public synchronized String getLastAction() { return lastAction; }
-                                                        ^
-  symbol:   variable lastAction
-  location: class BotContext
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:113: error: cannot find symbol
-    public synchronized void setLastAction(String action) { this.lastAction = action; }
-                                                                ^
-  symbol: variable lastAction
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/InventoryManager.java:11: error: selected has private access in Inventory
-            client.player.getInventory().selected = slot;
-                                        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:47: error: incompatible types: String cannot be converted to Category
-            "category.mobileminerong.general"
-            ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:46: error: package net.minecraft.client.InputConstants does not exist
+            net.minecraft.client.InputConstants.Type.KEYSYM,
+                                               ^
 Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                     ^
   symbol:   variable KeyBindingHelper
   location: class MobileMinerClient
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:35: error: cannot find symbol
-        ActionController.startMining(targetPos);
-                        ^
-  symbol:   method startMining(BlockPos)
-  location: class ActionController
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:45: error: cannot find symbol
-        ActionController.stopMining();
-                        ^
-  symbol:   method stopMining()
-  location: class ActionController
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-10 errors
+5 errors
 
 > Task :compileJava FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1785844867986.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1785848801405.json
+
 
 [Incubating] Problems report is available at: file:///home/runner/work/MobileMinerOng/MobileMinerOng/build/reports/problems/problems-report.html
-
 FAILURE: Build failed with an exception.
 
 * What went wrong:
 Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
 > Compilation failed; see the compiler output below.
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:47: error: incompatible types: String cannot be converted to Category
-              "category.mobileminerong.general"
-              ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:112: error: cannot find symbol
-      public synchronized String getLastAction() { return lastAction; }
-                                                          ^
-    symbol:   variable lastAction
-    location: class BotContext
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/ActionController.java:23: error: cannot find symbol
+      public static void startMining(BlockPos pos) {
+                                     ^
+    symbol:   class BlockPos
+    location: class ActionController
 Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
           toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                       ^
     symbol:   variable KeyBindingHelper
-1 actionable task: 1 executed
     location: class MobileMinerClient
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/InventoryManager.java:11: error: selected has private access in Inventory
-              client.player.getInventory().selected = slot;
-                                          ^
-  Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:93: error: cannot find symbol
-          if (pos != null) this.lastSeenTargetBlock = pos;
-                               ^
-    symbol: variable lastSeenTargetBlock
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:113: error: cannot find symbol
-      public synchronized void setLastAction(String action) { this.lastAction = action; }
-                                                                  ^
-    symbol: variable lastAction
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:35: error: cannot find symbol
-          ActionController.startMining(targetPos);
-                          ^
-    symbol:   method startMining(BlockPos)
-    location: class ActionController
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:45: error: cannot find symbol
-          ActionController.stopMining();
-                          ^
-    symbol:   method stopMining()
-    location: class ActionController
 Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
   import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
                                                      ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/state/BotState.java:13: error: enum MacroMode is public, should be declared in a file named MacroMode.java
-  public enum MacroMode {
-         ^
-  10 errors
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:46: error: package net.minecraft.client.InputConstants does not exist
+              net.minecraft.client.InputConstants.Type.KEYSYM,
+                                                 ^
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:58: error: variable stateChangeReason is already defined in class BotContext
+      private String stateChangeReason = "Initialization";
+                     ^
+  5 errors
 
 * Try:
 > Check your code and dependencies to fix the compilation error(s)
 > Run with --scan to get full insights from a Build Scan (powered by Develocity).
 
-BUILD FAILED in 28s
+BUILD FAILED in 33s
+1 actionable task: 1 executed
 Error: Process completed with exit code 1.
-

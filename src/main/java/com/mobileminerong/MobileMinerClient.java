@@ -13,13 +13,15 @@ import com.mobileminerong.state.PriorityTaskEngine;
 import com.mobileminerong.util.ChatLogger;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -30,6 +32,9 @@ public class MobileMinerClient implements ClientModInitializer {
     public static final BotContext BOT_CONTEXT = new BotContext();
     public static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
     private static KeyMapping toggleKey;
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+        Identifier.fromNamespaceAndPath("mobileminerong", "main")
+    );
     private static MacroMode lastMode = MacroMode.IDLE;
 
     private static int debugTimer = 0;
@@ -41,11 +46,11 @@ public class MobileMinerClient implements ClientModInitializer {
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
         TASK_ENGINE.registerTask(new TargetSearchTask());
 
-        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.mobileminerong.toggle",
-            net.minecraft.client.InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_O,
-            "category.mobileminerong.general"
+            CATEGORY
         ));
 
         DebugLogger.info("SYSTEM", "MobileMinerOng initialized");
@@ -66,7 +71,7 @@ public class MobileMinerClient implements ClientModInitializer {
             if(client.player == null || client.level == null)
                 return;
 
-            if (toggleKey.consumeClick()) {
+            while (toggleKey.consumeClick()) {
                 if (BOT_CONTEXT.getMode() != MacroMode.IDLE) {
                     BOT_CONTEXT.setMode(MacroMode.IDLE);
                     client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));
