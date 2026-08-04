@@ -21,6 +21,7 @@ public class BotContext {
     private BlockPos currentTargetBlock = null;
     private BlockPos lastSeenTargetBlock = null;
     private net.minecraft.world.entity.player.Player targetPlayer = null;
+    private boolean pendingPlayerSearch = false; // Add this flag
     
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
@@ -72,6 +73,9 @@ public class BotContext {
 
     public synchronized net.minecraft.world.entity.player.Player getTargetPlayer() { return targetPlayer; }
     public synchronized void setTargetPlayer(net.minecraft.world.entity.player.Player player) { this.targetPlayer = player; }
+
+    public synchronized boolean isPendingPlayerSearch() { return pendingPlayerSearch; }
+    public synchronized void setPendingPlayerSearch(boolean pending) { this.pendingPlayerSearch = pending; }
 
     public synchronized String getCurrentZone() { return currentZone; }
     public synchronized void setCurrentZone(String zone) { this.currentZone = zone; }

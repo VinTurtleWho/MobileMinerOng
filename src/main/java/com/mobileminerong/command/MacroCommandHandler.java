@@ -25,31 +25,12 @@ public class MacroCommandHandler {
                         if (args.length >= 3 && args[2].equalsIgnoreCase("player")) {
                             if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
                                 ctx.setTargetPlayer(null);
+                                ctx.setPendingPlayerSearch(false);
                                 client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
                             } else {
-                                if (client.level == null) {
-                                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] World not loaded!"));
-                                    return;
-                                }
-
-                                Player nearest = null;
-                                double minDist = Double.MAX_VALUE;
-                                for (Player p : client.level.players()) {
-                                    if (p == null || p == client.player || !p.isAlive()) continue;
-                                    double dist = p.distanceToSqr(client.player);
-                                    if (dist < minDist) {
-                                        minDist = dist;
-                                        nearest = p;
-                                    }
-                                }
-                                if (nearest != null) {
-                                    ctx.setTargetPlayer(nearest);
-                                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
-                                } else {
-                                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] No players found"));
-                                }
+                                ctx.setPendingPlayerSearch(true);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
                             }
-                        }
                         break;
                     case "debug":
                         // ... (keep existing debug logic)

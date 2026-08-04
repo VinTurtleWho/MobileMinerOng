@@ -65,9 +65,30 @@ public class MobileMinerClient implements ClientModInitializer {
             if(client.player == null || client.level == null)
                 return;
 
+            // Deferred player search
+            if (BOT_CONTEXT.isPendingPlayerSearch()) {
+                net.minecraft.world.entity.player.Player nearest = null;
+                double minDist = Double.MAX_VALUE;
+                for (net.minecraft.world.entity.player.Player p : client.level.players()) {
+                    if (p == null || p == client.player || !p.isAlive()) continue;
+                    double dist = p.distanceToSqr(client.player);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = p;
+                    }
+                }
+                if (nearest != null) {
+                    BOT_CONTEXT.setTargetPlayer(nearest);
+                    client.player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
+                } else {
+                    client.player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[MobileMinerOng] No players found"));
+                }
+                BOT_CONTEXT.setPendingPlayerSearch(false);
+            }
 
             updateContext(client);
             TASK_ENGINE.tick(BOT_CONTEXT);
+
 
 
             perceptionTimer++;
