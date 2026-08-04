@@ -7,16 +7,22 @@ import com.mobileminerong.state.BotState;
 import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public class CombatFollowTask implements BotTask {
 
     private final RotationController rotationController = new RotationController();
     private boolean finished = false;
+    private int targetLostTicks = 0;
+    private int lastSelectedSlot = -1;
+    private boolean isAttacking = false;
+    private Vec3 lastTargetPosition = null;
 
     @Override
     public void onStart(BotContext ctx) {
         ctx.setState(BotState.MOVING_TO_TARGET, "Engaging combat");
-        ActionController.selectHotbarSlot(ctx, ctx.getCombatToolSlot());
+        lastSelectedSlot = ctx.getCombatToolSlot();
+        ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
     }
 
     @Override
@@ -24,29 +30,64 @@ public class CombatFollowTask implements BotTask {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
+        // 1. Weapon check
+        if (lastSelectedSlot != ctx.getCombatToolSlot()) {
+            lastSelectedSlot = ctx.getCombatToolSlot();
+            ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
+        }
+
         Entity target = ctx.getTargetEntity();
-        if (target == null || !target.isAlive()) {
-            onFailure(ctx, "Target lost or dead");
+        
+        // Target lost check
+        if (target == null) {
+            targetLostTicks++;
+            if (targetLostTicks > 100) { // Increased grace period (5 seconds)
+                onFailure(ctx, "Target lost");
+            }
             return;
         }
 
+        // Target alive check
+        if (!target.isAlive()) {
+            finished = true;
+            ActionController.stopAttack();
+            ctx.setState(BotState.IDLE, "Target defeated");
+            return;
+        }
+        
+        targetLostTicks = 0; // Reset only if target is still valid
+
         double distance = client.player.distanceTo(target);
 
-        // Movement: Within 2 blocks
-        if (distance > 2.0) {
-            rotationController.setTarget(target.position(), client.player.getYRot(), client.player.getXRot());
-            rotationController.tick(ctx);
+        // Movement: Maintain 1.8 - 2.2 block engagement
+        if (distance > 2.2) {
             client.options.keyUp.setDown(true);
+            client.options.keyDown.setDown(false);
+        } else if (distance < 1.8) {
+            client.options.keyUp.setDown(false);
+            client.options.keyDown.setDown(true);
         } else {
             client.options.keyUp.setDown(false);
-            // Face target and attack
+            client.options.keyDown.setDown(false);
+        }
+
+        // Face target
+        if (lastTargetPosition == null || target.position().distanceToSqr(lastTargetPosition) > 0.5) {
             rotationController.setTarget(target.position(), client.player.getYRot(), client.player.getXRot());
-            rotationController.tick(ctx);
-            
-            if (rotationController.isAligned()) {
+            lastTargetPosition = target.position();
+        }
+        rotationController.tick(ctx);
+        
+        // Attack logic
+        if (rotationController.isAligned() && distance <= 2.5) {
+            if (!isAttacking) {
                 ActionController.startAttack();
-            } else {
+                isAttacking = true;
+            }
+        } else {
+            if (isAttacking) {
                 ActionController.stopAttack();
+                isAttacking = false;
             }
         }
     }
@@ -66,7 +107,7 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public int getPriority() {
-        return 50; // Combat Defense
+        return 50;
     }
 
     @Override

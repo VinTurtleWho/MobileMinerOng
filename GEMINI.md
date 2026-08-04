@@ -28,7 +28,7 @@ The project follows a standard Fabric mod structure.
 
 - The project has successfully stabilized its core movement and pathfinding engines (Phase 1 complete).
 - Core tasks (`MovementTask`, `AimingTask`) are functional and collision-aware.
-- **Feature Set**: Supports `MINER` and `COMBAT` modes, activated/deactivated via the 'O' keybind.
+- **Feature Set**: Supports MINER and COMBAT modes, activated/deactivated via the 'O' keybind. Includes entity-based CombatFollowTask.
 - **Task System**: Supports dynamic task switching based on the current `MacroMode`.
 
 ## Building and Running

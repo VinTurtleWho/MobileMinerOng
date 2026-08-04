@@ -34,7 +34,9 @@ The system now utilizes a `MacroMode` state machine to drive dynamic task regist
 * **`MacroMode`**: Central enum managing the operating mode.
 * **`PriorityTaskEngine`**: Now supports `clearTasks()` to allow switching modes at runtime.
 * **`MiningTask`**: Handles tool selection via `ActionController` and triggers mining actions based on `BotContext` targets.
+* **`CombatFollowTask`**: Handles tracking and attacking entities (`targetEntity`), maintaining a 2-block engagement range.
 
 ### 3.2 Control Layer (`com.mobileminerong.control`)
 
-* **`ActionController`**: Expanded to include `startMining()` and `stopMining()` for interaction.
+* **`ActionController`**: Expanded to include `startAttack()` and `stopAttack()` for interaction.
+* **`BotContext`**: Expanded to include `targetEntity` for combat targeting.

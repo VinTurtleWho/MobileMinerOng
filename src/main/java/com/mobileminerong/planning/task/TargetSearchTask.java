@@ -25,7 +25,9 @@ public class TargetSearchTask implements BotTask {
                     net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
                     if (client.level != null) {
                         for (net.minecraft.world.entity.Entity entity : client.level.entitiesForRendering()) {
-                            if (entity instanceof net.minecraft.world.entity.player.Player && entity != client.player) {
+                            if (entity == client.player || !entity.isAlive()) continue;
+                            if (entity instanceof net.minecraft.world.entity.player.Player || 
+                                entity instanceof net.minecraft.world.entity.monster.Monster) {
                                 ctx.setTargetEntity(entity);
                                 break;
                             }
