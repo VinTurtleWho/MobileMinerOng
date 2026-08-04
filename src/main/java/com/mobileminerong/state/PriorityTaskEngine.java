@@ -19,6 +19,11 @@ public class PriorityTaskEngine {
         taskPool.sort((a, b) -> Integer.compare(b.getPriority(), a.getPriority()));
     }
 
+    public void clearTasks() {
+        taskPool.clear();
+        activeTask = null;
+    }
+
     public void tick(BotContext ctx) {
         long startTime = System.nanoTime();
         

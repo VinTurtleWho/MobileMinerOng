@@ -9,3 +9,9 @@ public enum BotState {
     RECOVERING,         // Unstuck or hazard recovery
     ERROR               // Failsafe or emergency stop
 }
+
+public enum MacroMode {
+    IDLE,
+    MINER,
+    COMBAT
+}

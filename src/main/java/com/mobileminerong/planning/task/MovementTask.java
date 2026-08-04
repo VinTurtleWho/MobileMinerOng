@@ -42,7 +42,8 @@ public class MovementTask implements BotTask {
             return;
         }
 
-        this.rotationInitialized = false; // Reset flag
+        this.currentIndex = 0;
+        this.rotationInitialized = false;
         ctx.setState(BotState.MOVING_TO_TARGET, "Moving to " + targetPos);
         this.lastPos = client.player.position();
     }
@@ -51,6 +52,54 @@ public class MovementTask implements BotTask {
     public void onTick(BotContext ctx) {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
+
+        // Stuck detection
+        if (client.player.position().distanceToSqr(lastPos) < 0.01) {
+            stuckTicks++;
+        } else {
+            stuckTicks = 0;
+            lastPos = client.player.position();
+        }
+
+        if (stuckTicks > 60) {
+            onFailure(ctx, "Stuck for 3 seconds");
+            return;
+        }
+
+        if (currentIndex >= path.size()) {
+            finished = true;
+            ActionController.stopAllInputs();
+            ctx.setState(BotState.AIMING, "Reached destination");
+            return;
+        }
+
+        BlockPos currentWaypoint = path.get(currentIndex);
+        Vec3 waypointVec = Vec3.atCenterOf(currentWaypoint);
+
+        // Advance waypoint if close enough
+        if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
+            currentIndex++;
+            rotationInitialized = false; // reset flag so setTarget fires for next waypoint
+            ActionController.stopAllInputs();
+            return;
+        }
+
+        // Initialize rotation for this waypoint only once
+        if (!rotationInitialized) {
+            rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
+            rotationInitialized = true;
+        }
+
+        // Tick rotation every tick
+        rotationController.tick(ctx);
+
+        // Only move forward once facing the right direction
+        if (rotationController.isAligned()) {
+            client.options.keyUp.setDown(true);
+        } else {
+            client.options.keyUp.setDown(false);
+        }
+    }
 
         // Reduce cooldown
         if (pathCooldown > 0) pathCooldown--;

@@ -1,6 +1,7 @@
 package com.mobileminerong.context;
 
 import com.mobileminerong.state.BotState;
+import com.mobileminerong.state.MacroMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -11,25 +12,47 @@ import java.util.List;
 
 public class BotContext {
     private BotState currentState = BotState.IDLE;
-    
+    private MacroMode currentMode = MacroMode.IDLE;
+
     // Perception & Position
     private Vec3 playerPos = Vec3.ZERO;
     private float yaw = 0f;
     private float pitch = 0f;
-    
-    // Targets
+
+    // Targets & Tools
     private BlockPos currentTargetBlock = null;
-    private BlockPos lastSeenTargetBlock = null;
+    private String miningTargetId = null;
+    private int miningToolSlot = 0;
+
     private net.minecraft.world.entity.player.Player targetPlayer = null;
-    private boolean pendingPlayerSearch = false; // Add this flag
-    
+    private String combatTargetId = null;
+    private int combatToolSlot = 0;
+
+    private boolean pendingPlayerSearch = false; 
+
     // Skyblock Parsed Stats
     private String currentZone = "Unknown";
     private int currentMana = 0;
     private int maxMana = 0;
-    
-    // Diagnostics & Flags
-    private String lastAction = "NONE";
+
+    // ... rest of the file ...
+    // Getters and Setters ...
+    public synchronized MacroMode getMode() { return currentMode; }
+    public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
+
+    public synchronized String getMiningTargetId() { return miningTargetId; }
+    public synchronized void setMiningTargetId(String id) { this.miningTargetId = id; }
+
+    public synchronized int getMiningToolSlot() { return miningToolSlot; }
+    public synchronized void setMiningToolSlot(int slot) { this.miningToolSlot = slot; }
+
+    public synchronized String getCombatTargetId() { return combatTargetId; }
+    public synchronized void setCombatTargetId(String id) { this.combatTargetId = id; }
+
+    public synchronized int getCombatToolSlot() { return combatToolSlot; }
+    public synchronized void setCombatToolSlot(int slot) { this.combatToolSlot = slot; }
+    // ...
+
     private String stateChangeReason = "Initialization";
     
     // Observability

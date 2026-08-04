@@ -2,21 +2,25 @@ package com.mobileminerong;
 
 import com.mobileminerong.command.MacroCommandHandler;
 import com.mobileminerong.context.BotContext;
+import com.mobileminerong.state.MacroMode;
 import com.mobileminerong.debug.DebugLogger;
 import com.mobileminerong.perception.BlockScanner;
 import com.mobileminerong.perception.ScoreboardParser;
 import com.mobileminerong.planning.task.DiagnosticTestTask;
-import com.mobileminerong.planning.task.ShadowBotTask;
 import com.mobileminerong.planning.task.TargetSearchTask;
+import com.mobileminerong.planning.task.MiningTask;
 import com.mobileminerong.state.PriorityTaskEngine;
 import com.mobileminerong.util.ChatLogger;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,31 +29,31 @@ public class MobileMinerClient implements ClientModInitializer {
 
     public static final BotContext BOT_CONTEXT = new BotContext();
     public static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
+    private static KeyMapping toggleKey;
+    private static MacroMode lastMode = MacroMode.IDLE;
 
     private static int debugTimer = 0;
     private static int perceptionTimer = 0;
 
     @Override
     public void onInitializeClient() {
-
         DebugLogger.init();
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
         TASK_ENGINE.registerTask(new TargetSearchTask());
-        TASK_ENGINE.registerTask(new ShadowBotTask());
+
+        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+            "key.mobileminerong.toggle",
+            GLFW.GLFW_KEY_O,
+            "category.mobileminerong.general"
+        ));
 
         DebugLogger.info("SYSTEM", "MobileMinerOng initialized");
 
-
-
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
-
             ChatLogger.log("[SENT] " + message);
             if(message.startsWith("!macro")) {
-
                 return !MacroCommandHandler.handle(message, BOT_CONTEXT);
-
             }
-
             return true;
         });
 
@@ -57,11 +61,30 @@ public class MobileMinerClient implements ClientModInitializer {
             ChatLogger.log("[RECEIVED] " + message.getString());
         });
 
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-
             if(client.player == null || client.level == null)
                 return;
+
+            if (toggleKey.consumeClick()) {
+                if (BOT_CONTEXT.getMode() != MacroMode.IDLE) {
+                    BOT_CONTEXT.setMode(MacroMode.IDLE);
+                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));
+                } else {
+                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Macro Started"));
+                }
+            }
+
+            if (BOT_CONTEXT.getMode() != lastMode) {
+                lastMode = BOT_CONTEXT.getMode();
+                TASK_ENGINE.clearTasks();
+                if (lastMode == MacroMode.MINER) {
+                    TASK_ENGINE.registerTask(new TargetSearchTask());
+                    TASK_ENGINE.registerTask(new MiningTask());
+                } else if (lastMode == MacroMode.COMBAT) {
+                    // TODO: TASK_ENGINE.registerTask(new CombatFollowTask());
+                }
+                client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
+            }
 
             // Deferred player search
             if (BOT_CONTEXT.isPendingPlayerSearch()) {
@@ -77,9 +100,9 @@ public class MobileMinerClient implements ClientModInitializer {
                 }
                 if (nearest != null) {
                     BOT_CONTEXT.setTargetPlayer(nearest);
-                    client.player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
+                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
                 } else {
-                    client.player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§c[MobileMinerOng] No players found"));
+                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] No players found"));
                 }
                 BOT_CONTEXT.setPendingPlayerSearch(false);
             }
@@ -87,104 +110,42 @@ public class MobileMinerClient implements ClientModInitializer {
             updateContext(client);
             TASK_ENGINE.tick(BOT_CONTEXT);
 
-
-
             perceptionTimer++;
-
-            // Run perception once per second
             if(perceptionTimer >= 20) {
-
                 perceptionTimer = 0;
-
                 updatePerception();
-
             }
-
 
             if(MacroCommandHandler.isDebugEnabled()) {
-
                 debugTimer++;
-
-                // 20 ticks = 1 second
                 if(debugTimer >= 20) {
-
                     debugTimer = 0;
-
-                    DebugLogger.info(
-                        "DEBUG",
-                        buildDebugReport()
-                    );
-
+                    DebugLogger.info("DEBUG", buildDebugReport());
                 }
-
             }
-
         });
-
     }
-
 
     private void updateContext(Minecraft client) {
-
-        BOT_CONTEXT.setPlayerPos(
-            client.player.position()
-        );
-
-
-        BOT_CONTEXT.setRotations(
-            client.player.getYRot(),
-            client.player.getXRot()
-        );
-
+        BOT_CONTEXT.setPlayerPos(client.player.position());
+        BOT_CONTEXT.setRotations(client.player.getYRot(), client.player.getXRot());
     }
 
-
-
     private void updatePerception() {
-
         try {
-
-            ScoreboardParser.updateZone(
-                BOT_CONTEXT
-            );
-
-
-            List<BlockPos> targets =
-                BlockScanner.findTargetOres(
-                    BOT_CONTEXT,
-                    10
-                );
-
-
+            ScoreboardParser.updateZone(BOT_CONTEXT);
+            List<BlockPos> targets = BlockScanner.findTargetOres(BOT_CONTEXT, 10);
             if(!targets.isEmpty()) {
-
-                BOT_CONTEXT.setCurrentTargetBlock(
-                    targets.get(0)
-                );
+                BOT_CONTEXT.setCurrentTargetBlock(targets.get(0));
                 BOT_CONTEXT.updatePerceptionHealth(true);
-
-                DebugLogger.debug(
-                    "PERCEPTION",
-                    "Found target: " + targets.get(0)
-                );
-
-
             } else {
                 BOT_CONTEXT.updatePerceptionHealth(true);
             }
-
         } catch(Exception e) {
             BOT_CONTEXT.updatePerceptionHealth(false);
-            DebugLogger.error(
-                "PERCEPTION",
-                e.toString()
-            );
-
+            DebugLogger.error("PERCEPTION", e.toString());
         }
-
     }
-
-
 
     private String buildDebugReport(){
         String stateHistory = BOT_CONTEXT.getStateHistory().stream()
@@ -210,7 +171,5 @@ public class MobileMinerClient implements ClientModInitializer {
             "\nRECENT STATE TRANSITIONS" +
             "\n" + stateHistory +
             "\n============================";
-
     }
-
 }

@@ -20,20 +20,45 @@ public class MacroCommandHandler {
             if (client.player == null) return;
 
             if (args.length >= 2) {
+import com.mobileminerong.state.MacroMode;
+
+// ... inside the handle method ...
                 switch (args[1]) {
-                    case "target":
-                        if (args.length >= 3 && args[2].equalsIgnoreCase("player")) {
-                            if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
-                                ctx.setTargetPlayer(null);
-                                ctx.setPendingPlayerSearch(false);
-                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
-                            } else {
-                                ctx.setPendingPlayerSearch(true);
-                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
-                            }
+                    case "mode":
+                        if (args.length >= 3) {
+                            if (args[2].equalsIgnoreCase("miner")) ctx.setMode(MacroMode.MINER);
+                            else if (args[2].equalsIgnoreCase("combat")) ctx.setMode(MacroMode.COMBAT);
+                            else if (args[2].equalsIgnoreCase("idle")) ctx.setMode(MacroMode.IDLE);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mode set to " + args[2].toUpperCase()));
                         }
                         break;
-                    case "debug":
+                    case "mine":
+                        if (args.length >= 3) {
+                            ctx.setMiningTargetId(args[2]);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mining target: " + args[2]));
+                        }
+                        break;
+                    case "combat":
+                        if (args.length >= 3) {
+                            ctx.setCombatTargetId(args[2]);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat target: " + args[2]));
+                        }
+                        break;
+                    case "comtool":
+                        if (args.length >= 3) {
+                            ctx.setCombatToolSlot(Integer.parseInt(args[2]));
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat tool slot: " + args[2]));
+                        }
+                        break;
+                    case "mintool":
+                        if (args.length >= 3) {
+                            ctx.setMiningToolSlot(Integer.parseInt(args[2]));
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mining tool slot: " + args[2]));
+                        }
+                        break;
+                    case "target":
+                        // ... (existing target logic)
+
                         // ... (keep existing debug logic)
                         if(args.length >= 3 && args[2].equalsIgnoreCase("off")){
                             debugMode = false;

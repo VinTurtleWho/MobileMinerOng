@@ -13,6 +13,7 @@ public class AimingTask implements BotTask {
     private final Vec3 targetVec;
     private final RotationController rotationController = new RotationController();
     private int timeoutTicks = 200;
+    private boolean finished = false;
 
     public AimingTask(BlockPos targetPos) {
         this.targetVec = Vec3.atCenterOf(targetPos);
@@ -36,15 +37,21 @@ public class AimingTask implements BotTask {
         }
 
         rotationController.tick(ctx);
+
+        if (rotationController.isAligned()) {
+            ctx.setState(BotState.MINING, "Aiming complete");
+            finished = true;
+        }
     }
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        return false;
+        return finished;
     }
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
+        finished = true;
         ctx.setState(BotState.RECOVERING, "Aiming failed: " + reason);
         MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
     }
