@@ -12,7 +12,6 @@ import com.mobileminerong.state.PriorityTaskEngine;
 import com.mobileminerong.util.ChatLogger;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.KeyMapping;
@@ -31,6 +30,7 @@ public class MobileMinerClient implements ClientModInitializer {
     
     public static final KeyMapping TOGGLE_SHADOW_KEY = new KeyMapping(
         "key.mobileminerong.toggle_shadow",
+        net.minecraft.client.util.InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_O,
         "category.mobileminerong.general"
     );
@@ -42,7 +42,7 @@ public class MobileMinerClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         DebugLogger.init();
-        KeyBindingHelper.registerKeyBinding(TOGGLE_SHADOW_KEY);
+        net.minecraft.client.KeyMapping.register(TOGGLE_SHADOW_KEY);
         TASK_ENGINE.registerTask(new DiagnosticTestTask());
         TASK_ENGINE.registerTask(new TargetSearchTask());
         TASK_ENGINE.registerTask(new ShadowBotTask());

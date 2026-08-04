@@ -12,10 +12,9 @@ repositories {
 dependencies {
 minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // We are using implementation exactly like your working repo!
-    // modImplementation breaks it by asking for a dictionary that doesn't exist.
+    // Use modImplementation to ensure Fabric API is properly processed
 implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {
