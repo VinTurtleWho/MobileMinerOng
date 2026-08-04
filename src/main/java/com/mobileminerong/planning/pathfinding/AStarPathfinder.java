@@ -102,12 +102,17 @@ public class AStarPathfinder {
         Vec3 startVec = Vec3.atCenterOf(start);
         Vec3 endVec = Vec3.atCenterOf(end);
         
+        net.minecraft.world.entity.player.Player player = Minecraft.getInstance().player;
+        net.minecraft.world.phys.shapes.CollisionContext context = (player != null) ? 
+            net.minecraft.world.phys.shapes.CollisionContext.of(player) : 
+            net.minecraft.world.phys.shapes.CollisionContext.empty();
+
         // Raycast to check for block collisions
         net.minecraft.world.phys.HitResult hitResult = world.clip(new net.minecraft.world.level.ClipContext(
                 startVec, endVec,
                 net.minecraft.world.level.ClipContext.Block.COLLIDER,
                 net.minecraft.world.level.ClipContext.Fluid.NONE,
-                net.minecraft.world.phys.shapes.CollisionContext.of(null)
+                context
         ));
         
         return hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
