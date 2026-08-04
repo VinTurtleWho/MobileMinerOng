@@ -19,8 +19,9 @@ public class BotContext {
     private float yaw = 0f;
     private float pitch = 0f;
 
-    // Targets & Tools
+    // Targets
     private BlockPos currentTargetBlock = null;
+    private BlockPos lastSeenTargetBlock = null; // RESTORED
     private String miningTargetId = null;
     private int miningToolSlot = 0;
 
@@ -35,8 +36,9 @@ public class BotContext {
     private int currentMana = 0;
     private int maxMana = 0;
 
-    // ... rest of the file ...
-    // Getters and Setters ...
+    // Diagnostics & Flags
+    private String lastAction = "NONE"; // RESTORED
+    private String stateChangeReason = "Initialization";
     public synchronized MacroMode getMode() { return currentMode; }
     public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
 

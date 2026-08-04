@@ -43,6 +43,7 @@ public class MobileMinerClient implements ClientModInitializer {
 
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
             "key.mobileminerong.toggle",
+            net.minecraft.client.InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_O,
             "category.mobileminerong.general"
         ));

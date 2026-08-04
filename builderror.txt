@@ -1,6 +1,4 @@
-tching distribution.
-Downloading https://services.gradle.org/distributions/gradle-9.5.1-bin.zip
-.............10%.............20%..............30%.............40%.............50%..............60%.............70%..............80%.............90%.............100%
+0%.............90%.............100%
 
 Welcome to Gradle 9.5.1!
 
@@ -14,110 +12,109 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 
 > Configure project :
 Fabric Loom: 1.17.17
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/state/BotState.java:13: error: enum MacroMode is public, should be declared in a file named MacroMode.java
 
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/command/MacroCommandHandler.java:23: error: illegal start of expression
+public enum MacroMode {
+       ^
 > Task :compileJava
-import com.mobileminerong.state.MacroMode;
-^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/command/MacroCommandHandler.java:23: error: not a statement
-import com.mobileminerong.state.MacroMode;
-                               ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:105: error: statements not expected outside of methods and initializers
-        if (pathCooldown > 0) pathCooldown--;
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:108: error: statements not expected outside of methods and initializers
-        if (client.player.position().distanceToSqr(lastPos) < 0.01) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:115: error: statements not expected outside of methods and initializers
-        if (stuckTicks > 60 && pathCooldown == 0) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:124: error: statements not expected outside of methods and initializers
-        if (stuckTicks > 120) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:129: error: statements not expected outside of methods and initializers
-        if (currentIndex >= path.size()) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:140: error: statements not expected outside of methods and initializers
-        if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:148: error: statements not expected outside of methods and initializers
-        if (!rotationInitialized) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:154: error: <identifier> expected
-        rotationController.tick(ctx);
-                               ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:154: error: <identifier> expected
-        rotationController.tick(ctx);
-                                   ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:157: error: statements not expected outside of methods and initializers
-        if (rotationController.isAligned()) {
-        ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:186: error: class, interface, enum, or record expected
-}
-^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:1: error: compact source file should not have package declaration
-package com.mobileminerong.planning.task;
-^
-14 errors
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+                                                   ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:93: error: cannot find symbol
+        if (pos != null) this.lastSeenTargetBlock = pos;
+                             ^
+  symbol: variable lastSeenTargetBlock
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:112: error: cannot find symbol
+    public synchronized String getLastAction() { return lastAction; }
+                                                        ^
+  symbol:   variable lastAction
+  location: class BotContext
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:113: error: cannot find symbol
+    public synchronized void setLastAction(String action) { this.lastAction = action; }
+                                                                ^
+  symbol: variable lastAction
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/InventoryManager.java:11: error: selected has private access in Inventory
+            client.player.getInventory().selected = slot;
+                                        ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:47: error: incompatible types: String cannot be converted to Category
+            "category.mobileminerong.general"
+            ^
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
+        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+                    ^
+  symbol:   variable KeyBindingHelper
+  location: class MobileMinerClient
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:35: error: cannot find symbol
+        ActionController.startMining(targetPos);
+                        ^
+  symbol:   method startMining(BlockPos)
+  location: class ActionController
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:45: error: cannot find symbol
+        ActionController.stopMining();
+                        ^
+  symbol:   method stopMining()
+  location: class ActionController
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+10 errors
 
 > Task :compileJava FAILED
-
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1785843969714.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1785844867986.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/MobileMinerOng/MobileMinerOng/build/reports/problems/problems-report.html
-1 actionable task: 1 executed
+
 FAILURE: Build failed with an exception.
 
 * What went wrong:
 Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
 > Compilation failed; see the compiler output below.
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/command/MacroCommandHandler.java:23: error: not a statement
-  import com.mobileminerong.state.MacroMode;
-                                 ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:1: error: compact source file should not have package declaration
-  package com.mobileminerong.planning.task;
-  ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:186: error: class, interface, enum, or record expected
-  }
-  ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/command/MacroCommandHandler.java:23: error: illegal start of expression
-  import com.mobileminerong.state.MacroMode;
-  ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:154: error: <identifier> expected
-          rotationController.tick(ctx);
-                                 ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:154: error: <identifier> expected
-          rotationController.tick(ctx);
-                                     ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:105: error: statements not expected outside of methods and initializers
-          if (pathCooldown > 0) pathCooldown--;
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:108: error: statements not expected outside of methods and initializers
-          if (client.player.position().distanceToSqr(lastPos) < 0.01) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:115: error: statements not expected outside of methods and initializers
-          if (stuckTicks > 60 && pathCooldown == 0) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:124: error: statements not expected outside of methods and initializers
-          if (stuckTicks > 120) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:129: error: statements not expected outside of methods and initializers
-          if (currentIndex >= path.size()) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:140: error: statements not expected outside of methods and initializers
-          if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:148: error: statements not expected outside of methods and initializers
-          if (!rotationInitialized) {
-          ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MovementTask.java:157: error: statements not expected outside of methods and initializers
-          if (rotationController.isAligned()) {
-          ^
-  14 errors
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:47: error: incompatible types: String cannot be converted to Category
+              "category.mobileminerong.general"
+              ^
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:112: error: cannot find symbol
+      public synchronized String getLastAction() { return lastAction; }
+                                                          ^
+    symbol:   variable lastAction
+    location: class BotContext
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
+          toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+                      ^
+    symbol:   variable KeyBindingHelper
+1 actionable task: 1 executed
+    location: class MobileMinerClient
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/InventoryManager.java:11: error: selected has private access in Inventory
+              client.player.getInventory().selected = slot;
+                                          ^
+  Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:93: error: cannot find symbol
+          if (pos != null) this.lastSeenTargetBlock = pos;
+                               ^
+    symbol: variable lastSeenTargetBlock
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:113: error: cannot find symbol
+      public synchronized void setLastAction(String action) { this.lastAction = action; }
+                                                                  ^
+    symbol: variable lastAction
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:35: error: cannot find symbol
+          ActionController.startMining(targetPos);
+                          ^
+    symbol:   method startMining(BlockPos)
+    location: class ActionController
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/MiningTask.java:45: error: cannot find symbol
+          ActionController.stopMining();
+                          ^
+    symbol:   method stopMining()
+    location: class ActionController
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
+  import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+                                                     ^
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/state/BotState.java:13: error: enum MacroMode is public, should be declared in a file named MacroMode.java
+  public enum MacroMode {
+         ^
+  10 errors
 
 * Try:
 > Check your code and dependencies to fix the compilation error(s)
 > Run with --scan to get full insights from a Build Scan (powered by Develocity).
 
-BUILD FAILED in 32s
+BUILD FAILED in 28s
 Error: Process completed with exit code 1.
+

@@ -20,6 +20,20 @@ public class ActionController {
         }
     }
 
+    public static void startMining(BlockPos pos) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.options != null) {
+            client.options.keyAttack.setDown(true);
+        }
+    }
+
+    public static void stopMining() {
+        Minecraft client = Minecraft.getInstance();
+        if (client.options != null) {
+            client.options.keyAttack.setDown(false);
+        }
+    }
+
     public static void stopAllInputs() {
         Minecraft client = Minecraft.getInstance();
         if (client == null) return;

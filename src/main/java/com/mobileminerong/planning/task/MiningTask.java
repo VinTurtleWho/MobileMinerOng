@@ -1,7 +1,6 @@
 package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
-import com.mobileminerong.control.InventoryManager;
 import com.mobileminerong.control.ActionController;
 import com.mobileminerong.state.BotState;
 import net.minecraft.client.Minecraft;
@@ -13,7 +12,7 @@ public class MiningTask implements BotTask {
 
     @Override
     public void onStart(BotContext ctx) {
-        InventoryManager.selectHotbarSlot(ctx.getMiningToolSlot());
+        ActionController.selectHotbarSlot(ctx, ctx.getMiningToolSlot());
         ctx.setState(BotState.MINING, "Mining started");
     }
 
