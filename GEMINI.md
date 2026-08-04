@@ -26,9 +26,9 @@ The project follows a standard Fabric mod structure.
 
 ## Current Development Status
 
-- The project has moved from basic framework setup to implementing robust navigation and target-following capabilities.
-- Core tasks (`MovementTask`, `AimingTask`, `ShadowBotTask`) are functional.
-- Anti-cheat bypass testing and pathfinding stabilization are the current priorities.
+- The project has successfully stabilized its core movement and pathfinding engines (Phase 1 complete).
+- Core tasks (`MovementTask`, `AimingTask`, `ShadowBotTask`) are functional and collision-aware.
+- Ready to expand into specialized entity-tracking (`CombatFollowTask`) and block-mining (`MiningTask`) capabilities.
 
 ## Building and Running
 
@@ -44,3 +44,5 @@ The project uses Gradle for build management.
 - **Logging**: Use `com.mobileminerong.debug.DebugLogger` for all diagnostic output. All chat interactions must be routed through `com.mobileminerong.util.ChatLogger` for anti-cheat verification.
 - **Fabric**: Adhere to Fabric API patterns for event registration and client-side interactions.
 - **Performance**: Path-heavy tasks must implement cooldown-based re-pathing to prevent tick-lag.
+- **Pathfinding & Collisions**: All pathfinding walkability checks must utilize voxel-based collision checks (`getCollisionShape`) rather than full-block queries. This ensures partial blocks like stairs, slabs, and fences are handled correctly.
+- **Movement Alignment**: Movement tasks must ensure the bot is fully rotated and aligned with the target/waypoint before applying forward/directional input keys.

@@ -87,7 +87,7 @@ Decides which actions to take based on the parameters available in `BotContext`.
 * **`PriorityTaskEngine`**: Handles task sorting, context-sensitive preemption, and execution tick routing.
 * **`BotTask` Interface**: Defines behaviors using life-cycle phases (`onStart`, `onTick`, `isFinished`, `onFailure`).
 * **Tasks**:
-  * **`MovementTask`**: Path-finding and traversal using `AStarPathfinder`. Implements path-recalculation cooldowns to prevent lag.
+  * **`MovementTask`**: Stateful path-following and traversal using `AStarPathfinder`. Implements path-recalculation cooldowns to prevent tick-lag and manages a stateful `rotationInitialized` lifecycle to ensure the bot is fully aligned with each waypoint *before* moving forward.
   * **`AimingTask`**: Precisely orienting player view toward target vectors.
   * **`ShadowBotTask`**: Testing orchestrator; dynamically cycles between movement and aiming to maintain a constant distance from a target player.
 
