@@ -10,6 +10,7 @@ import com.mobileminerong.planning.task.DiagnosticTestTask;
 import com.mobileminerong.planning.task.TargetSearchTask;
 import com.mobileminerong.planning.task.MiningTask;
 import com.mobileminerong.planning.task.CombatFollowTask;
+import com.mobileminerong.control.ActionController;
 import com.mobileminerong.state.PriorityTaskEngine;
 import com.mobileminerong.util.ChatLogger;
 import net.fabricmc.api.ClientModInitializer;
@@ -73,50 +74,36 @@ public class MobileMinerClient implements ClientModInitializer {
                 return;
 
             while (toggleKey.consumeClick()) {
-                if (BOT_CONTEXT.getMode() != MacroMode.IDLE) {
-                    BOT_CONTEXT.setMode(MacroMode.IDLE);
+                if (BOT_CONTEXT.isActive()) {
+                    // Deactivate: stop tasks and release inputs
+                    BOT_CONTEXT.setActive(false);
+                    TASK_ENGINE.clearTasks();
+                    ActionController.stopAllInputs();
                     client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));
                 } else {
+                    // Activate
+                    BOT_CONTEXT.setActive(true);
                     client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Macro Started"));
                 }
             }
 
-            if (BOT_CONTEXT.getMode() != lastMode) {
-                lastMode = BOT_CONTEXT.getMode();
-                TASK_ENGINE.clearTasks();
-                if (lastMode == MacroMode.MINER) {
-                    TASK_ENGINE.registerTask(new TargetSearchTask());
-                    TASK_ENGINE.registerTask(new MiningTask());
-                } else if (lastMode == MacroMode.COMBAT) {
-                    TASK_ENGINE.registerTask(new CombatFollowTask());
-                }
-                client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
-            }
-
-            // Deferred player search
-            if (BOT_CONTEXT.isPendingPlayerSearch()) {
-                net.minecraft.world.entity.player.Player nearest = null;
-                double minDist = Double.MAX_VALUE;
-                for (net.minecraft.world.entity.player.Player p : client.level.players()) {
-                    if (p == null || p == client.player || !p.isAlive()) continue;
-                    double dist = p.distanceToSqr(client.player);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        nearest = p;
+            if (BOT_CONTEXT.isActive()) {
+                if (BOT_CONTEXT.getMode() != lastMode) {
+                    lastMode = BOT_CONTEXT.getMode();
+                    TASK_ENGINE.clearTasks();
+                    if (lastMode == MacroMode.MINER) {
+                        TASK_ENGINE.registerTask(new TargetSearchTask());
+                        TASK_ENGINE.registerTask(new MiningTask());
+                    } else if (lastMode == MacroMode.COMBAT) {
+                        TASK_ENGINE.registerTask(new CombatFollowTask());
                     }
+                    client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
                 }
-                if (nearest != null) {
-                    BOT_CONTEXT.setTargetPlayer(nearest);
-                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
-                } else {
-                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] No players found"));
-                }
-                BOT_CONTEXT.setPendingPlayerSearch(false);
+                
+                updateContext(client);
+                com.mobileminerong.perception.PerceptionManager.updatePerception(BOT_CONTEXT);
+                TASK_ENGINE.tick(BOT_CONTEXT);
             }
-
-            updateContext(client);
-            com.mobileminerong.perception.PerceptionManager.updatePerception(BOT_CONTEXT);
-            TASK_ENGINE.tick(BOT_CONTEXT);
 
             perceptionTimer++;
             if(perceptionTimer >= 20) {

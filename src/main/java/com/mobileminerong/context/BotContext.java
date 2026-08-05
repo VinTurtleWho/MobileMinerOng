@@ -13,6 +13,7 @@ import java.util.List;
 public class BotContext {
     private BotState currentState = BotState.IDLE;
     private MacroMode currentMode = MacroMode.IDLE;
+    private boolean isActive = false;
 
     // Perception & Position
     private Vec3 playerPos = Vec3.ZERO;
@@ -45,6 +46,8 @@ public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entit
     private String stateChangeReason = "Initialization";
     public synchronized MacroMode getMode() { return currentMode; }
     public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
+    public synchronized boolean isActive() { return isActive; }
+    public synchronized void setActive(boolean active) { this.isActive = active; }
 
     public synchronized String getMiningTargetId() { return miningTargetId; }
     public synchronized void setMiningTargetId(String id) { this.miningTargetId = id; }
