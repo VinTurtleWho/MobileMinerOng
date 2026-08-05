@@ -2,6 +2,7 @@ package com.mobileminerong.context;
 
 import com.mobileminerong.state.BotState;
 import com.mobileminerong.state.MacroMode;
+import com.mobileminerong.control.RotationEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,6 +15,7 @@ public class BotContext {
     private BotState currentState = BotState.IDLE;
     private MacroMode currentMode = MacroMode.IDLE;
     private boolean isActive = false;
+    private final RotationEngine rotationEngine = new RotationEngine();
 
     // Perception & Position
     private Vec3 playerPos = Vec3.ZERO;
@@ -48,6 +50,7 @@ public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entit
     public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
     public synchronized boolean isActive() { return isActive; }
     public synchronized void setActive(boolean active) { this.isActive = active; }
+    public synchronized RotationEngine getRotationEngine() { return rotationEngine; }
 
     public synchronized String getMiningTargetId() { return miningTargetId; }
     public synchronized void setMiningTargetId(String id) { this.miningTargetId = id; }

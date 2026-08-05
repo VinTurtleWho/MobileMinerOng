@@ -1,0 +1,9 @@
+Code rejected. Your 'mathematically robust' claim is false. You ignored explicit architectural directives and provided incomplete code.
+​Fix these fatal flaws immediately:
+​Incomplete Code: You omitted the most important logic using // .... Output the COMPLETE file with absolutely zero omissions or placeholders.
+​Frame Rate Independence (The currentTick flaw): You are incrementing currentTick inside a render loop method. At 144 FPS, your curve finishes 7x faster than intended. Remove currentTick and totalTicks. Use System.currentTimeMillis() to track startTimeMs and durationMs.
+​The Vec3d Stutter Trap: You hardcoded setTarget(Vec3 targetPos). I explicitly told you to use the ActiveTargetEntity. You accept tickDelta on line 31 but never use it. The engine must read the entity and calculate its visual coordinate dynamically per frame using entity.lerpPosition(tickDelta) to avoid high-refresh-rate stutter.
+​Missing Fitts's Law: You completely ignored the Fitts's Law duration requirement. Calculate durationMs dynamically inside setTarget based on the total angular distance.
+​The Pitch Math Disaster: Do NOT use Mth.wrapDegrees for pitch differences. Pitch does not wrap; it is clamped between [-90.0, 90.0]. Use standard subtraction and enforce strict clamping before calculating the residue, or your buffer will explode.
+​Sloppy GCD Caching: Do not query the Minecraft Options instance every single render frame. Cache the GCD.
+​Rewrite the entirety of RotationEngine.java. Do not proceed to Phase II."

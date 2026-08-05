@@ -1,0 +1,850 @@
+--------- Starting game with Launcher Debug!
+Info: Launcher version: iris-20260624-[27e2d51]-v3_openjdk
+Info: Build type: gplay
+Info: Architecture: arm64
+Info: Device model: realme RMX3031
+Info: API version: 33
+Info: Selected game version: fabric-loader-0.19.3-26.1.2
+Info: Custom Java arguments: ""
+Info: Total RAM on device: 7499 Mb
+Info: RAM allocated: 1424 Mb
+Info: Graphics device: ARM Mali-G77 MC9 (OpenGL ES 3)
+Info: Selected renderer: opengles3_ltw
+Added custom env: FORCE_VSYNC=true
+Added custom env: POJAV_NATIVEDIR=/data/app/~~FJUtbvOdB34g8GUZV3zBtA==/git.artdeell.mjlaunch--gbOo_yZK2L4zALuTtskYQ==/lib/arm64
+Added custom env: LIBGL_MIPMAP=3
+Added custom env: allow_higher_compat_version=true
+Added custom env: MESA_GLSL_CACHE_DIR=/data/user/0/git.artdeell.mjlaunch/cache
+Added custom env: LIBGL_NOINTOVLHACK=1
+Added custom env: MOD_ANDROID_RUNTIME=/data/user/0/git.artdeell.mjlaunch/cache/app_runtime_mod
+Added custom env: force_glsl_extensions_warn=true
+Added custom env: LIBGL_NORMALIZE=1
+Added custom env: POJAV_VSYNC_IN_ZINK=1
+Added custom env: LIBGL_NOERROR=1
+Added custom env: LIBGL_ES=2
+Added custom env: allow_glsl_extension_directive_midshader=true
+LTW will force dynamic storage buffers to be coherent.
+LTW will prevent all explicit buffer flushes.
+Loaded EGL libltw.so (in namespace: 0)
+--------- beginning of main
+I/jrelog  (26799): updateLdLibPath: 0x7854bed070
+
+WARNING: package sun.security.action not in java.base
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.github.caciocavallosilano.cacio.ctc.CTCScreen in an unnamed module (file:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/caciocavallo17/cacio-tta-72a9ab6323-jar-with-dependencies.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.github.caciocavallosilano.cacio.ctc.CTCPreloadAgent (file:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/caciocavallo17/cacio-tta-72a9ab6323-jar-with-dependencies.jar)
+WARNING: Please consider reporting this to the maintainers of class com.github.caciocavallosilano.cacio.ctc.CTCPreloadAgent
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[0.809s][warning][jni,resolve] Re-registering of platform native method: jdk.internal.loader.NativeLibraries.load(Ljdk/internal/loader/NativeLibraries$NativeLibraryImpl;Ljava/lang/String;ZZ)Z from code in a different classloader
+[0.809s][warning][jni,resolve] Re-registering of platform native method: java.lang.ProcessImpl.forkAndExec(I[B[B[BI[BI[B[IZ)I from code in a different classloader
+Registered forkAndExec
+2026-08-04T21:40:49.910463093Z main ERROR appender Console has no parameter that matches element Policies
+[03:10:50] [main/INFO]: Loading Minecraft 26.1.2 with Fabric Loader 0.19.3
+[03:10:50] [main/INFO]: Mappings not present!
+[03:10:50] [ForkJoinPool-1-worker-2/WARN]: Mod com_github_oryxel1_cubeconverter uses the version abecffaaea which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'abecffaaea'!), SemVer is recommended for reliably evaluating dependencies and prioritizing newer version
+[03:10:50] [main/INFO]: Loading 89 mods:
+	- fabric-api 0.155.2+26.1.2
+	   |-- fabric-api-base 2.0.3+ece063234c
+	   |-- fabric-api-lookup-api-v1 2.0.12+d5a053b64c
+	   |-- fabric-biome-api-v1 18.0.5+2fa62b4e4c
+	   |-- fabric-block-api-v1 3.0.2+ec56b6014c
+	   |-- fabric-block-getter-api-v2 2.0.6+ec56b6014c
+	   |-- fabric-command-api-v2 3.0.5+e2bdee784c
+	   |-- fabric-content-registries-v0 11.3.0+0082c9664c
+	   |-- fabric-convention-tags-v2 4.6.2+4f11f7994c
+	   |-- fabric-crash-report-info-v1 1.0.3+9f78a5a84c
+	   |-- fabric-creative-tab-api-v1 5.0.11+d871b99e4c
+	   |-- fabric-data-attachment-api-v1 2.2.9+44a0bd1d4c
+	   |-- fabric-data-generation-api-v1 24.3.3+cda368334c
+	   |-- fabric-debug-api-v1 1.0.1+c792624d4c
+	   |-- fabric-dimensions-v1 5.1.7+ad343a8d4c
+	   |-- fabric-entity-events-v1 5.0.2+e2bdee784c
+	   |-- fabric-events-interaction-v0 5.2.2+07b380be4c
+	   |-- fabric-game-rule-api-v1 4.0.5+d871b99e4c
+	   |-- fabric-item-api-v1 14.3.0+6d1aaa724c
+	   |-- fabric-key-mapping-api-v1 2.0.4+e2bdee784c
+	   |-- fabric-lifecycle-events-v1 4.1.1+df84eb3d4c
+	   |-- fabric-loot-api-v3 3.0.12+00a1fba64c
+	   |-- fabric-menu-api-v1 2.0.14+d871b99e4c
+	   |-- fabric-message-api-v1 7.0.5+dae8ce3e4c
+	   |-- fabric-model-loading-api-v1 8.0.11+c80601bb4c
+	   |-- fabric-networking-api-v1 6.3.1+554860db4c
+	   |-- fabric-object-builder-api-v1 23.1.0+abb459f14c
+	   |-- fabric-particles-v1 5.0.15+b61fef434c
+	   |-- fabric-permission-api-v1 1.0.2+7437387b4c
+	   |-- fabric-recipe-api-v1 9.0.16+be4b75ae4c
+	   |-- fabric-registry-sync-v0 7.1.0+2fa62b4e4c
+	   |-- fabric-renderer-api-v1 13.0.8+c80601bb4c
+	   |-- fabric-renderer-indigo 8.1.5+1403e82c4c
+	   |-- fabric-rendering-fluids-v1 6.0.1+d871b99e4c
+	   |-- fabric-rendering-v1 23.3.1+e9207d814c
+	   |-- fabric-resource-conditions-api-v1 6.1.0+83dd0ba34c
+	   |-- fabric-resource-loader-v0 3.3.17+4fc5413f4c
+	   |-- fabric-resource-loader-v1 2.0.10+7c44c7324c
+	   |-- fabric-screen-api-v1 5.1.0+981dd9b24c
+	   |-- fabric-serialization-api-v1 2.0.3+11a26f314c
+	   |-- fabric-sound-api-v1 2.0.4+11a26f314c
+	   |-- fabric-tag-api-v1 2.1.1+371cf5db4c
+	   |-- fabric-transfer-api-v1 8.0.6+357ea7334c
+	   \-- fabric-transitive-access-wideners-v1 8.1.3+3ff549fb4c
+	- fabricloader 0.19.3
+	   \-- mixinextras 0.5.4
+	- java 25
+	- minecraft 26.1.2
+	- mobileminerong 1.0.0
+	- viafabricplus 4.5.5
+	   |-- com_github_oryxel1_cubeconverter abecffaaea
+	   |-- com_google_code_gson_gson 2.13.2
+	   |-- com_google_errorprone_error_prone_annotations 2.41.0
+	   |-- com_seedfinding_mc_biome 1.171.1
+	   |-- com_seedfinding_mc_core 1.210.0
+	   |-- com_seedfinding_mc_math 1.171.0
+	   |-- com_seedfinding_mc_noise 1.171.1
+	   |-- com_seedfinding_mc_seed 1.171.2
+	   |-- com_vdurmont_semver4j 3.1.0
+	   |-- com_viaversion_mcstructs_dialog 5-3.2.2-20251210.004302-1
+	   |-- com_viaversion_mcstructs_registry 5-3.2.2-SNAPSHOT
+	   |-- com_viaversion_viaaprilfools-common 4.2.1
+	   |-- com_viaversion_viabackwards-common 5.10.0
+	   |-- com_viaversion_viaversion-common 5.10.0
+	   |-- de_florianreuth_classic4j 2.3.0
+	   |-- dev_kastle_netty_netty-transport-nethernet 1.7.0
+	   |-- dev_kastle_netty_netty-transport-raknet 1.7.0
+	   |-- dev_kastle_webrtc_webrtc-java 1.0.3
+	   |-- dev_kastle_webrtc_webrtc-java_linux-aarch64 1.0.3
+	   |-- dev_kastle_webrtc_webrtc-java_linux-x86_64 1.0.3
+	   |-- dev_kastle_webrtc_webrtc-java_macos-aarch64 1.0.3
+	   |-- dev_kastle_webrtc_webrtc-java_windows-aarch64 1.0.3
+	   |-- dev_kastle_webrtc_webrtc-java_windows-x86_64 1.0.3
+	   |-- fabric-api-base 2.0.3+ece063234c
+	   |-- fabric-resource-loader-v0 3.3.17+4fc5413f4c
+	   |-- io_jsonwebtoken_jjwt-api 0.13.0
+	   |-- io_jsonwebtoken_jjwt-gson 0.13.0
+	   |-- io_jsonwebtoken_jjwt-impl 0.13.0
+	   |-- net_jodah_expiringmap 0.5.10
+	   |-- net_lenni0451_commons_gson 1.9.2
+	   |-- net_lenni0451_commons_httpclient 1.9.2
+	   |-- net_lenni0451_commons_unchecked 1.9.2
+	   |-- net_lenni0451_mcstructs-bedrock_forms 2.0.1
+	   |-- net_lenni0451_mcstructs-bedrock_text 2.0.1
+	   |-- net_lenni0451_reflect 1.6.3
+	   |-- net_raphimc_minecraftauth 5.0.1
+	   |-- net_raphimc_viabedrock 0.0.28-20260528.153041-8
+	   |-- net_raphimc_vialegacy 3.0.16
+	   |-- team_unnamed_mocha 3.0.1
+	   |-- viafabricplus-api 4.5.5
+	   \-- viafabricplus-visuals 4.5.5
+[03:10:50] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/fabricmc/sponge-mixin/0.17.3+mixin.0.8.7/sponge-mixin-0.17.3+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[03:10:51] [main/INFO]: Compatibility level set to JAVA_25
+[03:10:53] [main/INFO]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.4).
+[03:10:55] [main/WARN]: Did not find udev library in operating system. Some features may not work.
+[03:10:56] [main/WARN]: File not found or not readable: /proc/stat
+[03:10:57] [Datafixer Bootstrap/INFO]: 291 Datafixer optimizations took 1452 milliseconds
+[03:11:08] [Render thread/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[03:11:08] [Render thread/INFO]: Setting user: J1d9
+[03:11:09] [Via-Mappingloader-1/INFO]: Loading block connection mappings ...
+[03:11:10] [Render thread/INFO]: [Indigo] Registering Indigo renderer!
+[03:11:10] [Worker-Main-1/INFO]: Loading translations...
+[03:11:10] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:10.052] [INFO] [SYSTEM] === MobileMinerOng Log Session Started ===
+[03:11:10] [Worker-Main-1/INFO]: Registering protocols...
+[03:11:10] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:10.071] [INFO] [SYSTEM] MobileMinerOng initialized
+[03:11:10] [Render thread/ERROR]: Error parsing option value off for option Fullscreen: Not a boolean: "off"
+[03:11:10] [Render thread/INFO]: Backend library: LWJGL version 3.4.1-snapshot
+LTW: Running on OpenGL ES 3.2 with ESSL 320
+LTW: BaseVertex render calls will use the host driver implementation
+LTW: Overridden glGetIntegerv
+LTW: Overridden glGetString
+LTW: Overridden glGetStringi
+GL_NUM_EXTENSIONS: 109
+GL_NUM_EXTENSIONS: 109
+GL_NUM_EXTENSIONS: 109
+LWJGL linkerhook: replacing OpenGL with renderspec driver
+LTW: Overridden glGetError
+LTW: Overridden glGetString
+LTW: Overridden glGetIntegerv
+GL_NUM_EXTENSIONS: 109
+LTW: Overridden glGetStringi
+LTW: Overridden glEnable
+LTW: Overridden glClearDepth
+LTW: Overridden glDepthRange
+LTW: Overridden glDrawBuffer
+LTW: Overridden glGetIntegerv
+LTW: Overridden glGetError
+LTW: Overridden glGetString
+LTW: Overridden glGetTexImage
+LTW: Overridden glGetTexLevelParameteriv
+LTW: Overridden glGetTexLevelParameterfv
+LTW: Overridden glReadPixels
+LTW: Overridden glTexImage2D
+LTW: Overridden glCopyTexSubImage2D
+LTW: Overridden glTexParameteri
+LTW: Overridden glTexParameteriv
+LTW: Overridden glTexParameterf
+LTW: Overridden glTexParameterfv
+LTW: Overridden glTexSubImage2D
+LTW: Overridden glMultiDrawArrays
+LTW: Overridden glMultiDrawElements
+LTW: Overridden glBindBuffer
+LTW: Overridden glMapBuffer
+LTW: Overridden glGetQueryObjectiv
+LTW: Overridden glCreateProgram
+LTW: Overridden glDeleteProgram
+LTW: Overridden glCreateShader
+LTW: Overridden glDeleteShader
+LTW: Overridden glAttachShader
+LTW: Overridden glShaderSource
+LTW: Overridden glLinkProgram
+LTW: Overridden glUseProgram
+LTW: Overridden glGetShaderiv
+LTW: Overridden glVertexAttrib1s
+LTW: Overridden glVertexAttrib1d
+LTW: Overridden glVertexAttrib2s
+LTW: Overridden glVertexAttrib2d
+LTW: Overridden glVertexAttrib3s
+LTW: Overridden glVertexAttrib3d
+LTW: Overridden glVertexAttrib4s
+LTW: Overridden glVertexAttrib4d
+LTW: Overridden glVertexAttrib4Nub
+LTW: Overridden glVertexAttrib1sv
+LTW: Overridden glVertexAttrib1dv
+LTW: Overridden glVertexAttrib2sv
+LTW: Overridden glVertexAttrib2dv
+LTW: Overridden glVertexAttrib3sv
+LTW: Overridden glVertexAttrib3dv
+LTW: Overridden glVertexAttrib4sv
+LTW: Overridden glVertexAttrib4dv
+LTW: Overridden glVertexAttrib4Nbv
+LTW: Overridden glVertexAttrib4Nsv
+LTW: Overridden glVertexAttrib4Niv
+LTW: Overridden glVertexAttrib4Nubv
+LTW: Overridden glVertexAttrib4Nusv
+LTW: Overridden glVertexAttrib4Nuiv
+LTW: Overridden glDrawBuffers
+LTW: Overridden glGetStringi
+LTW: Overridden glClearBufferiv
+LTW: Overridden glClearBufferuiv
+LTW: Overridden glClearBufferfv
+LTW: Overridden glVertexAttribI1i
+LTW: Overridden glVertexAttribI2i
+LTW: Overridden glVertexAttribI3i
+LTW: Overridden glVertexAttribI1ui
+LTW: Overridden glVertexAttribI2ui
+LTW: Overridden glVertexAttribI3ui
+LTW: Overridden glVertexAttribI1iv
+LTW: Overridden glVertexAttribI2iv
+LTW: Overridden glVertexAttribI3iv
+LTW: Overridden glVertexAttribI1uiv
+LTW: Overridden glVertexAttribI2uiv
+LTW: Overridden glVertexAttribI3uiv
+LTW: Overridden glVertexAttribI4bv
+LTW: Overridden glVertexAttribI4sv
+LTW: Overridden glVertexAttribI4ubv
+LTW: Overridden glVertexAttribI4usv
+LTW: Overridden glBindFragDataLocation
+LTW: Overridden glMapBufferRange
+LTW: Overridden glFlushMappedBufferRange
+LTW: Overridden glRenderbufferStorage
+LTW: Overridden glBindFramebuffer
+LTW: Overridden glDeleteFramebuffers
+LTW: Overridden glGenFramebuffers
+LTW: Overridden glCheckFramebufferStatus
+LTW: Overridden glFramebufferTexture2D
+LTW: Overridden glFramebufferTextureLayer
+LTW: Overridden glFramebufferRenderbuffer
+LTW: Overridden glGetFramebufferAttachmentParameteriv
+LTW: Overridden glTexParameterIiv
+LTW: Overridden glTexParameterIuiv
+LTW: Overridden glBindBufferRange
+LTW: Overridden glBindBufferBase
+LTW: Overridden glTexBuffer
+LTW: Overridden glDrawElementsBaseVertex
+LTW: Overridden glMultiDrawElementsBaseVertex
+LTW: Overridden glGetQueryObjecti64v
+LTW: Overridden glGetQueryObjectui64v
+LTW: Overridden glBufferStorage
+LTW: Overridden glDebugMessageControl
+[03:11:11] [Render thread/WARN]: Not setting icon for unrecognized platform: 393222
+[03:11:11] [Render thread/INFO]: Using optional rendering extensions: GL_ARB_buffer_storage, GL_KHR_debug, GL_EXT_texture_filter_anisotropic
+[03:11:12] [Worker-Main-1/WARN]: Failed to find a usable hardware address from the network interfaces; using random bytes: 8d:f4:39:1a:ea:0d:db:4f
+[03:11:12] [Worker-Main-1/INFO]: Started resource pack HTTP server on http://127.0.0.1:45091/
+[03:11:12] [Worker-Main-1/WARN]: Experimental features are enabled. These features might not be fully stable/tested and may cause issues.
+[03:11:12] [Worker-Main-1/INFO]: ViaVersion detected lowest supported version by the proxy: c0.0.15a-1 (0)
+[03:11:12] [Worker-Main-1/INFO]: Highest supported version by the proxy: 26.2 (776)
+[03:11:12] [Worker-Main-1/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[03:11:13] [Render thread/ERROR]: Error while loading the narrator
+com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
+	at knot//com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:81)
+	at knot//com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18)
+	at knot//com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41)
+	at knot//net.minecraft.client.GameNarrator.<init>(GameNarrator.java:20)
+	at knot//net.minecraft.client.Minecraft.<init>(Minecraft.java:726)
+	at knot//net.minecraft.client.main.Main.main(Main.java:232)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:514)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
+dlopen failed: library "libflite.so" not found
+dlopen failed: library "libflite.so" not found
+Native library (linux-aarch64/libflite.so) not found in resource path (/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/at/yawk/lz4/lz4-java/1.10.1/lz4-java-1.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/azure/azure-json/1.4.0/azure-json-1.4.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/github/oshi/oshi-core/6.9.0/oshi-core-6.9.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/ibm/icu/icu4j/77.1/icu4j-77.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/microsoft/azure/msal4j/1.23.1/msal4j-1.23.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/authlib/7.0.63/authlib-7.0.63.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/brigadier/1.3.10/brigadier-1.3.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/datafixerupper/9.0.19/datafixerupper-9.0.19.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/jtracy/1.0.37/jtracy-1.0.37.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/jtracy/1.0.37/jtracy-1.0.37-natives-linux.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/logging/1.6.11/logging-1.6.11.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/text2speech/1.18.11/text2speech-1.18.11.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-buffer/4.2.7.Final/netty-buffer-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-base/4.2.7.Final/netty-codec-base-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-compression/4.2.7.Final/netty-codec-compression-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-http/4.2.7.Final/netty-codec-http-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-common/4.2.7.Final/netty-common-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-handler/4.2.7.Final/netty-handler-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-resolver/4.2.7.Final/netty-resolver-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-classes-epoll/4.2.7.Final/netty-transport-classes-epoll-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-classes-kqueue/4.2.7.Final/netty-transport-classes-kqueue-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-aarch_64.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-x86_64.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-unix-common/4.2.7.Final/netty-transport-native-unix-common-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport/4.2.7.Final/netty-transport-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/it/unimi/dsi/fastutil/8.5.18/fastutil-8.5.18.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/java/dev/jna/jna/5.17.0/jna-5.17.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/commons/commons-lang3/3.19.0/commons-lang3-3.19.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-api/2.25.2/log4j-api-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-core/2.25.2/log4j-core-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.25.2/log4j-slf4j2-impl-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/jcraft/jorbis/0.0.17/jorbis-0.0.17.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/joml/joml/1.10.8/joml-1.10.8.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-freetype/3.4.1/lwjgl-freetype-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-glfw/3.4.1/lwjgl-glfw-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-rpmalloc/3.4.1/lwjgl-rpmalloc-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-rpmalloc/3.4.1/lwjgl-rpmalloc-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-openal/3.4.1/lwjgl-openal-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-opengl/3.4.1/lwjgl-opengl-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-opengl/3.4.1/lwjgl-opengl-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-stb/3.4.1/lwjgl-stb-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-stb/3.4.1/lwjgl-stb-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-tinyfd/3.4.1/lwjgl-tinyfd-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-tinyfd/3.4.1/lwjgl-tinyfd-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl/3.4.1/lwjgl-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl/3.4.1/lwjgl-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-analysis/9.10.1/asm-analysis-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-util/9.10.1/asm-util-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/fabricmc/sponge-mixin/0.17.3+mixin.0.8.7/sponge-mixin-0.17.3+mixin.0.8.7.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/fabricmc/fabric-loader/0.19.3/fabric-loader-0.19.3.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/versions/fabric-loader-0.19.3-26.1.2/fabric-loader-0.19.3-26.1.2.jar)
+	at knot//com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:325)
+	at knot//com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:481)
+	at knot//com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:423)
+	at knot//com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:79)
+	... 8 more
+	Suppressed: java.lang.UnsatisfiedLinkError: dlopen failed: library "libflite.so" not found
+		at knot//com.sun.jna.Native.open(Native Method)
+		at knot//com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:213)
+		... 11 more
+	Suppressed: java.lang.UnsatisfiedLinkError: dlopen failed: library "libflite.so" not found
+		at knot//com.sun.jna.Native.open(Native Method)
+		at knot//com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:226)
+		... 11 more
+	Suppressed: java.io.IOException: Native library (linux-aarch64/libflite.so) not found in resource path (/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/at/yawk/lz4/lz4-java/1.10.1/lz4-java-1.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/azure/azure-json/1.4.0/azure-json-1.4.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/github/oshi/oshi-core/6.9.0/oshi-core-6.9.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/ibm/icu/icu4j/77.1/icu4j-77.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/microsoft/azure/msal4j/1.23.1/msal4j-1.23.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/authlib/7.0.63/authlib-7.0.63.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/brigadier/1.3.10/brigadier-1.3.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/datafixerupper/9.0.19/datafixerupper-9.0.19.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/jtracy/1.0.37/jtracy-1.0.37.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/jtracy/1.0.37/jtracy-1.0.37-natives-linux.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/logging/1.6.11/logging-1.6.11.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/com/mojang/text2speech/1.18.11/text2speech-1.18.11.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-buffer/4.2.7.Final/netty-buffer-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-base/4.2.7.Final/netty-codec-base-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-compression/4.2.7.Final/netty-codec-compression-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-codec-http/4.2.7.Final/netty-codec-http-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-common/4.2.7.Final/netty-common-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-handler/4.2.7.Final/netty-handler-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-resolver/4.2.7.Final/netty-resolver-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-classes-epoll/4.2.7.Final/netty-transport-classes-epoll-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-classes-kqueue/4.2.7.Final/netty-transport-classes-kqueue-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-aarch_64.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-x86_64.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport-native-unix-common/4.2.7.Final/netty-transport-native-unix-common-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/io/netty/netty-transport/4.2.7.Final/netty-transport-4.2.7.Final.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/it/unimi/dsi/fastutil/8.5.18/fastutil-8.5.18.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/java/dev/jna/jna/5.17.0/jna-5.17.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/commons/commons-lang3/3.19.0/commons-lang3-3.19.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-api/2.25.2/log4j-api-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-core/2.25.2/log4j-core-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.25.2/log4j-slf4j2-impl-2.25.2.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/jcraft/jorbis/0.0.17/jorbis-0.0.17.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/joml/joml/1.10.8/joml-1.10.8.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-freetype/3.4.1/lwjgl-freetype-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-glfw/3.4.1/lwjgl-glfw-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-rpmalloc/3.4.1/lwjgl-rpmalloc-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-rpmalloc/3.4.1/lwjgl-rpmalloc-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-openal/3.4.1/lwjgl-openal-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-opengl/3.4.1/lwjgl-opengl-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-opengl/3.4.1/lwjgl-opengl-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-stb/3.4.1/lwjgl-stb-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-stb/3.4.1/lwjgl-stb-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-tinyfd/3.4.1/lwjgl-tinyfd-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl-tinyfd/3.4.1/lwjgl-tinyfd-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl/3.4.1/lwjgl-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/lwjgl/lwjgl/3.4.1/lwjgl-natives-linux-arm64-3.4.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-analysis/9.10.1/asm-analysis-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/org/ow2/asm/asm-util/9.10.1/asm-util-9.10.1.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/fabricmc/sponge-mixin/0.17.3+mixin.0.8.7/sponge-mixin-0.17.3+mixin.0.8.7.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/libraries/net/fabricmc/fabric-loader/0.19.3/fabric-loader-0.19.3.jar:/storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/.minecraft/versions/fabric-loader-0.19.3-26.1.2/fabric-loader-0.19.3-26.1.2.jar)
+		at knot//com.sun.jna.Native.extractFromResourcePath(Native.java:1141)
+		at knot//com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:297)
+		... 11 more
+[03:11:13] [Render thread/INFO]: Reloading ResourceManager: vanilla, com_viaversion_viaaprilfools-common, com_viaversion_viabackwards-common, com_viaversion_viaversion-common, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, mobileminerong, net_raphimc_viabedrock, net_raphimc_vialegacy, viafabricplus, viafabricplus-visuals
+Stub: glPolygonMode
+[03:11:14] [Via Async Scheduler 0/INFO]: Finished mapping loading, shutting down loader executor.
+[03:11:14] [Worker-Main-7/INFO]: Found unifont_pua-17.0.01.hex, loading
+[03:11:14] [Worker-Main-6/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[03:11:14] [Worker-Main-6/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[03:11:17] [Render thread/INFO]: OpenAL initialized on device Oboe Default
+[03:11:17] [Render thread/INFO]: Sound engine started
+[03:11:17] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[03:11:17] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[03:11:17] [Render thread/INFO]: Created: 2048x1024x0 minecraft:textures/atlas/armor_trims.png-atlas
+[03:11:17] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[03:11:17] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[03:11:17] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/blocks.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/beds.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/signs.png-atlas
+[03:11:18] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[03:11:27] [Render thread/INFO]: Connecting to modern.anticheat-test.com, 25565
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: Loaded 2 advancements
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT]  
+[03:11:36] [Render thread/INFO]: [System] [CHAT] [ACTest] You joined the with the client brand: fabric
+[03:11:36] [Render thread/INFO]: [System] [CHAT] [ACTest] Applying multi-anticheat selection.
+[03:11:36] [Netty NIO IO #2/ERROR]: An exception occurred while handling a packet
+io.netty.handler.codec.DecoderException: Received unknown packet id 24
+	at knot//net.minecraft.network.codec.IdDispatchCodec.decode(IdDispatchCodec.java:32)
+	at knot//net.minecraft.network.codec.IdDispatchCodec.decode(IdDispatchCodec.java:14)
+	at knot//net.minecraft.network.PacketDecoder.decode$mixinextras$wrapped$7(PacketDecoder.java:30)
+	at knot//net.minecraft.network.PacketDecoder.mixinextras$bridge$decode$mixinextras$wrapped$7$8(PacketDecoder.java)
+	at knot//net.minecraft.network.PacketDecoder.md70bb7d$fabric-networking-api-v1$lambda$wrapWithContext$0$0(PacketDecoder.java:542)
+	at java.base/jdk.internal.vm.ScopedValueContainer.runWithoutScope(ScopedValueContainer.java:112)
+	at java.base/jdk.internal.vm.ScopedValueContainer.run(ScopedValueContainer.java:98)
+	at java.base/java.lang.ScopedValue$Carrier.run(ScopedValue.java:466)
+	at knot//net.minecraft.network.PacketDecoder.wrapMethod$zjj000$fabric-networking-api-v1$wrapWithContext(PacketDecoder.java:542)
+	at knot//net.minecraft.network.PacketDecoder.decode(PacketDecoder.java)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:356)
+	at knot//io.netty.handler.flow.FlowControlHandler.dequeue(FlowControlHandler.java:201)
+	at knot//io.netty.handler.flow.FlowControlHandler.read(FlowControlHandler.java:138)
+	at knot//com.viaversion.viafabricplus.protocoltranslator.netty.NoReadFlowControlHandler.read(NoReadFlowControlHandler.java:32)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.read(AbstractChannelHandlerContext.java:725)
+	at knot//io.netty.channel.DefaultChannelPipeline.read(DefaultChannelPipeline.java:1025)
+	at knot//io.netty.channel.DefaultChannelPipeline.read(DefaultChannelPipeline.java:45)
+	at knot//io.netty.channel.Channel.read(Channel.java:245)
+	at knot//io.netty.channel.DefaultChannelConfig.setAutoRead(DefaultChannelConfig.java:341)
+	at knot//io.netty.channel.socket.DefaultSocketChannelConfig.setAutoRead(DefaultSocketChannelConfig.java:314)
+	at knot//io.netty.channel.socket.DefaultSocketChannelConfig.setAutoRead(DefaultSocketChannelConfig.java:37)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler.mixinextras$bridge$setAutoRead$8(UnconfiguredPipelineHandler.java)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler.wrapOperation$ced001$viafabricplus$dontChangeAutoRead(UnconfiguredPipelineHandler.java:541)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler.lambda$setupInboundHandler$0(UnconfiguredPipelineHandler.java:93)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler$InboundConfigurationTask.lambda$andThen$0(UnconfiguredPipelineHandler.java:68)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler$InboundConfigurationTask.lambda$andThen$0(UnconfiguredPipelineHandler.java:68)
+	at knot//net.minecraft.network.UnconfiguredPipelineHandler$Inbound.write(UnconfiguredPipelineHandler.java:32)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:825)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToByteEncoder.write(MessageToByteEncoder.java:120)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToByteEncoder.write(MessageToByteEncoder.java:120)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToByteEncoder.write(MessageToByteEncoder.java:120)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToMessageEncoder.write(MessageToMessageEncoder.java:102)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToByteEncoder.write(MessageToByteEncoder.java:120)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.handler.codec.MessageToMessageEncoder.write(MessageToMessageEncoder.java:102)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:752)
+	at knot//io.netty.channel.ChannelOutboundHandlerAdapter.write(ChannelOutboundHandlerAdapter.java:113)
+	at knot//net.minecraft.network.Connection$2.write(Connection.java:488)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.write(AbstractChannelHandlerContext.java:827)
+	at knot//io.netty.channel.AbstractChannelHandlerContext$WriteTask.run(AbstractChannelHandlerContext.java:1136)
+	at knot//io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:148)
+	at knot//io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:141)
+	at knot//io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:535)
+	at knot//io.netty.channel.SingleThreadIoEventLoop.run(SingleThreadIoEventLoop.java:201)
+	at knot//io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:1193)
+	at knot//io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[03:11:37] [Netty NIO IO #2/ERROR]: An exception occurred while handling a packet
+io.netty.handler.codec.DecoderException: Failed to decode packet 'clientbound/minecraft:select_known_packs'
+	at knot//net.minecraft.network.codec.IdDispatchCodec.decode(IdDispatchCodec.java:41)
+	at knot//net.minecraft.network.codec.IdDispatchCodec.decode(IdDispatchCodec.java:14)
+	at knot//net.minecraft.network.PacketDecoder.decode$mixinextras$wrapped$7(PacketDecoder.java:30)
+	at knot//net.minecraft.network.PacketDecoder.mixinextras$bridge$decode$mixinextras$wrapped$7$8(PacketDecoder.java)
+	at knot//net.minecraft.network.PacketDecoder.md70bb7d$fabric-networking-api-v1$lambda$wrapWithContext$0$0(PacketDecoder.java:542)
+	at java.base/jdk.internal.vm.ScopedValueContainer.runWithoutScope(ScopedValueContainer.java:112)
+	at java.base/jdk.internal.vm.ScopedValueContainer.run(ScopedValueContainer.java:98)
+	at java.base/java.lang.ScopedValue$Carrier.run(ScopedValue.java:466)
+	at knot//net.minecraft.network.PacketDecoder.wrapMethod$zjj000$fabric-networking-api-v1$wrapWithContext(PacketDecoder.java:542)
+	at knot//net.minecraft.network.PacketDecoder.decode(PacketDecoder.java)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInputClosed(ByteToMessageDecoder.java:427)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInputClosed(ByteToMessageDecoder.java:394)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInactive(ByteToMessageDecoder.java:377)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.handler.flow.FlowControlHandler.channelInactive(FlowControlHandler.java:133)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.handler.flow.FlowControlHandler.channelInactive(FlowControlHandler.java:133)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInputClosed(ByteToMessageDecoder.java:412)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInactive(ByteToMessageDecoder.java:377)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInputClosed(ByteToMessageDecoder.java:412)
+	at knot//io.netty.handler.codec.ByteToMessageDecoder.channelInactive(ByteToMessageDecoder.java:377)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.channel.ChannelInboundHandlerAdapter.channelInactive(ChannelInboundHandlerAdapter.java:81)
+	at knot//io.netty.handler.timeout.IdleStateHandler.channelInactive(IdleStateHandler.java:284)
+	at knot//io.netty.channel.AbstractChannelHandlerContext.fireChannelInactive(AbstractChannelHandlerContext.java:250)
+	at knot//io.netty.channel.DefaultChannelPipeline$HeadContext.channelInactive(DefaultChannelPipeline.java:1424)
+	at knot//io.netty.channel.DefaultChannelPipeline.fireChannelInactive(DefaultChannelPipeline.java:876)
+	at knot//io.netty.channel.AbstractChannel$AbstractUnsafe$8.run(AbstractChannel.java:684)
+	at knot//io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:148)
+	at knot//io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:141)
+	at knot//io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:535)
+	at knot//io.netty.channel.SingleThreadIoEventLoop.run(SingleThreadIoEventLoop.java:201)
+	at knot//io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:1193)
+	at knot//io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: io.netty.handler.codec.DecoderException: Not enough bytes in buffer, expected 118, but got 95
+	at knot//net.minecraft.network.Utf8String.read(Utf8String.java:24)
+	at knot//net.minecraft.network.codec.ByteBufCodecs$14.decode(ByteBufCodecs.java:234)
+	at knot//net.minecraft.network.codec.ByteBufCodecs$14.decode(ByteBufCodecs.java:231)
+	at knot//net.minecraft.network.codec.StreamCodec$9.decode(StreamCodec.java:175)
+	at knot//net.minecraft.network.codec.ByteBufCodecs$24.decode(ByteBufCodecs.java:450)
+	at knot//net.minecraft.network.codec.ByteBufCodecs$24.decode(ByteBufCodecs.java:444)
+	at knot//net.minecraft.network.codec.StreamCodec$7.decode(StreamCodec.java:134)
+	at knot//net.minecraft.network.codec.StreamCodec$5.decode(StreamCodec.java:95)
+	at knot//net.minecraft.network.codec.StreamCodec$5.decode(StreamCodec.java:91)
+	at knot//net.minecraft.network.codec.IdDispatchCodec.decode(IdDispatchCodec.java:36)
+	... 38 more
+[03:11:37] [Render thread/INFO]: Connection closed during protocol change
+[03:11:37] [Render thread/WARN]: Client disconnected with reason: Internal Exception: io.netty.handler.codec.DecoderException: Received unknown packet id 24
+[03:11:42] [Render thread/INFO]: Connecting to modern.anticheat-test.com, 25565
+[03:11:45] [Render thread/INFO]: [System] [CHAT] Switched to Grim
+[03:11:45] [Render thread/INFO]: [System] [CHAT] Switched to Matrix
+[03:11:45] [Render thread/INFO]: [System] [CHAT] Switched to NCP
+[03:11:45] [Render thread/INFO]: [System] [CHAT] Switched to Spartan
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[03:11:45] [Render thread/INFO]: Loaded 2 advancements
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT]  
+[03:11:45] [Render thread/INFO]: [System] [CHAT] [ACTest] You joined the with the client brand: fabric
+[03:11:46] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:46.015] [INFO] [EVENT] Diagnostic run started
+[03:11:46] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:46.016] [INFO] [BOT] State: RECOVERING
+[03:11:46] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:46.019] [INFO] [POSITION] Player: (-80.63497305854426, 84.0, -101.49640126211766)
+[03:11:46] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:46.022] [INFO] [ROTATION] Yaw: 108.60506 Pitch: 19.580408
+[03:11:46] [Render thread/INFO]: [STDOUT]: [MobileMinerOng] [03:11:46.022] [INFO] [EVENT] Diagnostic run complete
+[03:11:46] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[03:11:46] [Download-1/WARN]: Existing file /storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/instances/fabric-loader-0.19.3-26.1.2-508fb270-f694-4e73-87ce-f3aed671d486/downloads/1a4abd51-6173-4cfd-8bbf-1032a6eeec9d/c048ed855e39e83d039a59407898497f76dec787 not found or had mismatched hash
+[03:11:46] [Render thread/INFO]: Resizing Chunk Sections UBO, capacity limit of 2 reached during a single frame. New capacity will be 8.
+[03:11:46] [Render thread/INFO]: [System] [CHAT] [ACTest] Welcome! this is a recode of the current modern server supporting multi ac, and a plugin hooker! there might be bugs, if there any please report them, this system will be coming to the legacy server if it all goes well :)
+[03:11:46] [Render thread/INFO]: [System] [CHAT]  
+[03:11:46] [Render thread/INFO]: [System] [CHAT] You can check out latest server changes by using /changelog
+[03:11:47] [Render thread/INFO]: Resizing Chunk Sections UBO, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[03:11:47] [Render thread/INFO]: Resizing Chunk Sections UBO, capacity limit of 16 reached during a single frame. New capacity will be 32.
+[03:11:47] [Render thread/INFO]: Reloading ResourceManager: vanilla, com_viaversion_viaaprilfools-common, com_viaversion_viabackwards-common, com_viaversion_viaversion-common, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, mobileminerong, net_raphimc_viabedrock, net_raphimc_vialegacy, viafabricplus, viafabricplus-visuals, server/00000000/1a4abd51-6173-4cfd-8bbf-1032a6eeec9d
+[03:11:47] [Worker-Main-4/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[03:11:47] [Worker-Main-1/INFO]: Found unifont_pua-17.0.01.hex, loading
+[03:11:47] [Worker-Main-3/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[03:11:50] [Render thread/INFO]: OpenAL initialized on device Oboe Default
+[03:11:50] [Render thread/INFO]: Sound engine started
+[03:11:50] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 2048x1024x0 minecraft:textures/atlas/armor_trims.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/blocks.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/beds.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/signs.png-atlas
+[03:11:50] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[03:11:54] [Render thread/INFO]: Resizing Chunk Sections UBO, capacity limit of 32 reached during a single frame. New capacity will be 64.
+[03:11:54] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[03:11:59] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » but if your tryna run
+[03:12:01] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » its like
+[03:12:03] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » so good
+[03:12:04] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Searching for nearest player...
+[03:12:04] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Targeting: attackable
+[03:12:05] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » with gtgf
+[03:12:11] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:14] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » yeah
+[03:12:14] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:14] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:15] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:15] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:16] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » lol
+[03:12:16] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:16] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:16] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:16] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:17] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » omg
+[03:12:18] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:21] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » dude with displace
+[03:12:24] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » legit bhopping
+[03:12:29] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » yea
+[03:12:29] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Combat tool slot: 1
+[03:12:30] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:31] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:31] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:31] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:31] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:32] [Render thread/INFO]: [System] [CHAT]  [Main] PitPro_Connor » and its infinite
+[03:12:32] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:33] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:34] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » in that case like
+[03:12:36] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:39] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » is it even worth diplacing backwards
+[03:12:43] [Render thread/INFO]: [System] [CHAT]  [Main] FreeAndesite » or is vertical dispalce better
+[03:12:47] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Combat tool slot: 1
+[03:12:48] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Macro Started
+[03:12:56] [Render thread/INFO]: [System] [CHAT] §a[MobileMinerOng] Mode set to COMBAT
+[03:12:56] [Render thread/INFO]: [System] [CHAT] §e[MobileMinerOng] Tasks updated for COMBAT
+[03:12:56] [Render thread/ERROR]: Unreported exception thrown!
+java.lang.ClassCastException: class net.minecraft.world.entity.player.Inventory cannot be cast to class com.mobileminerong.mixin.accessor.InventoryAccessor (net.minecraft.world.entity.player.Inventory and com.mobileminerong.mixin.accessor.InventoryAccessor are in unnamed module of loader 'knot' @33d512c1)
+	at knot//com.mobileminerong.control.ActionController.selectHotbarSlot(ActionController.java:19)
+	at knot//com.mobileminerong.planning.task.CombatFollowTask.onStart(CombatFollowTask.java:25)
+	at knot//com.mobileminerong.state.PriorityTaskEngine.tick(PriorityTaskEngine.java:46)
+	at knot//com.mobileminerong.MobileMinerClient.lambda$onInitializeClient$2(MobileMinerClient.java:118)
+	at knot//net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.lambda$static$3(ClientTickEvents.java:43)
+	at knot//net.minecraft.client.Minecraft.handler$zic000$fabric-lifecycle-events-v1$onEndTick(Minecraft.java:4179)
+	at knot//net.minecraft.client.Minecraft.tick(Minecraft.java:2035)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1360)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:991)
+	at knot//net.minecraft.client.main.Main.main(Main.java:248)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:514)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+---- Minecraft Crash Report ----
+// Hey, that tickles! Hehehe!
+
+Time: 2026-08-05 03:12:59
+Description: Unexpected error
+
+java.lang.ClassCastException: class net.minecraft.world.entity.player.Inventory cannot be cast to class com.mobileminerong.mixin.accessor.InventoryAccessor (net.minecraft.world.entity.player.Inventory and com.mobileminerong.mixin.accessor.InventoryAccessor are in unnamed module of loader 'knot' @33d512c1)
+	at knot//com.mobileminerong.control.ActionController.selectHotbarSlot(ActionController.java:19)
+	at knot//com.mobileminerong.planning.task.CombatFollowTask.onStart(CombatFollowTask.java:25)
+	at knot//com.mobileminerong.state.PriorityTaskEngine.tick(PriorityTaskEngine.java:46)
+	at knot//com.mobileminerong.MobileMinerClient.lambda$onInitializeClient$2(MobileMinerClient.java:118)
+	at knot//net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.lambda$static$3(ClientTickEvents.java:43)
+	at knot//net.minecraft.client.Minecraft.handler$zic000$fabric-lifecycle-events-v1$onEndTick(Minecraft.java:4179)
+	at knot//net.minecraft.client.Minecraft.tick(Minecraft.java:2035)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1360)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:991)
+	at knot//net.minecraft.client.main.Main.main(Main.java:248)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:514)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Render thread
+Stacktrace:
+	at knot//com.mobileminerong.control.ActionController.selectHotbarSlot(ActionController.java:19)
+	at knot//com.mobileminerong.planning.task.CombatFollowTask.onStart(CombatFollowTask.java:25)
+	at knot//com.mobileminerong.state.PriorityTaskEngine.tick(PriorityTaskEngine.java:46)
+	at knot//com.mobileminerong.MobileMinerClient.lambda$onInitializeClient$2(MobileMinerClient.java:118)
+	at knot//net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.lambda$static$3(ClientTickEvents.java:43)
+	at knot//net.minecraft.client.Minecraft.handler$zic000$fabric-lifecycle-events-v1$onEndTick(Minecraft.java:4179)
+
+-- Uptime --
+Details:
+	JVM uptime: 131.563s
+	Wall uptime: 111.274s
+	High-res time: 108.691s
+	Client ticks: 1976 ticks / 98.800s
+Stacktrace:
+	at knot//net.minecraft.client.Minecraft.fillReport(Minecraft.java:2529)
+	at knot//net.minecraft.client.Minecraft.emergencySaveAndCrash(Minecraft.java:1047)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:1015)
+	at knot//net.minecraft.client.main.Main.main(Main.java:248)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:514)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+
+-- Affected level --
+Details:
+	All players: 25 total; LocalPlayer{name=J1d9, id=155703, pos=(-78.86426155744084, 84.0, -105.54321407987125), mode=SURVIVAL, permission=none}, RemotePlayer{name=attackable, id=521, pos=(-78.19026852715145, 84.0, -102.13930233904654), mode=null, permission=none}, RemotePlayer{name=attackable, id=513, pos=(-83.44439097240084, 84.0, -93.30181146921986), mode=SURVIVAL, permission=none}, RemotePlayer{name=Walking 2, id=537, pos=(-64.05128586682908, 85.5, -102.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=attackable, id=509, pos=(-83.26946486440066, 84.0, -93.74281001332051), mode=SURVIVAL, permission=none}, RemotePlayer{name=Walking 1, id=517, pos=(-67.17491587362827, 85.5, -92.50039875185757), mode=SURVIVAL, permission=none}, RemotePlayer{name=vkd3d, id=541, pos=(-50.5, 84.0, -100.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=Velocity, id=525, pos=(-66.5, 84.0, -78.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=VelocityNoDelay, id=529, pos=(-79.5, 84.0, -78.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-dd6d3670f9fb, id=909, pos=(-61.5, 84.0, -114.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=arbuzica, id=561, pos=(-45.5, 84.0, -100.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=Knockdowns, id=565, pos=(-33.5, 84.0, -99.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=lennoxlotl, id=569, pos=(-35.5, 84.0, -99.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=iTz_Lucky, id=573, pos=(-35.5, 84.0, -102.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=vmpsoft, id=577, pos=(-33.5, 84.0, -102.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=kpipewire, id=545, pos=(-50.5, 84.0, -94.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-9107e11a33c8, id=868, pos=(-51.5, 84.0, -78.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-e9b99109c124, id=814, pos=(-51.5, 84.0, -83.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-cb0d23b80b13, id=804, pos=(-51.5, 84.0, -73.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=BadAiiim, id=581, pos=(-45.5, 84.0, -94.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=terminalsin, id=589, pos=(-34.3967, 84.0, -93.4992), mode=SURVIVAL, permission=none}, RemotePlayer{name=funkemunky, id=593, pos=(-34.5, 84.0, -94.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-35f13b752e0e, id=824, pos=(-44.5, 84.0, -83.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-e0bf35a303d4, id=833, pos=(-44.5, 84.0, -73.5), mode=SURVIVAL, permission=none}, RemotePlayer{name=CIT-7687c20519fc, id=864, pos=(-44.5, 84.0, -78.5), mode=SURVIVAL, permission=none}
+	Chunk stats: 169, 81
+	Level dimension: minecraft:overworld
+	Level time: 398331201 game time, 24000 day time
+	Level spawn location: World: (-22,84,-67), Section: (at 10,4,13 in -2,5,-5; chunk contains blocks -32,-64,-80 to -17,319,-65), Region: (-1,-1; contains chunks -32,-32 to -1,-1, blocks -512,-64,-512 to -1,319,-1)
+	Server brand: AdvancedSlimePaper (Velocity)
+	Server type: Non-integrated multiplayer server
+	Tracked entity count: 35
+	Client weather: Raining: false, thundering: false
+
+-- Last reload --
+Details:
+	Reload number: 2
+	Reload reason: manual
+	Finished: Yes
+	Packs: vanilla, com_viaversion_viaaprilfools-common, com_viaversion_viabackwards-common, com_viaversion_viaversion-common, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, mobileminerong, net_raphimc_viabedrock, net_raphimc_vialegacy, viafabricplus, viafabricplus-visuals, server/00000000/1a4abd51-6173-4cfd-8bbf-1032a6eeec9d
+
+-- System Details --
+Details:
+	Minecraft Version: 26.1.2
+	Minecraft Version ID: 26.1.2
+	Operating System: Linux (aarch64) version Android-13
+	Java Version: 25.0.3-internal, N/A
+	Java VM Version: OpenJDK 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 522087360 bytes (497 MiB) / 1493172224 bytes (1424 MiB) up to 1493172224 bytes (1424 MiB)
+	Memory (heap): init: 1424MiB, used: 925MiB, committed: 1424MiB, max: 1424MiB
+	Memory (non-head): init: 007MiB, used: 236MiB, committed: 246MiB, max: 000MiB
+	CPUs: 8
+	Processor Vendor: ARM
+	Processor Name: 
+	Identifier: 0x41 Family 8 Model 0xd41 Stepping r2p0
+	Microarchitecture: unknown
+	Frequency (GHz): -0.00
+	Number of physical packages: 3
+	Number of physical CPUs: 8
+	Number of logical CPUs: 8
+	Graphics card #0 name: unknown
+	Graphics card #0 vendor: unknown
+	Graphics card #0 VRAM (MiB): 0.00
+	Graphics card #0 deviceId: unknown
+	Graphics card #0 versionInfo: unknown
+	Virtual memory max (MiB): 9381.81
+	Virtual memory used (MiB): 11491.45
+	Swap memory total (MiB): 5632.00
+	Swap memory used (MiB): 4768.42
+	Space in storage for jna.tmpdir (MiB): <path not set>
+	Space in storage for org.lwjgl.system.SharedLibraryExtractPath (MiB): available: 29771.32, total: 110517.97
+	Space in storage for io.netty.native.workdir (MiB): <path not set>
+	Space in storage for java.io.tmpdir (MiB): available: 29771.32, total: 110517.97
+	Space in storage for workdir (MiB): available: 29771.32, total: 110517.97
+	JVM Flags: 3 total; -Xmx1424M -Xms1424M -XX:ActiveProcessorCount=8
+	Debug Flags: 0 total; 
+	Fabric Mods: 
+		fabric-api: Fabric API 0.155.2+26.1.2
+			fabric-api-base: Fabric API Base 2.0.3+ece063234c
+			fabric-api-lookup-api-v1: Fabric API Lookup API (v1) 2.0.12+d5a053b64c
+			fabric-biome-api-v1: Fabric Biome API (v1) 18.0.5+2fa62b4e4c
+			fabric-block-api-v1: Fabric Block API (v1) 3.0.2+ec56b6014c
+			fabric-block-getter-api-v2: Fabric BlockGetter API (v2) 2.0.6+ec56b6014c
+			fabric-command-api-v2: Fabric Command API (v2) 3.0.5+e2bdee784c
+			fabric-content-registries-v0: Fabric Content Registries (v0) 11.3.0+0082c9664c
+			fabric-convention-tags-v2: Fabric Convention Tags (v2) 4.6.2+4f11f7994c
+			fabric-crash-report-info-v1: Fabric Crash Report Info (v1) 1.0.3+9f78a5a84c
+			fabric-creative-tab-api-v1: Fabric Creative Tab API (v1) 5.0.11+d871b99e4c
+			fabric-data-attachment-api-v1: Fabric Data Attachment API (v1) 2.2.9+44a0bd1d4c
+			fabric-data-generation-api-v1: Fabric Data Generation API (v1) 24.3.3+cda368334c
+			fabric-debug-api-v1: Fabric Debug API (v1) 1.0.1+c792624d4c
+			fabric-dimensions-v1: Fabric Dimensions API (v1) 5.1.7+ad343a8d4c
+			fabric-entity-events-v1: Fabric Entity Events (v1) 5.0.2+e2bdee784c
+			fabric-events-interaction-v0: Fabric Events Interaction (v0) 5.2.2+07b380be4c
+			fabric-game-rule-api-v1: Fabric Game Rule API (v1) 4.0.5+d871b99e4c
+			fabric-item-api-v1: Fabric Item API (v1) 14.3.0+6d1aaa724c
+			fabric-key-mapping-api-v1: Fabric Key Mapping API (v1) 2.0.4+e2bdee784c
+			fabric-lifecycle-events-v1: Fabric Lifecycle Events (v1) 4.1.1+df84eb3d4c
+			fabric-loot-api-v3: Fabric Loot API (v3) 3.0.12+00a1fba64c
+			fabric-menu-api-v1: Fabric Menu API (v1) 2.0.14+d871b99e4c
+			fabric-message-api-v1: Fabric Message API (v1) 7.0.5+dae8ce3e4c
+			fabric-model-loading-api-v1: Fabric Model Loading API (v1) 8.0.11+c80601bb4c
+			fabric-networking-api-v1: Fabric Networking API (v1) 6.3.1+554860db4c
+			fabric-object-builder-api-v1: Fabric Object Builder API (v1) 23.1.0+abb459f14c
+			fabric-particles-v1: Fabric Particles (v1) 5.0.15+b61fef434c
+			fabric-permission-api-v1: Fabric Permission API (v1) 1.0.2+7437387b4c
+			fabric-recipe-api-v1: Fabric Recipe API (v1) 9.0.16+be4b75ae4c
+			fabric-registry-sync-v0: Fabric Registry Sync (v0) 7.1.0+2fa62b4e4c
+			fabric-renderer-api-v1: Fabric Renderer API (v1) 13.0.8+c80601bb4c
+			fabric-renderer-indigo: Fabric Renderer - Indigo 8.1.5+1403e82c4c
+			fabric-rendering-fluids-v1: Fabric Rendering Fluids (v1) 6.0.1+d871b99e4c
+			fabric-rendering-v1: Fabric Rendering (v1) 23.3.1+e9207d814c
+			fabric-resource-conditions-api-v1: Fabric Resource Conditions API (v1) 6.1.0+83dd0ba34c
+			fabric-resource-loader-v0: Fabric Resource Loader (v0) 3.3.17+4fc5413f4c
+			fabric-resource-loader-v1: Fabric Resource Loader (v1) 2.0.10+7c44c7324c
+			fabric-screen-api-v1: Fabric Screen API (v1) 5.1.0+981dd9b24c
+			fabric-serialization-api-v1: Fabric Serialization API (v1) 2.0.3+11a26f314c
+			fabric-sound-api-v1: Fabric Sound API (v1) 2.0.4+11a26f314c
+			fabric-tag-api-v1: Fabric Tag API (v1) 2.1.1+371cf5db4c
+			fabric-transfer-api-v1: Fabric Transfer API (v1) 8.0.6+357ea7334c
+			fabric-transitive-access-wideners-v1: Fabric Transitive Access Wideners (v1) 8.1.3+3ff549fb4c
+		fabricloader: Fabric Loader 0.19.3
+			mixinextras: MixinExtras 0.5.4
+		java: OpenJDK 64-Bit Server VM 25
+		minecraft: Minecraft 26.1.2
+		mobileminerong: MobileMinerOng 1.0.0
+		viafabricplus: ViaFabricPlus 4.5.5
+			com_github_oryxel1_cubeconverter: CubeConverter abecffaaea
+			com_google_code_gson_gson: gson 2.13.2
+			com_google_errorprone_error_prone_annotations: error_prone_annotations 2.41.0
+			com_seedfinding_mc_biome: mc_biome 1.171.1
+			com_seedfinding_mc_core: mc_core 1.210.0
+			com_seedfinding_mc_math: mc_math 1.171.0
+			com_seedfinding_mc_noise: mc_noise 1.171.1
+			com_seedfinding_mc_seed: mc_seed 1.171.2
+			com_vdurmont_semver4j: semver4j 3.1.0
+			com_viaversion_mcstructs_dialog: dialog 5-3.2.2-20251210.004302-1
+			com_viaversion_mcstructs_registry: registry 5-3.2.2-SNAPSHOT
+			com_viaversion_viaaprilfools-common: viaaprilfools-common 4.2.1
+			com_viaversion_viabackwards-common: viabackwards-common 5.10.0
+			com_viaversion_viaversion-common: viaversion-common 5.10.0
+			de_florianreuth_classic4j: classic4j 2.3.0
+			dev_kastle_netty_netty-transport-nethernet: netty-transport-nethernet 1.7.0
+			dev_kastle_netty_netty-transport-raknet: netty-transport-raknet 1.7.0
+			dev_kastle_webrtc_webrtc-java: webrtc-java 1.0.3
+			dev_kastle_webrtc_webrtc-java_linux-aarch64: webrtc-java 1.0.3
+			dev_kastle_webrtc_webrtc-java_linux-x86_64: webrtc-java 1.0.3
+			dev_kastle_webrtc_webrtc-java_macos-aarch64: webrtc-java 1.0.3
+			dev_kastle_webrtc_webrtc-java_windows-aarch64: webrtc-java 1.0.3
+			dev_kastle_webrtc_webrtc-java_windows-x86_64: webrtc-java 1.0.3
+			io_jsonwebtoken_jjwt-api: jjwt-api 0.13.0
+			io_jsonwebtoken_jjwt-gson: jjwt-gson 0.13.0
+			io_jsonwebtoken_jjwt-impl: jjwt-impl 0.13.0
+			net_jodah_expiringmap: expiringmap 0.5.10
+			net_lenni0451_commons_gson: gson 1.9.2
+			net_lenni0451_commons_httpclient: httpclient 1.9.2
+			net_lenni0451_commons_unchecked: unchecked 1.9.2
+			net_lenni0451_mcstructs-bedrock_forms: forms 2.0.1
+			net_lenni0451_mcstructs-bedrock_text: text 2.0.1
+			net_lenni0451_reflect: Reflect 1.6.3
+			net_raphimc_minecraftauth: MinecraftAuth 5.0.1
+			net_raphimc_viabedrock: ViaBedrock 0.0.28-20260528.153041-8
+			net_raphimc_vialegacy: ViaLegacy 3.0.16
+			team_unnamed_mocha: mocha 3.0.1
+			viafabricplus-api: ViaFabricPlus API 4.5.5
+			viafabricplus-visuals: ViaFabricPlus Visuals 4.5.5
+	Launched Version: 26.1.2
+	Backend library: LWJGL version 3.4.1-snapshot
+	Backend API: Mali-G77 MC9 GL version 3.3 OpenLTW (Built on: May 21 2026/12:38:14), artDev, SerpentSpirale, CADIndie
+	Window size: 2280x1080
+	GFLW Platform: unknown (00060006)
+	Render Extensions: GL_ARB_buffer_storage, GL_KHR_debug, GL_EXT_texture_filter_anisotropic
+	GL debug messages: 
+	Is Modded: Definitely; Client brand changed to 'fabric'
+	Universe: 400921fb54442d18
+	Type: Client
+	Transparency: regular
+	Render Distance: 2/2 chunks
+	Resource Packs: vanilla, com_viaversion_viaaprilfools-common, com_viaversion_viabackwards-common, com_viaversion_viaversion-common, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, mobileminerong, net_raphimc_viabedrock, net_raphimc_vialegacy, viafabricplus, viafabricplus-visuals, server/00000000/1a4abd51-6173-4cfd-8bbf-1032a6eeec9d
+	Sound Cache: 608354 bytes in 12 buffers
+	Current Language: en_us
+	Locale: en
+	System encoding: UTF-8
+	File encoding: UTF-8
+	CPU: 8x 
+#@!@# Game crashed! Crash report saved to: #@!@# /storage/emulated/0/Android/data/git.artdeell.mjlaunch/files/instances/fabric-loader-0.19.3-26.1.2-508fb270-f694-4e73-87ce-f3aed671d486/crash-reports/crash-2026-08-05_03.12.59-client.txt
