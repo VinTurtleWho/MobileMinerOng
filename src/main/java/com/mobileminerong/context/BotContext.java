@@ -61,11 +61,15 @@ public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entit
     // Observability
     public record StateEvent(BotState state, String reason, long timestamp) {}
     private final Deque<StateEvent> stateHistory = new ArrayDeque<>(10);
-    
     private long lastPerceptionUpdate = 0;
+    private int perceptionTimer = 0;
     private int perceptionFailures = 0;
     private long lastTickDurationNano = 0;
-    
+
+    // ...
+    public synchronized int getPerceptionTimer() { return perceptionTimer; }
+    public synchronized void setPerceptionTimer(int timer) { this.perceptionTimer = timer; }
+
     public record TaskEvent(String name, String status, String reason, long timestamp) {}
     private final Deque<TaskEvent> taskHistory = new ArrayDeque<>(10);
 

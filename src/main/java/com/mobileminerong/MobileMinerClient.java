@@ -115,6 +115,7 @@ public class MobileMinerClient implements ClientModInitializer {
             }
 
             updateContext(client);
+            com.mobileminerong.perception.PerceptionManager.updatePerception(BOT_CONTEXT);
             TASK_ENGINE.tick(BOT_CONTEXT);
 
             perceptionTimer++;

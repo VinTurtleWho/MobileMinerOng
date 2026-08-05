@@ -1,0 +1,15 @@
+{
+  "overall_goal": "Fix the Combat module's complete behavioral no-op",
+  "subgoals": [
+    "Trace and investigate combat execution path",
+    "Fix Combat task registration",
+    "Refactor CombatFollowTask/RotationController",
+    "Final whole-codebase regression audit"
+  ],
+  "current_subgoal_index": 3,
+  "status": "COMPLETED",
+  "review_status": "STABLE",
+  "defects_found": 5,
+  "defects_fixed": 5,
+  "verification_history": ["Pass 1: Architecture - Task Registration Defect Found", "Pass 1: Performance - High-frequency scanning regression", "Pass 2: State - Stale target on mode change", "Pass 2: Lifecycle - RotationController instantiation", "Pass 2: Concurrency - Static timer in PerceptionManager", "Pass 4: Final whole-codebase regression audit"]
+}

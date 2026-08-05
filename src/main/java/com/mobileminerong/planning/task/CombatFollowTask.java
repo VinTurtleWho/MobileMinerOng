@@ -12,7 +12,16 @@ import net.minecraft.util.Mth;
 
 public class CombatFollowTask implements BotTask {
 
-    private final RotationController rotationController = new RotationController();
+    private final RotationController rotationController;
+
+    public CombatFollowTask() {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player != null) {
+            rotationController = new RotationController(client.player.getYRot(), client.player.getXRot());
+        } else {
+            rotationController = new RotationController();
+        }
+    }
     private boolean finished = false;
     private int targetLostTicks = 0;
     private int stallTicks = 0;
@@ -39,6 +48,7 @@ public class CombatFollowTask implements BotTask {
         }
 
         Entity target = ctx.getTargetEntity();
+        com.mobileminerong.debug.DebugLogger.debug("COMBAT", "CombatFollowTask ticking, target: " + (target != null ? target.getName().getString() : "null"));
         
         // Target lost check
         if (target == null) {
@@ -101,7 +111,7 @@ public class CombatFollowTask implements BotTask {
         rotationController.tick(ctx);
         
         // Attack logic
-        if (rotationController.isAligned() && distance <= 2.5) {
+        if (rotationController.isWithinThreshold(15.0f) && distance <= 2.5) {
             if (!isAttacking) {
                 ActionController.startAttack();
                 isAttacking = true;

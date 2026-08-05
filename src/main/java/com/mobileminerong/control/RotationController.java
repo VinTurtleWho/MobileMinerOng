@@ -18,6 +18,17 @@ public class RotationController {
     private int currentTick = 0;
     private final Random jitterRandom = new Random();
 
+    public RotationController(float initialYaw, float initialPitch) {
+        this.targetYaw = initialYaw;
+        this.targetPitch = initialPitch;
+        this.startYaw = initialYaw;
+        this.startPitch = initialPitch;
+    }
+
+    public RotationController() {
+        this(0, 0);
+    }
+
     public void setTarget(Vec3 targetPos, float playerCurrentYaw, float playerCurrentPitch) {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
