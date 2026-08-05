@@ -12,16 +12,6 @@ import net.minecraft.util.Mth;
 
 public class CombatFollowTask implements BotTask {
 
-    private final RotationController rotationController;
-
-    public CombatFollowTask() {
-        Minecraft client = Minecraft.getInstance();
-        if (client.player != null) {
-            rotationController = new RotationController(client.player.getYRot(), client.player.getXRot());
-        } else {
-            rotationController = new RotationController();
-        }
-    }
     private boolean finished = false;
     private int targetLostTicks = 0;
     private int stallTicks = 0;
@@ -53,7 +43,7 @@ public class CombatFollowTask implements BotTask {
         // Target lost check
         if (target == null) {
             targetLostTicks++;
-            if (targetLostTicks > 100) { // Increased grace period (5 seconds)
+            if (targetLostTicks > 100) { 
                 onFailure(ctx, "Target lost");
             }
             return;
@@ -67,51 +57,25 @@ public class CombatFollowTask implements BotTask {
             return;
         }
         
-        targetLostTicks = 0; // Reset only if target is still valid
-
+        targetLostTicks = 0; 
         double distance = client.player.distanceTo(target);
 
-        // Calculate angular error to smoothly gate movement
-        float currentYaw = Mth.wrapDegrees(client.player.getYRot());
-        float targetYaw = rotationController.getTargetYaw(); // Assume RotationController exposes target
-        float angularError = Math.abs(Mth.wrapDegrees(targetYaw - currentYaw));
-        
-        // Scale movement based on angular error: if significantly misaligned, slow down/stop movement
-        boolean shouldMove = angularError < 60.0f; // Smoother threshold
-        
-        // Force-move if stalled for too long
-        if (!shouldMove) {
-            stallTicks++;
+        // Movement logic
+        if (distance > 2.2) {
+            client.options.keyUp.setDown(true);
+            client.options.keyDown.setDown(false);
+        } else if (distance < 1.8) {
+            client.options.keyUp.setDown(false);
+            client.options.keyDown.setDown(true);
         } else {
-            stallTicks = 0;
-        }
-        
-        if (shouldMove || stallTicks > 40) {
-            if (distance > 2.2) {
-                client.options.keyUp.setDown(true);
-                client.options.keyDown.setDown(false);
-            } else if (distance < 1.8) {
-                client.options.keyUp.setDown(false);
-                client.options.keyDown.setDown(true);
-            } else {
-                client.options.keyUp.setDown(false);
-                client.options.keyDown.setDown(false);
-            }
-        } else {
-            // Stop movement while significantly misaligned
             client.options.keyUp.setDown(false);
             client.options.keyDown.setDown(false);
         }
 
-        // Face target
-        if (lastTargetPosition == null || target.position().distanceToSqr(lastTargetPosition) > 0.5) {
-            rotationController.setTarget(target.position(), client.player.getYRot(), client.player.getXRot());
-            lastTargetPosition = target.position();
-        }
-        rotationController.tick(ctx);
+        // Target update for RotationEngine (No longer needed, RotationEngine tracks target dynamically)
         
-        // Attack logic
-        if (rotationController.isWithinThreshold(15.0f) && distance <= 2.5) {
+        // Attack logic (using distance check)
+        if (distance <= 2.5) {
             if (!isAttacking) {
                 ActionController.startAttack();
                 isAttacking = true;
@@ -126,11 +90,13 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public boolean isFinished(BotContext ctx) {
+        if (finished) ctx.getRotationEngine().abort();
         return finished;
     }
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
+        ctx.getRotationEngine().abort();
         ActionController.stopAllInputs();
         finished = true;
         ctx.setState(BotState.RECOVERING, "Combat failed: " + reason);
