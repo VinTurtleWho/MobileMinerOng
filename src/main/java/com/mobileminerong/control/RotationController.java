@@ -80,4 +80,23 @@ public class RotationController {
     public boolean isAligned() {
         return currentTick >= totalTicks;
     }
+
+    public float getTargetYaw() {
+        return this.targetYaw;
+    }
+
+    public boolean isWithinThreshold(float thresholdDegrees) {
+        float yawDiff = Math.abs(Mth.wrapDegrees(targetYaw - startYaw));
+        // Need to know current rotation to calculate error accurately.
+        // Simplified: check if target is close enough.
+        // Requires current rotation state from Minecraft.
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return true;
+        
+        float currentYaw = Mth.wrapDegrees(client.player.getYRot());
+        float currentPitch = Mth.wrapDegrees(client.player.getXRot());
+        
+        return Math.abs(Mth.wrapDegrees(targetYaw - currentYaw)) < thresholdDegrees &&
+               Math.abs(Mth.wrapDegrees(targetPitch - currentPitch)) < thresholdDegrees;
+    }
 }

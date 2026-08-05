@@ -8,12 +8,14 @@ import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Mth;
 
 public class CombatFollowTask implements BotTask {
 
     private final RotationController rotationController = new RotationController();
     private boolean finished = false;
     private int targetLostTicks = 0;
+    private int stallTicks = 0;
     private int lastSelectedSlot = -1;
     private boolean isAttacking = false;
     private Vec3 lastTargetPosition = null;
@@ -59,14 +61,34 @@ public class CombatFollowTask implements BotTask {
 
         double distance = client.player.distanceTo(target);
 
-        // Movement: Maintain 1.8 - 2.2 block engagement
-        if (distance > 2.2) {
-            client.options.keyUp.setDown(true);
-            client.options.keyDown.setDown(false);
-        } else if (distance < 1.8) {
-            client.options.keyUp.setDown(false);
-            client.options.keyDown.setDown(true);
+        // Calculate angular error to smoothly gate movement
+        float currentYaw = Mth.wrapDegrees(client.player.getYRot());
+        float targetYaw = rotationController.getTargetYaw(); // Assume RotationController exposes target
+        float angularError = Math.abs(Mth.wrapDegrees(targetYaw - currentYaw));
+        
+        // Scale movement based on angular error: if significantly misaligned, slow down/stop movement
+        boolean shouldMove = angularError < 60.0f; // Smoother threshold
+        
+        // Force-move if stalled for too long
+        if (!shouldMove) {
+            stallTicks++;
         } else {
+            stallTicks = 0;
+        }
+        
+        if (shouldMove || stallTicks > 40) {
+            if (distance > 2.2) {
+                client.options.keyUp.setDown(true);
+                client.options.keyDown.setDown(false);
+            } else if (distance < 1.8) {
+                client.options.keyUp.setDown(false);
+                client.options.keyDown.setDown(true);
+            } else {
+                client.options.keyUp.setDown(false);
+                client.options.keyDown.setDown(false);
+            }
+        } else {
+            // Stop movement while significantly misaligned
             client.options.keyUp.setDown(false);
             client.options.keyDown.setDown(false);
         }
