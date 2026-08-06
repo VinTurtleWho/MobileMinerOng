@@ -113,7 +113,9 @@ public class CombatFollowTask implements BotTask {
                     }
                 } else {
                     // Boss Mode (BAS-Synced)
-                    if (System.currentTimeMillis() > lastClickTime + com.mobileminerong.control.ClickGenerator.calculateInterval(bas, isShortbow)) {
+                    long interval = com.mobileminerong.control.ClickGenerator.calculateInterval(bas, isShortbow);
+                    if (System.currentTimeMillis() > lastClickTime + interval) {
+                        com.mobileminerong.debug.DebugLogger.debug("COMBAT", "Clicking - Interval passed: " + interval);
                         com.mobileminerong.control.ClickGenerator.performClick();
                         lastClickTime = System.currentTimeMillis();
                     }

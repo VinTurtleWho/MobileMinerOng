@@ -13,8 +13,10 @@ public class ClickGenerator {
         Minecraft client = Minecraft.getInstance();
         if (isHolding && System.currentTimeMillis() > clickDownTime + (20 + random.nextInt(20))) {
             client.execute(() -> {
-                client.options.keyAttack.setDown(false);
-                com.mobileminerong.debug.DebugLogger.debug("CLICK", "Released attack key");
+                if (client.options.keyAttack.isDown()) {
+                    client.options.keyAttack.setDown(false);
+                    com.mobileminerong.debug.DebugLogger.debug("CLICK", "Released attack key");
+                }
             });
             isHolding = false;
         }
@@ -24,7 +26,7 @@ public class ClickGenerator {
         Minecraft client = Minecraft.getInstance();
         client.execute(() -> {
             client.options.keyAttack.setDown(true);
-            com.mobileminerong.debug.DebugLogger.debug("CLICK", "Pressed attack key");
+            com.mobileminerong.debug.DebugLogger.debug("CLICK", "Pressed attack key - IS_DOWN: " + client.options.keyAttack.isDown());
         });
         clickDownTime = System.currentTimeMillis();
         isHolding = true;
