@@ -97,7 +97,7 @@ public class CombatFollowTask implements BotTask {
             int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
             ctx.setPendingMouseDelta(steps[0], steps[1]);
 
-            // NEW BAS-Synced Attack logic
+            // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
                 int bas = 100; // placeholder for actual BAS
                 boolean isShortbow = false;
