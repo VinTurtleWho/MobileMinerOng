@@ -24,6 +24,9 @@ public class CombatFollowTask implements BotTask {
     private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
     private Vec3 lastPos = null;
     private com.mobileminerong.util.OrnsteinUhlenbeckDrift drift = new com.mobileminerong.util.OrnsteinUhlenbeckDrift();
+    private long lastClickTime = 0;
+    private boolean hasAttackedOnce = false;
+    private java.util.Random random = new java.util.Random();
 
     @Override
     public void onStart(BotContext ctx) {
@@ -39,6 +42,8 @@ public class CombatFollowTask implements BotTask {
         this.isAttacking = false;
         this.lastPos = lockedTarget != null ? lockedTarget.position() : null;
         this.velocityHistory.clear();
+        this.lastClickTime = 0;
+        this.hasAttackedOnce = false;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class CombatFollowTask implements BotTask {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
 
-            // ... (Weapon check and Target validation remain the same)
+            // ... Weapon check...
             if (lastSelectedSlot != ctx.getCombatToolSlot()) {
                 lastSelectedSlot = ctx.getCombatToolSlot();
                 ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
@@ -55,11 +60,11 @@ public class CombatFollowTask implements BotTask {
 
             if (lockedTarget == null || !lockedTarget.isAlive()) {
                 Entity newTarget = ctx.getTargetEntity();
-                if (newTarget != null && newTarget.isAlive()) lockedTarget = newTarget;
+                if (newTarget != null && newTarget.isAlive()) { lockedTarget = newTarget; hasAttackedOnce = false; }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            // Update Cognitive Ring Buffer
+            // ... Aiming (AimPoint logic same as previous step)...
             Vec3 currentTargetPos = lockedTarget.position();
             if (lastPos != null) {
                 Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
@@ -68,17 +73,16 @@ public class CombatFollowTask implements BotTask {
             }
             lastPos = currentTargetPos;
 
-            // Aiming formula: AimPoint = currentPos + (delayedVelocity * PredictionHorizon) + OU_Offset
             Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
             drift.update();
             Vec3 aimPoint = lockedTarget.getEyePosition()
-                .add(delayedVelocity.scale(5.0)) // PredictionHorizon
+                .add(delayedVelocity.scale(5.0))
                 .add(drift.getX(), drift.getY(), 0);
 
-            // ... (Pathfinding/Movement logic, simplified as requested)
             double distance = client.player.distanceTo(lockedTarget);
+            
+            // ... Movement logic same ...
             if (distance > 2.5) {
-                // Rotation: Start/Update rotation toward aimPoint
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 5);
                 }
@@ -86,25 +90,40 @@ public class CombatFollowTask implements BotTask {
             } else {
                 ActionController.setKey(client.options.keyUp, false);
                 ActionController.setKey(client.options.keyDown, false);
-                // Aim at target
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 3);
                 }
             }
-
-            // Apply computed steps
             int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
             ctx.setPendingMouseDelta(steps[0], steps[1]);
 
-            // Attack logic (Schmitt trigger: 2.0 - 2.2)
-            if (distance <= 2.0) isAttacking = true;
-            else if (distance > 2.2) isAttacking = false;
+            // NEW BAS-Synced Attack logic
+            if (distance <= 3.0) {
+                int bas = 100; // placeholder for actual BAS
+                boolean isShortbow = false;
+                
+                // One-Shot Mode (if mobHP < playerDmg)
+                float mobHp = 100; // placeholder
+                float playerDmg = 200; 
 
-            if (isAttacking) ActionController.startAttack();
-            else ActionController.stopAttack();
+                if (mobHp <= playerDmg) {
+                    if (!hasAttackedOnce) {
+                        com.mobileminerong.control.ClickGenerator.performClick();
+                        hasAttackedOnce = true;
+                    }
+                } else {
+                    // Boss Mode (BAS-Synced)
+                    if (System.currentTimeMillis() > lastClickTime + com.mobileminerong.control.ClickGenerator.calculateInterval(bas, isShortbow)) {
+                        com.mobileminerong.control.ClickGenerator.performClick();
+                        lastClickTime = System.currentTimeMillis();
+                    }
+                }
+            } else {
+                hasAttackedOnce = false;
+            }
 
         } catch (Exception e) {
-            com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error in CombatFollowTask: " + e.getMessage());
+            com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error: " + e.getMessage());
             onFailure(ctx, "Exception: " + e.getMessage());
         }
     }
