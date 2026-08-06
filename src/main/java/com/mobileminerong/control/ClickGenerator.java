@@ -1,6 +1,7 @@
 package com.mobileminerong.control;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
 import java.util.Random;
 
 public class ClickGenerator {
@@ -10,13 +11,13 @@ public class ClickGenerator {
 
     // Call this in the client tick loop to manage click release
     public static void tick() {
-        Minecraft client = Minecraft.getInstance();
         if (isHolding && System.currentTimeMillis() > clickDownTime + (20 + random.nextInt(20))) {
-            forceRelease(client);
+            forceRelease();
         }
     }
 
-    public static void forceRelease(Minecraft client) {
+    public static void forceRelease() {
+        Minecraft client = Minecraft.getInstance();
         if (isHolding) {
             client.execute(() -> {
                 client.options.keyAttack.setDown(false);
@@ -28,10 +29,20 @@ public class ClickGenerator {
 
     public static void performClick() {
         Minecraft client = Minecraft.getInstance();
+        com.mobileminerong.debug.DebugLogger.info("CLICK", "Attempting performClick()");
+
         client.execute(() -> {
-            client.options.keyAttack.setDown(true);
-            com.mobileminerong.debug.DebugLogger.debug("CLICK", "Pressed attack key - IS_DOWN: " + client.options.keyAttack.isDown());
+            KeyMapping attackKey = client.options.keyAttack;
+            // 1. Set holding state to true
+            attackKey.setDown(true);
+
+            // 2. Inject click by incrementing timesPressed using the Accessor
+            com.mobileminerong.mixin.KeyMappingAccessor accessor = (com.mobileminerong.mixin.KeyMappingAccessor) attackKey;
+            accessor.setTimesPressed(accessor.getTimesPressed() + 1);
+
+            com.mobileminerong.debug.DebugLogger.info("CLICK", "Dispatched native attack key event using timesPressed injection");
         });
+
         clickDownTime = System.currentTimeMillis();
         isHolding = true;
     }

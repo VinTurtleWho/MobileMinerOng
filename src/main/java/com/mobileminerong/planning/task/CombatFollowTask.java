@@ -99,6 +99,7 @@ public class CombatFollowTask implements BotTask {
 
             // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
+                com.mobileminerong.debug.DebugLogger.info("COMBAT", "In attack block. Distance: " + distance);
                 int bas = 100; // placeholder for actual BAS
                 boolean isShortbow = false;
                 
@@ -107,6 +108,7 @@ public class CombatFollowTask implements BotTask {
                 float playerDmg = 200; 
 
                 if (mobHp <= playerDmg) {
+                    com.mobileminerong.debug.DebugLogger.info("COMBAT", "One-Shot Mode. Attack: " + !hasAttackedOnce);
                     if (!hasAttackedOnce) {
                         com.mobileminerong.control.ClickGenerator.performClick();
                         hasAttackedOnce = true;
@@ -114,8 +116,9 @@ public class CombatFollowTask implements BotTask {
                 } else {
                     // Boss Mode (BAS-Synced)
                     long interval = com.mobileminerong.control.ClickGenerator.calculateInterval(bas, isShortbow);
-                    if (System.currentTimeMillis() > lastClickTime + interval) {
-                        com.mobileminerong.debug.DebugLogger.debug("COMBAT", "Clicking - Interval passed: " + interval);
+                    boolean timePassed = System.currentTimeMillis() > lastClickTime + interval;
+                    com.mobileminerong.debug.DebugLogger.info("COMBAT", "Boss Mode. Interval passed: " + timePassed);
+                    if (timePassed) {
                         com.mobileminerong.control.ClickGenerator.performClick();
                         lastClickTime = System.currentTimeMillis();
                     }

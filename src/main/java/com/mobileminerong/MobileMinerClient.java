@@ -79,7 +79,7 @@ public class MobileMinerClient implements ClientModInitializer {
                     BOT_CONTEXT.setActive(false);
                     TASK_ENGINE.clearTasks();
                     ActionController.stopAllInputs();
-                    com.mobileminerong.control.ClickGenerator.forceRelease(client);
+                    com.mobileminerong.control.ClickGenerator.forceRelease();
                     client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));
                 } else {
                     // Activate

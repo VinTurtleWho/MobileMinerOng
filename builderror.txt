@@ -14,65 +14,63 @@ For more details see https://docs.gradle.org/9.5.1/release-notes.html
 Starting a Gradle Daemon (subsequent builds will be faster)
 
 > Configure project :
-Fabric Loom: 1.17.17
+Fabric Loom: 1.17.18
 
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:58: error: variable stateChangeReason is already defined in class BotContext
-    private String stateChangeReason = "Initialization";
-                   ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/ActionController.java:23: error: cannot find symbol
-    public static void startMining(BlockPos pos) {
-                                   ^
-  symbol:   class BlockPos
-  location: class ActionController
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:78: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
 > Task :compileJava
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-                                                   ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:46: error: package net.minecraft.client.InputConstants does not exist
-            net.minecraft.client.InputConstants.Type.KEYSYM,
-                                               ^
-Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
-        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-                    ^
-  symbol:   variable KeyBindingHelper
-  location: class MobileMinerClient
-5 errors
+                        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), nodePos);
+                                                             ^
+  required: no arguments
+  found:    float,float,Vec3
+  reason: actual and formal argument lists differ in length
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:86: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
 
 > Task :compileJava FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1785848801405.json
+                    int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                                                         ^
+  required: no arguments
+  found:    float,float,Vec3
+  reason: actual and formal argument lists differ in length
+Error: /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:95: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
+                int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                                                     ^
+  required: no arguments
+  found:    float,float,Vec3
+  reason: actual and formal argument lists differ in length
+3 errors
 
-
-[Incubating] Problems report is available at: file:///home/runner/work/MobileMinerOng/MobileMinerOng/build/reports/problems/problems-report.html
 FAILURE: Build failed with an exception.
 
 * What went wrong:
 Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
 > Compilation failed; see the compiler output below.
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/control/ActionController.java:23: error: cannot find symbol
-      public static void startMining(BlockPos pos) {
-                                     ^
-    symbol:   class BlockPos
-    location: class ActionController
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:44: error: cannot find symbol
-          toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-                      ^
-    symbol:   variable KeyBindingHelper
-    location: class MobileMinerClient
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:16: error: package net.fabricmc.fabric.api.client.keybinding.v1 does not exist
-  import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-                                                     ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/MobileMinerClient.java:46: error: package net.minecraft.client.InputConstants does not exist
-              net.minecraft.client.InputConstants.Type.KEYSYM,
-                                                 ^
-Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/context/BotContext.java:58: error: variable stateChangeReason is already defined in class BotContext
-      private String stateChangeReason = "Initialization";
-                     ^
-  5 errors
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:78: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
+                          int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), nodePos);
+                                                               ^
+    required: no arguments
+    found:    float,float,Vec3
+    reason: actual and formal argument lists differ in length
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:86: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
+                      int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                                                           ^
+    required: no arguments
+    found:    float,float,Vec3
+    reason: actual and formal argument lists differ in length
+Error:   /home/runner/work/MobileMinerOng/MobileMinerOng/src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java:95: error: method computeNextFrameSteps in class RotationEngine cannot be applied to given types;
+                  int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                                                       ^
+    required: no arguments
+    found:    float,float,Vec3
+    reason: actual and formal argument lists differ in length
+  3 errors
 
 * Try:
 > Check your code and dependencies to fix the compilation error(s)
 > Run with --scan to get full insights from a Build Scan (powered by Develocity).
 
 BUILD FAILED in 33s
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1786023793347.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/MobileMinerOng/MobileMinerOng/build/reports/problems/problems-report.html
 1 actionable task: 1 executed
 Error: Process completed with exit code 1.

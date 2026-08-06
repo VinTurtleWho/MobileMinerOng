@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
   "client": [
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "KeyMappingAccessor"
   ],
   "injectors": {
     "defaultRequire": 0
