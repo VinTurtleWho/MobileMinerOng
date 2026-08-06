@@ -24,6 +24,7 @@ public class CombatFollowTask implements BotTask {
         ctx.setState(BotState.MOVING_TO_TARGET, "Engaging combat");
         lastSelectedSlot = ctx.getCombatToolSlot();
         ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
+        ctx.getRotationEngine().setActive(true);
     }
 
     @Override
