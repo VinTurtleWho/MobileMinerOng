@@ -55,12 +55,12 @@ public class PerceptionManager {
                     }
                 }
             }
-            ctx.setTargetEntity(nearest);
+            if (nearest != null) {
+                ctx.setTargetEntity(nearest);
+                com.mobileminerong.debug.DebugLogger.debug("PERCEPTION", "Found combat target: " + nearest.getName().getString());
+            }
         } else {
-            // Only clear if not searching for player? 
-            // Wait, combat logic might clear it if not in COMBAT mode.
-            // If we are searching for a player, we don't want combat logic to clear it immediately.
-            // Let's only clear if we are not actively searching.
+            // Only clear entity if we are not explicitly searching for a player and not in COMBAT mode
             if (!ctx.isPendingPlayerSearch()) {
                 ctx.setTargetEntity(null);
             }
