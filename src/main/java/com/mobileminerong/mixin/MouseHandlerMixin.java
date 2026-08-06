@@ -25,22 +25,10 @@ public class MouseHandlerMixin {
         }
 
         // Bot Control
-        if (MobileMinerClient.TASK_ENGINE.getActiveTask() instanceof CombatFollowTask) {
-            net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
-            if (client.player == null) return;
-            
-            net.minecraft.world.entity.Entity target = MobileMinerClient.BOT_CONTEXT.getTargetEntity();
-            if (target != null) {
-                float tickDelta = client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
-                
-                int[] steps = MobileMinerClient.BOT_CONTEXT.getRotationEngine().computeNextFrameSteps(
-                        client.player.getYRot(),
-                        client.player.getXRot(),
-                        target.getPosition(tickDelta)
-                );
-                this.accumulatedDX = steps[0];
-                this.accumulatedDY = steps[1];
-            }
+        int[] steps = MobileMinerClient.BOT_CONTEXT.getAndClearPendingMouseDelta();
+        if (steps[0] != 0 || steps[1] != 0) {
+            this.accumulatedDX = steps[0];
+            this.accumulatedDY = steps[1];
         }
     }
 }

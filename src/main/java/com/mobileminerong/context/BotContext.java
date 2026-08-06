@@ -16,6 +16,8 @@ public class BotContext {
     private MacroMode currentMode = MacroMode.IDLE;
     private boolean isActive = false;
     private final RotationEngine rotationEngine = new RotationEngine();
+    private int pendingMouseDeltaX = 0;
+    private int pendingMouseDeltaY = 0;
 
     // Perception & Position
     private Vec3 playerPos = Vec3.ZERO;
@@ -51,6 +53,17 @@ public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entit
     public synchronized boolean isActive() { return isActive; }
     public synchronized void setActive(boolean active) { this.isActive = active; }
     public synchronized RotationEngine getRotationEngine() { return rotationEngine; }
+    public synchronized void setPendingMouseDelta(int x, int y) {
+        this.pendingMouseDeltaX = x;
+        this.pendingMouseDeltaY = y;
+    }
+    public synchronized int[] getAndClearPendingMouseDelta() {
+        int[] delta = new int[]{pendingMouseDeltaX, pendingMouseDeltaY};
+        this.pendingMouseDeltaX = 0;
+        this.pendingMouseDeltaY = 0;
+        return delta;
+    }
+
 
     public synchronized String getMiningTargetId() { return miningTargetId; }
     public synchronized void setMiningTargetId(String id) { this.miningTargetId = id; }

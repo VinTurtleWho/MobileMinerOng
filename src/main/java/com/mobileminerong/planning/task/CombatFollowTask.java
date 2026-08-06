@@ -72,7 +72,9 @@ public class CombatFollowTask implements BotTask {
             client.options.keyDown.setDown(false);
         }
 
-        // Target update for RotationEngine (No longer needed, RotationEngine tracks target dynamically)
+        // Target update for RotationEngine
+        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+        ctx.setPendingMouseDelta(steps[0], steps[1]);
         
         // Attack logic (using distance check)
         if (distance <= 2.5) {
