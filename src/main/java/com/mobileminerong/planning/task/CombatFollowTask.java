@@ -18,6 +18,7 @@ public class CombatFollowTask implements BotTask {
     private java.util.List<net.minecraft.core.BlockPos> currentPath = null;
     private int lastSelectedSlot = -1;
     private boolean isAttacking = false;
+    private Entity lockedTarget = null;
 
     @Override
     public void onStart(BotContext ctx) {
@@ -25,6 +26,7 @@ public class CombatFollowTask implements BotTask {
         lastSelectedSlot = ctx.getCombatToolSlot();
         ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
         ctx.getRotationEngine().setActive(true);
+        this.lockedTarget = ctx.getTargetEntity();
     }
 
     @Override
@@ -39,31 +41,27 @@ public class CombatFollowTask implements BotTask {
                 ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
             }
 
-            Entity target = ctx.getTargetEntity();
-            
-            // Target lost check
-            if (target == null) {
-                targetLostTicks++;
-                if (targetLostTicks > 100) onFailure(ctx, "Target lost");
-                return;
+            // Ensure we have a valid target
+            if (lockedTarget == null || !lockedTarget.isAlive()) {
+                Entity newTarget = ctx.getTargetEntity();
+                if (newTarget != null && newTarget.isAlive()) {
+                    lockedTarget = newTarget;
+                } else {
+                    targetLostTicks++;
+                    if (targetLostTicks > 100) onFailure(ctx, "Target lost");
+                    return;
+                }
             }
 
-            if (!target.isAlive()) {
-                finished = true;
-                ActionController.stopAttack();
-                ctx.setState(BotState.IDLE, "Target defeated");
-                return;
-            }
-            
             targetLostTicks = 0; 
-            double distance = client.player.distanceTo(target);
+            double distance = client.player.distanceTo(lockedTarget);
 
             // Pathfinding/Movement logic
             if (distance > 2.5) {
                 if (pathUpdateTicks++ >= 20 || currentPath == null || currentPath.isEmpty()) {
                     pathUpdateTicks = 0;
                     currentPath = com.mobileminerong.planning.pathfinding.AStarPathfinder.findPath(
-                        ctx, client.player.blockPosition(), target.blockPosition(), 500
+                        ctx, client.player.blockPosition(), lockedTarget.blockPosition(), 500
                     );
                 }
 
@@ -73,33 +71,33 @@ public class CombatFollowTask implements BotTask {
                         currentPath.remove(0);
                     } else {
                         // Rotation: Start/Update rotation toward node
-                            if (!ctx.getRotationEngine().isActive()) {
-                                ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), Vec3.atCenterOf(nextNode), 10);
-                            }
-
-                            ActionController.setKey(client.options.keyUp, true);
-                        }
-                        } else {
-                        // Fallback to direct target rotation
                         if (!ctx.getRotationEngine().isActive()) {
-                            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), target.position(), 10);
+                            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), Vec3.atCenterOf(nextNode), 10);
                         }
+
                         ActionController.setKey(client.options.keyUp, true);
-                        }
-                        } else {
-                        ActionController.setKey(client.options.keyUp, false);
-                        ActionController.setKey(client.options.keyDown, false);
+                    }
+                } else {
+                    // Fallback to direct target rotation
+                    if (!ctx.getRotationEngine().isActive()) {
+                        ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 10);
+                    }
+                    ActionController.setKey(client.options.keyUp, true);
+                }
+            } else {
+                ActionController.setKey(client.options.keyUp, false);
+                ActionController.setKey(client.options.keyDown, false);
 
-                        // Keep rotating to target
-                        if (!ctx.getRotationEngine().isActive()) {
-                        ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), target.position(), 5);
-                        }
-                        }
+                // Keep rotating to target
+                if (!ctx.getRotationEngine().isActive()) {
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 5);
+                }
+            }
 
-                        // Apply computed steps
-                        int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
-                        ctx.setPendingMouseDelta(steps[0], steps[1]);
-            
+            // Apply computed steps
+            int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
+            ctx.setPendingMouseDelta(steps[0], steps[1]);
+
             // Attack logic
             if (distance <= 3.0) {
                 if (!isAttacking) {
