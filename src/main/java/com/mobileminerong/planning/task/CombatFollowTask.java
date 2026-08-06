@@ -20,6 +20,11 @@ public class CombatFollowTask implements BotTask {
     private boolean isAttacking = false;
     private Entity lockedTarget = null;
 
+    // Cognitive Ring Buffer for velocity
+    private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
+    private Vec3 lastPos = null;
+    private com.mobileminerong.util.OrnsteinUhlenbeckDrift drift = new com.mobileminerong.util.OrnsteinUhlenbeckDrift();
+
     @Override
     public void onStart(BotContext ctx) {
         ctx.setState(BotState.MOVING_TO_TARGET, "Engaging combat");
@@ -32,6 +37,8 @@ public class CombatFollowTask implements BotTask {
         this.pathUpdateTicks = 0;
         this.currentPath = null;
         this.isAttacking = false;
+        this.lastPos = lockedTarget != null ? lockedTarget.position() : null;
+        this.velocityHistory.clear();
     }
 
     @Override
@@ -40,81 +47,62 @@ public class CombatFollowTask implements BotTask {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
 
-            // 1. Weapon check
+            // ... (Weapon check and Target validation remain the same)
             if (lastSelectedSlot != ctx.getCombatToolSlot()) {
                 lastSelectedSlot = ctx.getCombatToolSlot();
                 ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
             }
 
-            // Ensure we have a valid target
             if (lockedTarget == null || !lockedTarget.isAlive()) {
                 Entity newTarget = ctx.getTargetEntity();
-                if (newTarget != null && newTarget.isAlive()) {
-                    lockedTarget = newTarget;
-                } else {
-                    targetLostTicks++;
-                    if (targetLostTicks > 100) onFailure(ctx, "Target lost");
-                    return;
-                }
+                if (newTarget != null && newTarget.isAlive()) lockedTarget = newTarget;
+                else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            targetLostTicks = 0; 
+            // Update Cognitive Ring Buffer
+            Vec3 currentTargetPos = lockedTarget.position();
+            if (lastPos != null) {
+                Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
+                velocityHistory.addLast(currentVelocity);
+                if (velocityHistory.size() > 3) velocityHistory.removeFirst();
+            }
+            lastPos = currentTargetPos;
+
+            // Aiming formula: AimPoint = currentPos + (delayedVelocity * PredictionHorizon) + OU_Offset
+            Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
+            drift.update();
+            Vec3 aimPoint = lockedTarget.getEyePosition()
+                .add(delayedVelocity.scale(5.0)) // PredictionHorizon
+                .add(drift.getX(), drift.getY(), 0);
+
+            // ... (Pathfinding/Movement logic, simplified as requested)
             double distance = client.player.distanceTo(lockedTarget);
-
-            // Pathfinding/Movement logic
             if (distance > 2.5) {
-                if (pathUpdateTicks++ >= 20 || currentPath == null || currentPath.isEmpty()) {
-                    pathUpdateTicks = 0;
-                    currentPath = com.mobileminerong.planning.pathfinding.AStarPathfinder.findPath(
-                        ctx, client.player.blockPosition(), lockedTarget.blockPosition(), 500
-                    );
+                // Rotation: Start/Update rotation toward aimPoint
+                if (!ctx.getRotationEngine().isActive()) {
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 5);
                 }
-
-                if (currentPath != null && !currentPath.isEmpty()) {
-                    net.minecraft.core.BlockPos nextNode = currentPath.get(0);
-                    if (client.player.blockPosition().distSqr(nextNode) < 1.0) {
-                        currentPath.remove(0);
-                    } else {
-                        // Rotation: Start/Update rotation toward node
-                            if (!ctx.getRotationEngine().isActive()) {
-                                ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), Vec3.atCenterOf(nextNode), 10);
-                            }
-
-                            ActionController.setKey(client.options.keyUp, true);
-                        }
-                        } else {
-                        // Fallback to direct target rotation
-                        if (!ctx.getRotationEngine().isActive()) {
-                            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 10);
-                        }
-                        ActionController.setKey(client.options.keyUp, true);
-                        }
-                        } else {
-                        ActionController.setKey(client.options.keyUp, false);
-                        ActionController.setKey(client.options.keyDown, false);
-
-                        // Keep rotating to target
-                        if (!ctx.getRotationEngine().isActive()) {
-                        ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 5);
-                        }
-                        }
-
-                        // Apply computed steps with live target position
-                        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(lockedTarget.getEyePosition());
-                        ctx.setPendingMouseDelta(steps[0], steps[1]);
-
-            // Attack logic
-            if (distance <= 3.0) {
-                if (!isAttacking) {
-                    ActionController.startAttack();
-                    isAttacking = true;
-                }
+                ActionController.setKey(client.options.keyUp, true);
             } else {
-                if (isAttacking) {
-                    ActionController.stopAttack();
-                    isAttacking = false;
+                ActionController.setKey(client.options.keyUp, false);
+                ActionController.setKey(client.options.keyDown, false);
+                // Aim at target
+                if (!ctx.getRotationEngine().isActive()) {
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 3);
                 }
             }
+
+            // Apply computed steps
+            int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
+            ctx.setPendingMouseDelta(steps[0], steps[1]);
+
+            // Attack logic (Schmitt trigger: 2.0 - 2.2)
+            if (distance <= 2.0) isAttacking = true;
+            else if (distance > 2.2) isAttacking = false;
+
+            if (isAttacking) ActionController.startAttack();
+            else ActionController.stopAttack();
+
         } catch (Exception e) {
             com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error in CombatFollowTask: " + e.getMessage());
             onFailure(ctx, "Exception: " + e.getMessage());
