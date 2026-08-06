@@ -15,7 +15,7 @@ public class ActionController {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         if (slot >= 0 && slot < 9) {
-            client.player.getInventory().selected = slot;
+            ((com.mobileminerong.mixin.accessor.InventoryAccessor) client.player.getInventory()).setSelectedSlot(slot);
             ctx.setLastAction("Selected Hotbar Slot: " + slot);
         }
     }
