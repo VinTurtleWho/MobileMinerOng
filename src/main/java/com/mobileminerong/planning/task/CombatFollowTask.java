@@ -28,65 +28,70 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public void onTick(BotContext ctx) {
-        Minecraft client = Minecraft.getInstance();
-        if (client.player == null) return;
+        try {
+            Minecraft client = Minecraft.getInstance();
+            if (client == null || client.player == null) return;
 
-        // 1. Weapon check
-        if (lastSelectedSlot != ctx.getCombatToolSlot()) {
-            lastSelectedSlot = ctx.getCombatToolSlot();
-            ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
-        }
-
-        Entity target = ctx.getTargetEntity();
-        com.mobileminerong.debug.DebugLogger.debug("COMBAT", "CombatFollowTask ticking, target: " + (target != null ? target.getName().getString() : "null"));
-        
-        // Target lost check
-        if (target == null) {
-            targetLostTicks++;
-            if (targetLostTicks > 100) { 
-                onFailure(ctx, "Target lost");
+            // 1. Weapon check
+            if (lastSelectedSlot != ctx.getCombatToolSlot()) {
+                lastSelectedSlot = ctx.getCombatToolSlot();
+                ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
             }
-            return;
-        }
 
-        // Target alive check
-        if (!target.isAlive()) {
-            finished = true;
-            ActionController.stopAttack();
-            ctx.setState(BotState.IDLE, "Target defeated");
-            return;
-        }
-        
-        targetLostTicks = 0; 
-        double distance = client.player.distanceTo(target);
-
-        // Movement logic
-        if (distance > 2.2) {
-            client.options.keyUp.setDown(true);
-            client.options.keyDown.setDown(false);
-        } else if (distance < 1.8) {
-            client.options.keyUp.setDown(false);
-            client.options.keyDown.setDown(true);
-        } else {
-            client.options.keyUp.setDown(false);
-            client.options.keyDown.setDown(false);
-        }
-
-        // Target update for RotationEngine
-        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
-        ctx.setPendingMouseDelta(steps[0], steps[1]);
-        
-        // Attack logic (using distance check)
-        if (distance <= 2.5) {
-            if (!isAttacking) {
-                ActionController.startAttack();
-                isAttacking = true;
+            Entity target = ctx.getTargetEntity();
+            com.mobileminerong.debug.DebugLogger.debug("COMBAT", "CombatFollowTask ticking, target: " + (target != null ? target.getName().getString() : "null"));
+            
+            // Target lost check
+            if (target == null) {
+                targetLostTicks++;
+                if (targetLostTicks > 100) { 
+                    onFailure(ctx, "Target lost");
+                }
+                return;
             }
-        } else {
-            if (isAttacking) {
+
+            // Target alive check
+            if (!target.isAlive()) {
+                finished = true;
                 ActionController.stopAttack();
-                isAttacking = false;
+                ctx.setState(BotState.IDLE, "Target defeated");
+                return;
             }
+            
+            targetLostTicks = 0; 
+            double distance = client.player.distanceTo(target);
+
+            // Movement logic
+            if (distance > 2.2) {
+                client.options.keyUp.setDown(true);
+                client.options.keyDown.setDown(false);
+            } else if (distance < 1.8) {
+                client.options.keyUp.setDown(false);
+                client.options.keyDown.setDown(true);
+            } else {
+                client.options.keyUp.setDown(false);
+                client.options.keyDown.setDown(false);
+            }
+
+            // Target update for RotationEngine
+            int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+            ctx.setPendingMouseDelta(steps[0], steps[1]);
+            
+            // Attack logic (using distance check)
+            if (distance <= 2.5) {
+                if (!isAttacking) {
+                    ActionController.startAttack();
+                    isAttacking = true;
+                }
+            } else {
+                if (isAttacking) {
+                    ActionController.stopAttack();
+                    isAttacking = false;
+                }
+            }
+        } catch (Exception e) {
+            com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error in CombatFollowTask: " + e.getMessage());
+            onFailure(ctx, "Exception: " + e.getMessage());
         }
     }
 
