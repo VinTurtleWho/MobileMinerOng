@@ -68,30 +68,33 @@ public class CombatFollowTask implements BotTask {
                 }
 
                 if (currentPath != null && !currentPath.isEmpty()) {
-                    // Simple path following: look at next node
                     net.minecraft.core.BlockPos nextNode = currentPath.get(0);
+                    // Check if reached node
                     if (client.player.blockPosition().distSqr(nextNode) < 1.0) {
                         currentPath.remove(0);
                     } else {
-                        // Move toward node
-                        Vec3 nodeVec = Vec3.atCenterOf(nextNode);
-                        // For this implementation, we simplify movement back to key presses but 
-                        // now directed toward the path node, not the entity itself.
-                        // (Ideally, we would use a proper MovementTask here).
+                        // Rotation: Look at the next node
+                        Vec3 nodePos = Vec3.atCenterOf(nextNode);
+                        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), nodePos);
+                        ctx.setPendingMouseDelta(steps[0], steps[1]);
+                        
+                        // Movement: Walk forward
                         ActionController.setKey(client.options.keyUp, true);
                     }
                 } else {
                     // Fallback to direct movement if pathing fails
+                    int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                    ctx.setPendingMouseDelta(steps[0], steps[1]);
                     ActionController.setKey(client.options.keyUp, true);
                 }
             } else {
                 ActionController.setKey(client.options.keyUp, false);
                 ActionController.setKey(client.options.keyDown, false);
+                
+                // Still rotate to face target even if close
+                int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
+                ctx.setPendingMouseDelta(steps[0], steps[1]);
             }
-
-            // Target update for RotationEngine
-            int[] steps = ctx.getRotationEngine().computeNextFrameSteps(client.player.getYRot(), client.player.getXRot(), target.position());
-            ctx.setPendingMouseDelta(steps[0], steps[1]);
             
             // Attack logic
             if (distance <= 3.0) {
