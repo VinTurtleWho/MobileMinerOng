@@ -48,7 +48,7 @@ public class RotationEngine {
         this.active = true;
     }
 
-    public synchronized int[] computeNextFrameSteps() {
+    public synchronized int[] computeNextFrameSteps(Vec3 targetPos) {
         if (!active || currentTick >= totalTicks) {
             active = false;
             return new int[]{0, 0};
@@ -59,11 +59,18 @@ public class RotationEngine {
         // 5th-order polynomial: 10τ³ - 15τ⁴ + 6τ⁵
         double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
 
-        float currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
-        float currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
-
+        // Recalculate target angles based on live targetPos
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return new int[]{0, 0};
+        Vec3 eyesPos = client.player.getEyePosition();
+        double dx = targetPos.x - eyesPos.x;
+        double dy = targetPos.y - eyesPos.y;
+        double dz = targetPos.z - eyesPos.z;
+        float liveTargetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
+        float liveTargetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
+
+        float currentYaw = (float) (startYaw + (Mth.wrapDegrees(liveTargetYaw - startYaw) * smoothTau));
+        float currentPitch = (float) (startPitch + (Mth.wrapDegrees(liveTargetPitch - startPitch) * smoothTau));
 
         updateGcd();
         
@@ -71,8 +78,8 @@ public class RotationEngine {
         double prevTau = (double) (currentTick - 1) / totalTicks;
         double smoothPrevTau = (currentTick == 1) ? 0.0 : prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
         
-        float prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau));
-        float prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau));
+        float prevYaw = (float) (startYaw + (Mth.wrapDegrees(liveTargetYaw - startYaw) * smoothPrevTau));
+        float prevPitch = (float) (startPitch + (Mth.wrapDegrees(liveTargetPitch - startPitch) * smoothPrevTau));
 
         double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + yawResidue;
         int mouseStepX = (int) Math.round(desiredYawDelta / cachedGcd);

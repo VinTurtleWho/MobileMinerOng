@@ -71,32 +71,32 @@ public class CombatFollowTask implements BotTask {
                         currentPath.remove(0);
                     } else {
                         // Rotation: Start/Update rotation toward node
+                            if (!ctx.getRotationEngine().isActive()) {
+                                ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), Vec3.atCenterOf(nextNode), 10);
+                            }
+
+                            ActionController.setKey(client.options.keyUp, true);
+                        }
+                        } else {
+                        // Fallback to direct target rotation
                         if (!ctx.getRotationEngine().isActive()) {
-                            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), Vec3.atCenterOf(nextNode), 10);
+                            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 10);
+                        }
+                        ActionController.setKey(client.options.keyUp, true);
+                        }
+                        } else {
+                        ActionController.setKey(client.options.keyUp, false);
+                        ActionController.setKey(client.options.keyDown, false);
+
+                        // Keep rotating to target
+                        if (!ctx.getRotationEngine().isActive()) {
+                        ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 5);
+                        }
                         }
 
-                        ActionController.setKey(client.options.keyUp, true);
-                    }
-                } else {
-                    // Fallback to direct target rotation
-                    if (!ctx.getRotationEngine().isActive()) {
-                        ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 10);
-                    }
-                    ActionController.setKey(client.options.keyUp, true);
-                }
-            } else {
-                ActionController.setKey(client.options.keyUp, false);
-                ActionController.setKey(client.options.keyDown, false);
-
-                // Keep rotating to target
-                if (!ctx.getRotationEngine().isActive()) {
-                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), lockedTarget.getEyePosition(), 5);
-                }
-            }
-
-            // Apply computed steps
-            int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
-            ctx.setPendingMouseDelta(steps[0], steps[1]);
+                        // Apply computed steps with live target position
+                        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(lockedTarget.getEyePosition());
+                        ctx.setPendingMouseDelta(steps[0], steps[1]);
 
             // Attack logic
             if (distance <= 3.0) {
