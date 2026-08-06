@@ -27,6 +27,11 @@ public class CombatFollowTask implements BotTask {
         ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
         ctx.getRotationEngine().setActive(true);
         this.lockedTarget = ctx.getTargetEntity();
+        this.finished = false;
+        this.targetLostTicks = 0;
+        this.pathUpdateTicks = 0;
+        this.currentPath = null;
+        this.isAttacking = false;
     }
 
     @Override
