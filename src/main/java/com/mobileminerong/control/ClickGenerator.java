@@ -12,11 +12,15 @@ public class ClickGenerator {
     public static void tick() {
         Minecraft client = Minecraft.getInstance();
         if (isHolding && System.currentTimeMillis() > clickDownTime + (20 + random.nextInt(20))) {
+            forceRelease(client);
+        }
+    }
+
+    public static void forceRelease(Minecraft client) {
+        if (isHolding) {
             client.execute(() -> {
-                if (client.options.keyAttack.isDown()) {
-                    client.options.keyAttack.setDown(false);
-                    com.mobileminerong.debug.DebugLogger.debug("CLICK", "Released attack key");
-                }
+                client.options.keyAttack.setDown(false);
+                com.mobileminerong.debug.DebugLogger.debug("CLICK", "Released attack key");
             });
             isHolding = false;
         }
