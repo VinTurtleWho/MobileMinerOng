@@ -78,6 +78,8 @@ public class CombatFollowTask implements BotTask {
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                } else {
+                    ctx.getRotationEngine().updateTarget(aimPoint);
                 }
                 ActionController.setKey(client.options.keyUp, true);
                 ActionController.setKey(client.options.keySprint, true);
@@ -88,9 +90,11 @@ public class CombatFollowTask implements BotTask {
                 ActionController.setKey(client.options.keySprint, false);
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                } else {
+                    ctx.getRotationEngine().updateTarget(aimPoint);
                 }
             }
-            int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
+            int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
             ctx.setPendingMouseDelta(steps[0], steps[1]);
 
             // Attack logic (BAS-Synced)

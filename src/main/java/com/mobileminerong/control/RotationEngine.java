@@ -33,6 +33,18 @@ public class RotationEngine {
     public synchronized void setActive(boolean active) { this.active = active; }
     public synchronized boolean isActive() { return active; }
 
+    public synchronized void updateTarget(Vec3 targetPos) {
+        if (!active) return;
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+        Vec3 eyesPos = client.player.getEyePosition();
+        double dx = targetPos.x - eyesPos.x;
+        double dy = targetPos.y - eyesPos.y;
+        double dz = targetPos.z - eyesPos.z;
+        this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
+        this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
+    }
+
     public synchronized void startRotation(float currentYaw, float currentPitch, Vec3 targetPos) {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
@@ -60,18 +72,11 @@ public class RotationEngine {
         this.active = true;
     }
 
-    public synchronized int[] computeNextFrameSteps(Vec3 targetPos) {
+    public synchronized int[] computeNextFrameSteps() {
         if (!active) return new int[]{0, 0};
 
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return new int[]{0, 0};
-
-        Vec3 eyesPos = client.player.getEyePosition();
-        double dx = targetPos.x - eyesPos.x;
-        double dy = targetPos.y - eyesPos.y;
-        double dz = targetPos.z - eyesPos.z;
-        float liveTargetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
-        float liveTargetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
 
         float currentYaw;
         float currentPitch;
@@ -92,18 +97,18 @@ public class RotationEngine {
             double tau = (double) currentTick / totalTicks;
             double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
 
-            currentYaw = (float) (startYaw + (Mth.wrapDegrees(liveTargetYaw - startYaw) * smoothTau) + driftX);
-            currentPitch = (float) (startPitch + (Mth.wrapDegrees(liveTargetPitch - startPitch) * smoothTau) + driftY);
+            currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau) + driftX);
+            currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau) + driftY);
 
             double prevTau = (double) (currentTick - 1) / totalTicks;
             double smoothPrevTau = (currentTick == 1) ? 0.0 : prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
 
-            prevYaw = (float) (startYaw + (Mth.wrapDegrees(liveTargetYaw - startYaw) * smoothPrevTau) + driftX);
-            prevPitch = (float) (startPitch + (Mth.wrapDegrees(liveTargetPitch - startPitch) * smoothPrevTau) + driftY);
+            prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau) + driftX);
+            prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau) + driftY);
         } else {
             // Infinite-Horizon Regulation Phase (Lock-on & micro-tremor)
-            currentYaw = (float) (liveTargetYaw + driftX);
-            currentPitch = (float) (liveTargetPitch + driftY);
+            currentYaw = (float) (targetYaw + driftX);
+            currentPitch = (float) (targetPitch + driftY);
 
             prevYaw = client.player.getYRot();
             prevPitch = client.player.getXRot();

@@ -46,7 +46,7 @@ public class AimingTask implements BotTask {
         }
 
         // Feed mouse steps every tick
-        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(targetVec);
+        int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
         ctx.setPendingMouseDelta(steps[0], steps[1]);
 
         // Rotation complete when engine goes inactive

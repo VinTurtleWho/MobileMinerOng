@@ -128,9 +128,10 @@ public class MovementTask implements BotTask {
                 aimPoint
             );
         }
+// Tick rotation
+int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
+ctx.setPendingMouseDelta(steps[0], steps[1]);
 
-        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
-        ctx.setPendingMouseDelta(steps[0], steps[1]);
 
         // Maintain forward sprint momentum
         client.options.keyUp.setDown(true);
