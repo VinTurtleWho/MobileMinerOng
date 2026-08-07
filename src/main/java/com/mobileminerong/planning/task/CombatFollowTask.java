@@ -2,31 +2,24 @@ package com.mobileminerong.planning.task;
 
 import com.mobileminerong.context.BotContext;
 import com.mobileminerong.control.ActionController;
-import com.mobileminerong.control.RotationController;
 import com.mobileminerong.state.BotState;
 import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.util.Mth;
 
 public class CombatFollowTask implements BotTask {
 
     private boolean finished = false;
     private int targetLostTicks = 0;
-    private int pathUpdateTicks = 0;
-    private java.util.List<net.minecraft.core.BlockPos> currentPath = null;
     private int lastSelectedSlot = -1;
-    private boolean isAttacking = false;
+    private boolean hasAttackedOnce = false;
     private Entity lockedTarget = null;
 
-    // Cognitive Ring Buffer for velocity
     private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
     private Vec3 lastPos = null;
     private com.mobileminerong.util.OrnsteinUhlenbeckDrift drift = new com.mobileminerong.util.OrnsteinUhlenbeckDrift();
     private long lastClickTime = 0;
-    private boolean hasAttackedOnce = false;
-    private java.util.Random random = new java.util.Random();
 
     @Override
     public void onStart(BotContext ctx) {
@@ -37,9 +30,6 @@ public class CombatFollowTask implements BotTask {
         this.lockedTarget = ctx.getTargetEntity();
         this.finished = false;
         this.targetLostTicks = 0;
-        this.pathUpdateTicks = 0;
-        this.currentPath = null;
-        this.isAttacking = false;
         this.lastPos = lockedTarget != null ? lockedTarget.position() : null;
         this.velocityHistory.clear();
         this.lastClickTime = 0;
@@ -52,19 +42,17 @@ public class CombatFollowTask implements BotTask {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
 
-            // ... Weapon check...
             if (lastSelectedSlot != ctx.getCombatToolSlot()) {
                 lastSelectedSlot = ctx.getCombatToolSlot();
                 ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
             }
 
-            if (lockedTarget == null || !lockedTarget.isAlive()) {
-                Entity newTarget = ctx.getTargetEntity();
-                if (newTarget != null && newTarget.isAlive()) { lockedTarget = newTarget; hasAttackedOnce = false; }
+            if (lockedTarget == null || !isValidTarget(ctx, lockedTarget)) {
+                Entity newTarget = findTarget(ctx);
+                if (newTarget != null) { lockedTarget = newTarget; hasAttackedOnce = false; }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            // ... Aiming (AimPoint logic same as previous step)...
             Vec3 currentTargetPos = lockedTarget.position();
             if (lastPos != null) {
                 Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
@@ -81,7 +69,6 @@ public class CombatFollowTask implements BotTask {
 
             double distance = client.player.distanceTo(lockedTarget);
             
-            // ... Movement logic same ...
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 5);
@@ -97,40 +84,45 @@ public class CombatFollowTask implements BotTask {
             int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
             ctx.setPendingMouseDelta(steps[0], steps[1]);
 
-            // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
-                com.mobileminerong.debug.DebugLogger.info("COMBAT", "In attack block. Distance: " + distance);
-                int bas = 100; // placeholder for actual BAS
-                boolean isShortbow = false;
-                
-                // One-Shot Mode (if mobHP < playerDmg)
-                float mobHp = 100; // placeholder
-                float playerDmg = 200; 
-
-                if (mobHp <= playerDmg) {
-                    com.mobileminerong.debug.DebugLogger.info("COMBAT", "One-Shot Mode. Attack: " + !hasAttackedOnce);
-                    if (!hasAttackedOnce) {
-                        com.mobileminerong.control.ClickGenerator.performClick();
-                        hasAttackedOnce = true;
-                    }
-                } else {
-                    // Boss Mode (BAS-Synced)
-                    long interval = com.mobileminerong.control.ClickGenerator.calculateInterval(bas, isShortbow);
-                    boolean timePassed = System.currentTimeMillis() > lastClickTime + interval;
-                    com.mobileminerong.debug.DebugLogger.info("COMBAT", "Boss Mode. Interval passed: " + timePassed);
-                    if (timePassed) {
-                        com.mobileminerong.control.ClickGenerator.performClick();
-                        lastClickTime = System.currentTimeMillis();
-                    }
+                if (System.currentTimeMillis() > lastClickTime + 500) { // Simplified interval for testing
+                    com.mobileminerong.control.ClickGenerator.performClick();
+                    lastClickTime = System.currentTimeMillis();
                 }
-            } else {
-                hasAttackedOnce = false;
             }
-
         } catch (Exception e) {
             com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error: " + e.getMessage());
             onFailure(ctx, "Exception: " + e.getMessage());
         }
+    }
+
+    private boolean isValidTarget(BotContext ctx, Entity entity) {
+        if (entity == null || !entity.isAlive() || entity.isRemoved() || entity.isInvulnerable() || entity instanceof net.minecraft.world.entity.decoration.ArmorStand) return false;
+        if (entity.isInvisible()) return false;
+        if (ctx.getCombatTargetType() == BotContext.CombatTargetType.PLAYER) return entity instanceof net.minecraft.world.entity.player.Player;
+        return entity instanceof net.minecraft.world.entity.LivingEntity && entity != Minecraft.getInstance().player;
+    }
+
+    private Entity findTarget(BotContext ctx) {
+        Minecraft client = Minecraft.getInstance();
+        Entity bestTarget = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Entity entity : client.level.entitiesForRendering()) {
+            if (!isValidTarget(ctx, entity)) continue;
+            if (ctx.getCombatTargetType() == BotContext.CombatTargetType.MOB && !ctx.getMobWhitelist().isEmpty()) {
+                String strippedName = entity.getCustomName() != null ? entity.getCustomName().getString().replaceAll("§[0-9a-fk-or]", "") : "";
+                boolean whitelisted = false;
+                for (String allowed : ctx.getMobWhitelist()) {
+                    if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
+                }
+                if (!whitelisted) continue;
+            }
+
+            double dist = client.player.distanceTo(entity);
+            if (dist < minDistance) { minDistance = dist; bestTarget = entity; }
+        }
+        return bestTarget;
     }
 
     @Override
@@ -149,12 +141,8 @@ public class CombatFollowTask implements BotTask {
     }
 
     @Override
-    public int getPriority() {
-        return 50;
-    }
+    public int getPriority() { return 50; }
 
     @Override
-    public String getName() {
-        return "CombatFollowTask";
-    }
+    public String getName() { return "CombatFollowTask"; }
 }

@@ -10,12 +10,16 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BotContext {
     private BotState currentState = BotState.IDLE;
     private MacroMode currentMode = MacroMode.IDLE;
     private boolean isActive = false;
     private final RotationEngine rotationEngine = new RotationEngine();
+    private final Map<UUID, Long> pendingKills = new ConcurrentHashMap<>();
     private int pendingMouseDeltaX = 0;
     private int pendingMouseDeltaY = 0;
 
@@ -34,13 +38,23 @@ private net.minecraft.world.entity.Entity targetEntity = null; // Add this
 private String combatTargetId = null;
 private int combatToolSlot = 0;
 
+public enum CombatTargetType { PLAYER, MOB }
+private CombatTargetType combatTargetType = CombatTargetType.PLAYER;
+private final java.util.Set<String> mobWhitelist = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
 private boolean pendingPlayerSearch = false; 
 
 // ...
 
 public synchronized net.minecraft.world.entity.Entity getTargetEntity() { return targetEntity; }
 public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entity) { this.targetEntity = entity; }
-    // Skyblock Parsed Stats
+
+public synchronized CombatTargetType getCombatTargetType() { return combatTargetType; }
+public synchronized void setCombatTargetType(CombatTargetType type) { this.combatTargetType = type; }
+public synchronized java.util.Set<String> getMobWhitelist() { return mobWhitelist; }
+
+// Skyblock Parsed Stats
+
     private String currentZone = "Unknown";
     private int currentMana = 0;
     private int maxMana = 0;
@@ -53,6 +67,7 @@ public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entit
     public synchronized boolean isActive() { return isActive; }
     public synchronized void setActive(boolean active) { this.isActive = active; }
     public synchronized RotationEngine getRotationEngine() { return rotationEngine; }
+    public Map<UUID, Long> getPendingKills() { return pendingKills; }
     public synchronized void setPendingMouseDelta(int x, int y) {
         this.pendingMouseDeltaX = x;
         this.pendingMouseDeltaY = y;

@@ -53,19 +53,42 @@ public class MacroCommandHandler {
                         }
                         break;
                     case "target":
-                        if (args.length >= 3 && args[2].equalsIgnoreCase("player")) {
-                            if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
-                                ctx.setTargetPlayer(null);
-                                ctx.setPendingPlayerSearch(false);
-                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
-                            } else {
-                                ctx.setPendingPlayerSearch(true);
-                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Searching for nearest player..."));
+                        if (args.length >= 3) {
+                            if (args[2].equalsIgnoreCase("player")) {
+                                if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
+                                    ctx.setTargetPlayer(null);
+                                    ctx.setPendingPlayerSearch(false);
+                                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
+                                } else {
+                                    ctx.setCombatTargetType(BotContext.CombatTargetType.PLAYER);
+                                    ctx.setPendingPlayerSearch(true);
+                                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat targeting: PLAYER"));
+                                }
+                            } else if (args[2].equalsIgnoreCase("mob")) {
+                                ctx.setCombatTargetType(BotContext.CombatTargetType.MOB);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat targeting: MOB"));
                             }
                         }
                         break;
+                    case "addmob":
+                    case "delmob":
+                        String mobName = parseQuotedArgument(message);
+                        if (mobName != null) {
+                            if (args[1].equals("addmob")) {
+                                ctx.getMobWhitelist().add(mobName);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Added to whitelist: " + mobName));
+                            } else {
+                                ctx.getMobWhitelist().remove(mobName);
+                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Removed from whitelist: " + mobName));
+                            }
+                        }
+                        break;
+                    case "clearmobs":
+                        ctx.getMobWhitelist().clear();
+                        client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Mob whitelist cleared"));
+                        break;
                     case "debug":
-                        if(args.length >= 3 && args[2].equalsIgnoreCase("off")){
+                        if (args.length >= 3 && args[2].equalsIgnoreCase("off")) {
                             debugMode = false;
                             DebugLogger.info("SYSTEM", "Debug disabled");
                             client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Debug OFF"));
@@ -81,6 +104,15 @@ public class MacroCommandHandler {
             }
         });
         return true;
+    }
+
+    private static String parseQuotedArgument(String message) {
+        int firstQuote = message.indexOf('"');
+        int lastQuote = message.lastIndexOf('"');
+        if (firstQuote != -1 && lastQuote != -1 && firstQuote != lastQuote) {
+            return message.substring(firstQuote + 1, lastQuote);
+        }
+        return null;
     }
 
     public static boolean isDebugEnabled(){
