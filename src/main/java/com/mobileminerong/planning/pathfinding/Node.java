@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class Node {
     public final BlockPos pos;
-    public Node parent;
-    public double gCost = Double.MAX_VALUE; // Distance from start
-    public double hCost = 0;                // Heuristic to target
+    public Node parent = null;
+    public double gCost = Double.MAX_VALUE;
+    public double hCost = 0.0;
 
     public Node(BlockPos pos) {
         this.pos = pos;
@@ -20,8 +20,7 @@ public class Node {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Node)) return false;
-        Node node = (Node) o;
+        if (!(o instanceof Node node)) return false;
         return Objects.equals(pos, node.pos);
     }
 
