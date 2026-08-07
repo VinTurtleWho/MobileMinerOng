@@ -51,17 +51,20 @@ public class CombatFollowTask implements BotTask {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
 
+            // Weapon check
             if (lastSelectedSlot != ctx.getCombatToolSlot()) {
                 lastSelectedSlot = ctx.getCombatToolSlot();
                 ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
             }
 
+            // Target filtering
             if (lockedTarget == null || !isValidTarget(ctx, lockedTarget)) {
                 Entity newTarget = findTarget(ctx);
                 if (newTarget != null) { lockedTarget = newTarget; hasAttackedOnce = false; }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
+            // Aiming (AimPoint logic)
             Vec3 currentTargetPos = lockedTarget.position();
             if (lastPos != null) {
                 Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
@@ -78,14 +81,18 @@ public class CombatFollowTask implements BotTask {
 
             double distance = client.player.distanceTo(lockedTarget);
             
+            // Movement logic with Forced Sprinting
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 5);
                 }
                 ActionController.setKey(client.options.keyUp, true);
+                ActionController.setKey(client.options.keySprint, true);
+                client.player.setSprinting(true);
             } else {
                 ActionController.setKey(client.options.keyUp, false);
                 ActionController.setKey(client.options.keyDown, false);
+                ActionController.setKey(client.options.keySprint, false);
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 3);
                 }
@@ -93,6 +100,7 @@ public class CombatFollowTask implements BotTask {
             int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);
             ctx.setPendingMouseDelta(steps[0], steps[1]);
 
+            // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
                 if (System.currentTimeMillis() > lastClickTime + 500) { // Simplified interval for testing
                     com.mobileminerong.control.ClickGenerator.performClick();
@@ -108,39 +116,47 @@ public class CombatFollowTask implements BotTask {
     private boolean isValidTarget(BotContext ctx, Entity entity) {
         if (entity == null || !entity.isAlive() || entity.isRemoved() || entity.isInvulnerable() || entity instanceof net.minecraft.world.entity.decoration.ArmorStand) return false;
         if (entity.isInvisible()) return false;
-        if (ctx.getCombatTargetType() == BotContext.CombatTargetType.PLAYER) return entity instanceof net.minecraft.world.entity.player.Player;
-        return entity instanceof net.minecraft.world.entity.LivingEntity && entity != Minecraft.getInstance().player;
+        
+        boolean isPlayer = entity instanceof net.minecraft.world.entity.player.Player;
+        if (ctx.getCombatTargetType() == BotContext.CombatTargetType.PLAYER) {
+            return isPlayer && entity != Minecraft.getInstance().player;
+        } else { // MOB MODE
+            // Hard-block real players in MOB mode unless whitelist is populated
+            if (isPlayer && ctx.getMobWhitelist().isEmpty()) return false;
+            return entity != Minecraft.getInstance().player;
+        }
     }
 
     private Entity findTarget(BotContext ctx) {
         Minecraft client = Minecraft.getInstance();
         Entity bestTarget = null;
         double minDistance = Double.MAX_VALUE;
+        
+        // Optimize search to 15-block radius AABB
+        net.minecraft.world.phys.AABB searchBox = client.player.getBoundingBox().inflate(15.0);
 
-        for (Entity entity : client.level.entitiesForRendering()) {
+        for (Entity entity : client.level.getEntities(null, searchBox)) {
             if (!isValidTarget(ctx, entity)) continue;
             
             if (ctx.getCombatTargetType() == BotContext.CombatTargetType.MOB) {
-                boolean isMobOrSlime = (entity instanceof Mob || entity instanceof Slime);
+                boolean isPlayer = entity instanceof net.minecraft.world.entity.player.Player;
                 
                 if (ctx.getMobWhitelist().isEmpty()) {
                     // NPC Exclusion Fix: Restrict fallback to Mob/Slime
+                    boolean isMobOrSlime = (entity instanceof Mob || entity instanceof Slime);
                     if (!isMobOrSlime) continue;
                 } else {
                     // Name-Tag Retrieval Fix
-                    String rawName = "";
-                    if (entity.hasCustomName() && entity.getCustomName() != null) {
-                        rawName = entity.getCustomName().getString();
-                    } else {
-                        rawName = entity.getName().getString();
-                    }
+                    String rawName = (entity.hasCustomName() && entity.getCustomName() != null) 
+                        ? entity.getCustomName().getString() 
+                        : entity.getName().getString();
                     String strippedName = rawName.replaceAll("§.", "");
                     
                     boolean whitelisted = false;
                     for (String allowed : ctx.getMobWhitelist()) {
                         if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
                     }
-                    if (!whitelisted) continue;
+                    if (!whitelisted) continue; // Block players/NPCs if not specifically whitelisted
                 }
             }
 
