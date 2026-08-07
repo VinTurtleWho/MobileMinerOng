@@ -6,6 +6,14 @@ This document details the architectural components, execution loops, state propa
 
 ---
 
+## 3.3 Combat System (New)
+
+- **`ClickGenerator`**: Handles native-event-like clicks by directly manipulating `timesPressed` / `clickCount` via `KeyMappingAccessor`, simulating genuine HID events.
+- **`RotationEngine`**: Implements a 5th-order Minimum-Jerk trajectory (10τ³ - 15τ⁴ + 6τ⁵) to provide snappy, human-like rotation without the asymptotic decay issues of PD controllers.
+- **`CombatFollowTask`**:
+    - **Cognitive Ring Buffer**: Maintains a 3-tick (150ms) history of target velocity to simulate human cognitive delay when targets "juke".
+    - **Ornstein-Uhlenbeck Drift**: Adds stochastic, mean-reverting drift to the target aim-point for realistic "swimming" mouse behavior.
+    - **Schmitt Trigger**: Employs a distance-based dead-zone for attack states to prevent combat-state oscillation.
 ## 1. Architectural Overview
 
 The system is organized into layers to maintain separation of concerns:
@@ -17,6 +25,14 @@ The system is organized into layers to maintain separation of concerns:
 
 ---
 
+## 3.3 Combat System (New)
+
+- **`ClickGenerator`**: Handles native-event-like clicks by directly manipulating `timesPressed` / `clickCount` via `KeyMappingAccessor`, simulating genuine HID events.
+- **`RotationEngine`**: Implements a 5th-order Minimum-Jerk trajectory (10τ³ - 15τ⁴ + 6τ⁵) to provide snappy, human-like rotation without the asymptotic decay issues of PD controllers.
+- **`CombatFollowTask`**:
+    - **Cognitive Ring Buffer**: Maintains a 3-tick (150ms) history of target velocity to simulate human cognitive delay when targets "juke".
+    - **Ornstein-Uhlenbeck Drift**: Adds stochastic, mean-reverting drift to the target aim-point for realistic "swimming" mouse behavior.
+    - **Schmitt Trigger**: Employs a distance-based dead-zone for attack states to prevent combat-state oscillation.
 ## 2. Mode-Based Orchestration
 
 The system now utilizes a `MacroMode` state machine to drive dynamic task registration.
@@ -27,6 +43,14 @@ The system now utilizes a `MacroMode` state machine to drive dynamic task regist
 
 ---
 
+## 3.3 Combat System (New)
+
+- **`ClickGenerator`**: Handles native-event-like clicks by directly manipulating `timesPressed` / `clickCount` via `KeyMappingAccessor`, simulating genuine HID events.
+- **`RotationEngine`**: Implements a 5th-order Minimum-Jerk trajectory (10τ³ - 15τ⁴ + 6τ⁵) to provide snappy, human-like rotation without the asymptotic decay issues of PD controllers.
+- **`CombatFollowTask`**:
+    - **Cognitive Ring Buffer**: Maintains a 3-tick (150ms) history of target velocity to simulate human cognitive delay when targets "juke".
+    - **Ornstein-Uhlenbeck Drift**: Adds stochastic, mean-reverting drift to the target aim-point for realistic "swimming" mouse behavior.
+    - **Schmitt Trigger**: Employs a distance-based dead-zone for attack states to prevent combat-state oscillation.
 ## 3. Layer Breakdown (Updates)
 
 ### 3.1 Planning Layer (`com.mobileminerong.planning` & `com.mobileminerong.state`)
