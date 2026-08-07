@@ -21,7 +21,6 @@ public class CombatFollowTask implements BotTask {
 
     private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
     private Vec3 lastPos = null;
-    private com.mobileminerong.util.OrnsteinUhlenbeckDrift drift = new com.mobileminerong.util.OrnsteinUhlenbeckDrift();
     private long lastClickTime = 0;
 
     @Override
@@ -68,17 +67,15 @@ public class CombatFollowTask implements BotTask {
             lastPos = currentTargetPos;
 
             Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
-            drift.update();
             Vec3 aimPoint = lockedTarget.getEyePosition()
-                .add(delayedVelocity.scale(5.0))
-                .add(drift.getX(), drift.getY(), 0);
+                .add(delayedVelocity.scale(5.0));
 
             double distance = client.player.distanceTo(lockedTarget);
             
             // Movement logic with Forced Sprinting
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {
-                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 5);
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
                 }
                 ActionController.setKey(client.options.keyUp, true);
                 ActionController.setKey(client.options.keySprint, true);
@@ -88,7 +85,7 @@ public class CombatFollowTask implements BotTask {
                 ActionController.setKey(client.options.keyDown, false);
                 ActionController.setKey(client.options.keySprint, false);
                 if (!ctx.getRotationEngine().isActive()) {
-                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint, 3);
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
                 }
             }
             int[] steps = ctx.getRotationEngine().computeNextFrameSteps(aimPoint);

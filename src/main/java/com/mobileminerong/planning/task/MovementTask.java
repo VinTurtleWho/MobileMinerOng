@@ -125,8 +125,7 @@ public class MovementTask implements BotTask {
             ctx.getRotationEngine().startRotation(
                 client.player.getYRot(),
                 client.player.getXRot(),
-                aimPoint,
-                4 // Consistent snapping latency
+                aimPoint
             );
         }
 

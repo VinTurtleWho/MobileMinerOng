@@ -40,7 +40,7 @@ public class AimingTask implements BotTask {
         // Start rotation once
         if (!rotationStarted) {
             ctx.getRotationEngine().startRotation(
-                client.player.getYRot(), client.player.getXRot(), targetVec, 8
+                client.player.getYRot(), client.player.getXRot(), targetVec
             );
             rotationStarted = true;
         }
