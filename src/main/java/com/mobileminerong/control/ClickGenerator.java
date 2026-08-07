@@ -2,16 +2,15 @@ package com.mobileminerong.control;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
-import java.util.Random;
+import com.mobileminerong.util.ExGaussianGenerator;
 
 public class ClickGenerator {
-    private static final Random random = new Random();
     private static long clickDownTime = 0;
     private static boolean isHolding = false;
 
     // Call this in the client tick loop to manage click release
     public static void tick() {
-        if (isHolding && System.currentTimeMillis() > clickDownTime + (20 + random.nextInt(20))) {
+        if (isHolding && System.currentTimeMillis() > clickDownTime + ExGaussianGenerator.nextDelay(20, 5, 10)) {
             forceRelease();
         }
     }
@@ -50,6 +49,6 @@ public class ClickGenerator {
     public static long calculateInterval(int bonusAttackSpeed, boolean isShortbow) {
         // BAS caps at 5 CPS (200ms) or 100 BAS.
         int baseDelay = isShortbow ? 200 : (400 - (int)(bonusAttackSpeed * 2));
-        return Math.max(100, baseDelay + random.nextInt(50));
+        return Math.max(100, ExGaussianGenerator.nextDelay(baseDelay, 15, 20));
     }
 }

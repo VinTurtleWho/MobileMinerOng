@@ -22,6 +22,7 @@ public class CombatFollowTask implements BotTask {
     private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
     private Vec3 lastPos = null;
     private long lastClickTime = 0;
+    private long nextAttackDelay = 0;
 
     @Override
     public void onStart(BotContext ctx) {
@@ -36,6 +37,7 @@ public class CombatFollowTask implements BotTask {
         this.velocityHistory.clear();
         this.lastClickTime = 0;
         this.hasAttackedOnce = false;
+        this.nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
     }
 
     @Override
@@ -93,9 +95,10 @@ public class CombatFollowTask implements BotTask {
 
             // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
-                if (System.currentTimeMillis() > lastClickTime + 500) { // Simplified interval for testing
+                if (System.currentTimeMillis() > lastClickTime + nextAttackDelay) {
                     com.mobileminerong.control.ClickGenerator.performClick();
                     lastClickTime = System.currentTimeMillis();
+                    nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
                 }
             }
         } catch (Exception e) {
