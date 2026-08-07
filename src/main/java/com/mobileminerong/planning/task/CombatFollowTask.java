@@ -6,6 +6,9 @@ import com.mobileminerong.state.BotState;
 import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 
 public class CombatFollowTask implements BotTask {
@@ -38,6 +41,12 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public void onTick(BotContext ctx) {
+        // Phantom Strike Fix (Null Guarding)
+        if (this.lockedTarget == null || !this.lockedTarget.isAlive()) {
+            ctx.getRotationEngine().abort();
+            return;
+        }
+
         try {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
@@ -110,13 +119,29 @@ public class CombatFollowTask implements BotTask {
 
         for (Entity entity : client.level.entitiesForRendering()) {
             if (!isValidTarget(ctx, entity)) continue;
-            if (ctx.getCombatTargetType() == BotContext.CombatTargetType.MOB && !ctx.getMobWhitelist().isEmpty()) {
-                String strippedName = entity.getCustomName() != null ? entity.getCustomName().getString().replaceAll("§[0-9a-fk-or]", "") : "";
-                boolean whitelisted = false;
-                for (String allowed : ctx.getMobWhitelist()) {
-                    if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
+            
+            if (ctx.getCombatTargetType() == BotContext.CombatTargetType.MOB) {
+                boolean isMobOrSlime = (entity instanceof Mob || entity instanceof Slime);
+                
+                if (ctx.getMobWhitelist().isEmpty()) {
+                    // NPC Exclusion Fix: Restrict fallback to Mob/Slime
+                    if (!isMobOrSlime) continue;
+                } else {
+                    // Name-Tag Retrieval Fix
+                    String rawName = "";
+                    if (entity.hasCustomName() && entity.getCustomName() != null) {
+                        rawName = entity.getCustomName().getString();
+                    } else {
+                        rawName = entity.getName().getString();
+                    }
+                    String strippedName = rawName.replaceAll("§.", "");
+                    
+                    boolean whitelisted = false;
+                    for (String allowed : ctx.getMobWhitelist()) {
+                        if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
+                    }
+                    if (!whitelisted) continue;
                 }
-                if (!whitelisted) continue;
             }
 
             double dist = client.player.distanceTo(entity);
