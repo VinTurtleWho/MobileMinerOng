@@ -39,6 +39,16 @@ public class MobileMinerClient implements ClientModInitializer {
     );
     private static MacroMode lastMode = MacroMode.IDLE;
 
+    private static void syncTasks(MacroMode mode) {
+        TASK_ENGINE.clearTasks();
+        if (mode == MacroMode.MINER) {
+            TASK_ENGINE.registerTask(new TargetSearchTask());
+            TASK_ENGINE.registerTask(new MiningTask());
+        } else if (mode == MacroMode.COMBAT) {
+            TASK_ENGINE.registerTask(new CombatFollowTask());
+        }
+    }
+
     private static int debugTimer = 0;
     private static int perceptionTimer = 0;
 
@@ -84,6 +94,7 @@ public class MobileMinerClient implements ClientModInitializer {
                 } else {
                     // Activate
                     BOT_CONTEXT.setActive(true);
+                    syncTasks(BOT_CONTEXT.getMode());
                     client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Macro Started"));
                 }
             }
@@ -91,26 +102,20 @@ public class MobileMinerClient implements ClientModInitializer {
             if (BOT_CONTEXT.isActive()) {
                 if (BOT_CONTEXT.getMode() != lastMode) {
                     lastMode = BOT_CONTEXT.getMode();
-                    TASK_ENGINE.clearTasks();
-                    if (lastMode == MacroMode.MINER) {
-                        TASK_ENGINE.registerTask(new TargetSearchTask());
-                        TASK_ENGINE.registerTask(new MiningTask());
-                    } else if (lastMode == MacroMode.COMBAT) {
-                        TASK_ENGINE.registerTask(new CombatFollowTask());
-                    }
+                    syncTasks(lastMode);
                     client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
                 }
                 
                 updateContext(client);
                 com.mobileminerong.perception.PerceptionManager.updatePerception(BOT_CONTEXT);
-                com.mobileminerong.control.ClickGenerator.tick(); // Added this
+                com.mobileminerong.control.ClickGenerator.tick();
                 TASK_ENGINE.tick(BOT_CONTEXT);
-            }
 
-            perceptionTimer++;
-            if(perceptionTimer >= 20) {
-                perceptionTimer = 0;
-                updatePerception();
+                perceptionTimer++;
+                if(perceptionTimer >= 20) {
+                    perceptionTimer = 0;
+                    updatePerception();
+                }
             }
 
             if(MacroCommandHandler.isDebugEnabled()) {
@@ -131,7 +136,7 @@ public class MobileMinerClient implements ClientModInitializer {
     private void updatePerception() {
         try {
             ScoreboardParser.updateZone(BOT_CONTEXT);
-            List<BlockPos> targets = BlockScanner.findTargetOres(BOT_CONTEXT, 10);
+            List<BlockPos> targets = BlockScanner.findTargetOres(BOT_CONTEXT, 20);
             if(!targets.isEmpty()) {
                 BOT_CONTEXT.setCurrentTargetBlock(targets.get(0));
                 BOT_CONTEXT.updatePerceptionHealth(true);

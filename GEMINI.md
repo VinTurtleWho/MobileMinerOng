@@ -9,7 +9,7 @@ The project follows a standard Fabric mod structure.
 - **Entry Point**: `com.mobileminerong.MobileMinerClient` implements `ClientModInitializer`.
 - **Bot Core**: State management is centralized in `com.mobileminerong.context.BotContext` and updated via `ClientTickEvents`.
 - **Perception**: Modules like `BlockScanner` and `ScoreboardParser` analyze game state.
-- **Control**: `RotationController` and `ActionController` handle interaction with the game environment.
+- **Control**: `RotationController` (deprecated) and `ActionController` handle interaction with the game environment.
 - **Commands**: `MacroCommandHandler` provides a command-line interface within chat.
 - **Logging/Utilities**: `ChatLogger` handles persistent chat logging; `DebugLogger` handles diagnostic outputs.
 
@@ -30,8 +30,9 @@ The project follows a standard Fabric mod structure.
 ## Current Development Status
 
 - The project has successfully stabilized its core movement and pathfinding engines (Phase 1 complete).
-- Core tasks (`MovementTask`, `AimingTask`) are functional and collision-aware.
-- **Feature Set**: Supports MINER and COMBAT modes, activated/deactivated via the 'O' keybind. Includes entity-based CombatFollowTask.
+- **Feature Set**: Supports MINER and COMBAT modes, activated/deactivated via the 'O' keybind.
+- **Combat Enhancement**: Implemented robust combat target filtering (`PLAYER`/`MOB` modes, mob whitelisting, name-tag parsing with color-code stripping, and NPC/ArmorStand exclusion) for Hypixel Skyblock compatibility.
+- **Combat Movement**: Implemented forced sprinting and 15-block AABB entity scanning to reduce latency and improve responsiveness.
 - **Task System**: Supports dynamic task switching based on the current `MacroMode`.
 
 ## Building and Running
@@ -47,6 +48,7 @@ The project uses Gradle for build management.
 - **Tick Loop**: Use `ClientTickEvents.END_CLIENT_TICK` for mod logic execution. Heavy operations (like block scanning) should be rate-limited (currently 20 ticks/sec).
 - **Logging**: Use `com.mobileminerong.debug.DebugLogger` for all diagnostic output. All chat interactions must be routed through `com.mobileminerong.util.ChatLogger` for anti-cheat verification.
 - **Fabric**: Adhere to Fabric API patterns for event registration and client-side interactions.
+- **Combat Safety (Hypixel)**: All targeting loops must strictly exclude `ArmorStand` entities, invulnerable entities, and entities flagged as dead/dying/invisible. Use prioritized custom name parsing with §-code stripping for target whitelisting.
 - **Performance**: Path-heavy tasks must implement cooldown-based re-pathing to prevent tick-lag.
 - **Pathfinding & Collisions**: All pathfinding walkability checks must utilize voxel-based collision checks (`getCollisionShape`) rather than full-block queries. This ensures partial blocks like stairs, slabs, and fences are handled correctly.
 - **Movement Alignment**: Movement tasks must ensure the bot is fully rotated and aligned with the target/waypoint before applying forward/directional input keys.

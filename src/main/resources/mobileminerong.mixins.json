@@ -5,7 +5,8 @@
   "mixins": [],
   "client": [
     "MouseHandlerMixin",
-    "KeyMappingAccessor"
+    "KeyMappingAccessor",
+    "accessor.InventoryAccessor"
   ],
   "injectors": {
     "defaultRequire": 0

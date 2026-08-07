@@ -5,6 +5,8 @@ import com.mobileminerong.state.MacroMode;
 import com.mobileminerong.control.RotationEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -12,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BotContext {
@@ -30,37 +35,35 @@ public class BotContext {
 
     // Targets
     private BlockPos currentTargetBlock = null;
-    private BlockPos lastSeenTargetBlock = null; // RESTORED
+    private BlockPos lastSeenTargetBlock = null;
     private String miningTargetId = null;
     private int miningToolSlot = 0;
-private net.minecraft.world.entity.player.Player targetPlayer = null;
-private net.minecraft.world.entity.Entity targetEntity = null; // Add this
-private String combatTargetId = null;
-private int combatToolSlot = 0;
+    private Player targetPlayer = null;
+    private Entity targetEntity = null;
+    private String combatTargetId = null;
+    private int combatToolSlot = 0;
 
-public enum CombatTargetType { PLAYER, MOB }
-private CombatTargetType combatTargetType = CombatTargetType.PLAYER;
-private final java.util.Set<String> mobWhitelist = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+    public enum CombatTargetType { PLAYER, MOB }
+    private CombatTargetType combatTargetType = CombatTargetType.PLAYER;
+    private final Set<String> mobWhitelist = Collections.synchronizedSet(new HashSet<>());
 
-private boolean pendingPlayerSearch = false; 
+    private boolean pendingPlayerSearch = false; 
 
-// ...
+    // Getters and Setters
+    public synchronized Entity getTargetEntity() { return targetEntity; }
+    public synchronized void setTargetEntity(Entity entity) { this.targetEntity = entity; }
 
-public synchronized net.minecraft.world.entity.Entity getTargetEntity() { return targetEntity; }
-public synchronized void setTargetEntity(net.minecraft.world.entity.Entity entity) { this.targetEntity = entity; }
+    public synchronized CombatTargetType getCombatTargetType() { return combatTargetType; }
+    public synchronized void setCombatTargetType(CombatTargetType type) { this.combatTargetType = type; }
+    public synchronized Set<String> getMobWhitelist() { return mobWhitelist; }
 
-public synchronized CombatTargetType getCombatTargetType() { return combatTargetType; }
-public synchronized void setCombatTargetType(CombatTargetType type) { this.combatTargetType = type; }
-public synchronized java.util.Set<String> getMobWhitelist() { return mobWhitelist; }
-
-// Skyblock Parsed Stats
-
+    // Skyblock Parsed Stats
     private String currentZone = "Unknown";
     private int currentMana = 0;
     private int maxMana = 0;
 
     // Diagnostics & Flags
-    private String lastAction = "NONE"; // RESTORED
+    private String lastAction = "NONE";
     private String stateChangeReason = "Initialization";
     public synchronized MacroMode getMode() { return currentMode; }
     public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
@@ -100,14 +103,12 @@ public synchronized java.util.Set<String> getMobWhitelist() { return mobWhitelis
     private int perceptionFailures = 0;
     private long lastTickDurationNano = 0;
 
-    // ...
     public synchronized int getPerceptionTimer() { return perceptionTimer; }
     public synchronized void setPerceptionTimer(int timer) { this.perceptionTimer = timer; }
 
     public record TaskEvent(String name, String status, String reason, long timestamp) {}
     private final Deque<TaskEvent> taskHistory = new ArrayDeque<>(10);
 
-    // Getters and Setters
     public synchronized BotState getCurrentState() { return currentState; }
     public synchronized void setState(BotState state, String reason) {
         if (this.currentState != state) {
@@ -135,8 +136,8 @@ public synchronized java.util.Set<String> getMobWhitelist() { return mobWhitelis
         this.currentTargetBlock = pos; 
     }
 
-    public synchronized net.minecraft.world.entity.player.Player getTargetPlayer() { return targetPlayer; }
-    public synchronized void setTargetPlayer(net.minecraft.world.entity.player.Player player) { this.targetPlayer = player; }
+    public synchronized Player getTargetPlayer() { return targetPlayer; }
+    public synchronized void setTargetPlayer(Player player) { this.targetPlayer = player; }
 
     public synchronized boolean isPendingPlayerSearch() { return pendingPlayerSearch; }
     public synchronized void setPendingPlayerSearch(boolean pending) { this.pendingPlayerSearch = pending; }

@@ -42,11 +42,18 @@ public class PerceptionManager {
         }
 
         if (ctx.getMode() == com.mobileminerong.state.MacroMode.COMBAT) {
+            // Purge expired blacklist entries
+            ctx.getPendingKills().entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue());
+
             Entity nearest = null;
             double minDist = Double.MAX_VALUE;
             
             for (Entity entity : client.level.entitiesForRendering()) {
                 if (entity == client.player || !entity.isAlive()) continue;
+                
+                // Skip blacklisted entities
+                if (ctx.getPendingKills().containsKey(entity.getUUID())) continue;
+
                 if (entity instanceof Player || entity instanceof Monster) {
                     double dist = entity.distanceToSqr(client.player);
                     if (dist < minDist) {

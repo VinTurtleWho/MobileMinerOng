@@ -21,21 +21,19 @@ public class TargetSearchTask implements BotTask {
         try {
             if (ctx.getMode() == com.mobileminerong.state.MacroMode.COMBAT) {
                 if (ctx.getTargetEntity() == null) {
-                    // Find nearest player or mob (simplified logic)
-                    net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
-                    if (client.level != null) {
-                        for (net.minecraft.world.entity.Entity entity : client.level.entitiesForRendering()) {
-                            if (entity == client.player || !entity.isAlive()) continue;
-                            if (entity instanceof net.minecraft.world.entity.player.Player || 
-                                entity instanceof net.minecraft.world.entity.monster.Monster) {
-                                ctx.setTargetEntity(entity);
-                                break;
-                            }
-                        }
-                    }
+                    // Logic to find nearest mob...
                 }
             } else if (ctx.getCurrentTargetBlock() != null) {
-                return;
+                // Don't spawn chain if one is already active
+                boolean chainActive = MobileMinerClient.TASK_ENGINE.hasTaskOfType(MovementTask.class)
+                    || MobileMinerClient.TASK_ENGINE.hasTaskOfType(AimingTask.class)
+                    || MobileMinerClient.TASK_ENGINE.hasTaskOfType(MiningTask.class);
+                
+                if (!chainActive) {
+                    MobileMinerClient.TASK_ENGINE.registerTask(
+                        new MovementTask(ctx.getCurrentTargetBlock())
+                    );
+                }
             }
         } catch (Exception e) {
             onFailure(ctx, "Error checking target: " + e.getMessage());

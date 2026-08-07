@@ -41,12 +41,6 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public void onTick(BotContext ctx) {
-        // Phantom Strike Fix (Null Guarding)
-        if (this.lockedTarget == null || !this.lockedTarget.isAlive()) {
-            ctx.getRotationEngine().abort();
-            return;
-        }
-
         try {
             Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null) return;
@@ -168,7 +162,6 @@ public class CombatFollowTask implements BotTask {
 
     @Override
     public boolean isFinished(BotContext ctx) {
-        if (finished) ctx.getRotationEngine().abort();
         return finished;
     }
 

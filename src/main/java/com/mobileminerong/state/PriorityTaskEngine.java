@@ -8,6 +8,7 @@ import java.util.List;
 public class PriorityTaskEngine {
     private final List<BotTask> taskPool = new ArrayList<>();
     private BotTask activeTask = null;
+    private BotTask startedTask = null;
     private BotTask lastCompletedTask = null;
     private BotTask lastFailedTask = null;
     private String lastFailureReason = "NONE";
@@ -22,6 +23,7 @@ public class PriorityTaskEngine {
     public void clearTasks() {
         taskPool.clear();
         activeTask = null;
+        startedTask = null;
     }
 
     public void tick(BotContext ctx) {
@@ -43,7 +45,12 @@ public class PriorityTaskEngine {
                 ctx.addTaskEvent(activeTask.getName(), "PREEMPTED", reason);
             }
             activeTask = highestPriorityTask;
+        }
+
+        // Only call onStart once per task instance
+        if (activeTask != null && activeTask != startedTask) {
             activeTask.onStart(ctx);
+            startedTask = activeTask;
             ctx.addTaskEvent(activeTask.getName(), "STARTED", "Task started");
         }
 
@@ -73,4 +80,8 @@ public class PriorityTaskEngine {
     public BotTask getLastPreemptedTask() { return lastPreemptedTask; }
     public String getLastPreemptedReason() { return lastPreemptedReason; }
     public int getTaskPoolSize() { return taskPool.size(); }
+    
+    public boolean hasTaskOfType(Class<?> type) {
+        return taskPool.stream().anyMatch(t -> t.getClass().equals(type));
+    }
 }

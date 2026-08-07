@@ -6,9 +6,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(KeyMapping.class)
 public interface KeyMappingAccessor {
-    @Accessor("timesPressed")
-    int getTimesPressed();
+    @Accessor("clickCount")
+    int getClickCount();
 
-    @Accessor("timesPressed")
-    void setTimesPressed(int timesPressed);
+    @Accessor("clickCount")
+    void setClickCount(int clickCount);
 }

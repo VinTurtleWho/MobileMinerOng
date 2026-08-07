@@ -4,7 +4,6 @@ import com.mobileminerong.context.BotContext;
 import com.mobileminerong.state.BotState;
 import com.mobileminerong.planning.pathfinding.AStarPathfinder;
 import com.mobileminerong.control.ActionController;
-import com.mobileminerong.control.RotationController;
 import com.mobileminerong.MobileMinerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -22,7 +21,6 @@ public class MovementTask implements BotTask {
     private int stuckTicks = 0;
     private int pathCooldown = 0; 
     private boolean rotationInitialized = false; 
-    private final RotationController rotationController = new RotationController();
 
     public MovementTask(BlockPos targetPos) {
         this.targetPos = targetPos;
@@ -71,6 +69,7 @@ public class MovementTask implements BotTask {
             pathCooldown = 100;
             stuckTicks = 0;
             rotationInitialized = false;
+            ctx.getRotationEngine().abort();
             return;
         }
         if (stuckTicks > 120) {
@@ -81,6 +80,7 @@ public class MovementTask implements BotTask {
         if (currentIndex >= path.size()) {
             finished = true;
             ActionController.stopAllInputs();
+            ctx.getRotationEngine().abort();
             ctx.setState(BotState.AIMING, "Reached destination");
             return;
         }
@@ -92,21 +92,22 @@ public class MovementTask implements BotTask {
         if (client.player.position().distanceToSqr(waypointVec) < 0.5) {
             currentIndex++;
             rotationInitialized = false; 
-            ActionController.stopAllInputs();
+            ctx.getRotationEngine().abort();
             return;
         }
 
         // Initialize rotation
         if (!rotationInitialized) {
-            rotationController.setTarget(waypointVec, client.player.getYRot(), client.player.getXRot());
+            ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), waypointVec, 5);
             rotationInitialized = true;
         }
 
         // Tick rotation
-        rotationController.tick(ctx);
+        int[] steps = ctx.getRotationEngine().computeNextFrameSteps(waypointVec);
+        ctx.setPendingMouseDelta(steps[0], steps[1]);
         
         // Move forward only when aligned
-        if (rotationController.isAligned()) {
+        if (!ctx.getRotationEngine().isActive()) {
             client.options.keyUp.setDown(true);
         } else {
             client.options.keyUp.setDown(false);
@@ -120,6 +121,7 @@ public class MovementTask implements BotTask {
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
+        ctx.getRotationEngine().abort();
         ActionController.stopAllInputs();
         finished = true;
         ctx.setState(BotState.RECOVERING, "Movement failed: " + reason);

@@ -14,7 +14,7 @@ public class MouseHandlerMixin {
     @Shadow private double accumulatedDX;
     @Shadow private double accumulatedDY;
 
-    @Inject(method = "handleAccumulatedMovement", at = @At("TAIL"))
+    @Inject(method = "handleAccumulatedMovement", at = @At("HEAD"))
     private void onHandleAccumulatedMovement(CallbackInfo ci) {
         if (!MobileMinerClient.BOT_CONTEXT.isActive()) return;
 
