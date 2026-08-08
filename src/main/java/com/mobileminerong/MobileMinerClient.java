@@ -89,6 +89,7 @@ public class MobileMinerClient implements ClientModInitializer {
                     // Deactivate: stop tasks and release inputs
                     BOT_CONTEXT.setActive(false);
                     TASK_ENGINE.clearTasks();
+                    BOT_CONTEXT.getRotationEngine().abort();
                     ActionController.stopAllInputs();
                     com.mobileminerong.control.ClickGenerator.forceRelease();
                     client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));

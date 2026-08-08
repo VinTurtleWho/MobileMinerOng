@@ -127,11 +127,9 @@ public class MovementTask implements BotTask {
                 client.player.getXRot(),
                 aimPoint
             );
+        } else {
+            ctx.getRotationEngine().updateTarget(aimPoint);
         }
-// Tick rotation
-int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
-ctx.setPendingMouseDelta(steps[0], steps[1]);
-
 
         // Maintain forward sprint momentum
         client.options.keyUp.setDown(true);

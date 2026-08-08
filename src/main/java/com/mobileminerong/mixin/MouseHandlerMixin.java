@@ -18,12 +18,12 @@ public class MouseHandlerMixin {
     private void onHandleAccumulatedMovement(CallbackInfo ci) {
         if (!MobileMinerClient.BOT_CONTEXT.isActive()) return;
 
-        // Bot Control
-        int[] steps = MobileMinerClient.BOT_CONTEXT.getAndClearPendingMouseDelta();
+        // Get movement steps directly from engine (calculates per frame)
+        int[] steps = MobileMinerClient.BOT_CONTEXT.getRotationEngine().computeNextFrameSteps();
+        
         if (steps[0] != 0 || steps[1] != 0) {
             this.accumulatedDX = steps[0];
             this.accumulatedDY = steps[1];
-            com.mobileminerong.debug.DebugLogger.debug("MOUSE", "Injected delta: " + steps[0] + ", " + steps[1]);
         }
     }
 }

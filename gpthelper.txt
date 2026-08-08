@@ -1,1 +1,0 @@
-Before Phase II, do a Phase I review only. Show me the complete "RotationEngine.java" and the exact "BotContext" changes, then verify the minimum-jerk calculation, GCD quantization, residue accumulation, reset/abort behavior, and target-switch state handling. Do not modify anything. Build passing is not enough; I want the actual math/state logic reviewed first.

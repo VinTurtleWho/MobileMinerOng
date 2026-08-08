@@ -20,7 +20,6 @@ public class CombatFollowTask implements BotTask {
     private Entity lockedTarget = null;
     private long lastClickTime = 0;
     private long nextAttackDelay = 0;
-    private long lastHitboxSampleTime = 0;
     private Vec3 currentAimPoint = null;
 
     @Override
@@ -34,7 +33,6 @@ public class CombatFollowTask implements BotTask {
         this.lastClickTime = 0;
         this.hasAttackedOnce = false;
         this.nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
-        this.lastHitboxSampleTime = 0;
         this.currentAimPoint = null;
     }
 
@@ -56,21 +54,23 @@ public class CombatFollowTask implements BotTask {
                 if (newTarget != null) { 
                     lockedTarget = newTarget; 
                     hasAttackedOnce = false;
-                    lastHitboxSampleTime = 0; 
                     currentAimPoint = null;
                 }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            // Update aim-point surface scan (every 300ms)
-            if (currentAimPoint == null || System.currentTimeMillis() > lastHitboxSampleTime + 300) {
-                currentAimPoint = com.mobileminerong.util.TargetSurfaceScanner.samplePoint(lockedTarget);
-                lastHitboxSampleTime = System.currentTimeMillis();
-            }
+            // Update aim-point: Select Eye or Stomach level (closest to player)
+            Vec3 playerPos = client.player.getEyePosition();
+            Vec3 eyeLevelPos = lockedTarget.getEyePosition();
+            Vec3 stomachLevelPos = lockedTarget.position().add(0, lockedTarget.getBbHeight() * 0.45, 0);
+            
+            currentAimPoint = (playerPos.distanceTo(eyeLevelPos) < playerPos.distanceTo(stomachLevelPos)) ? eyeLevelPos : stomachLevelPos;
 
             // Aiming
             double distance = client.player.distanceTo(lockedTarget);
             
+            if (currentAimPoint == null) return; // Prevent NPE
+
             // Movement logic with Forced Sprinting
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {

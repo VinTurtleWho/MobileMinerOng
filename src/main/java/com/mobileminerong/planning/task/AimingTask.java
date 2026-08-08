@@ -43,11 +43,9 @@ public class AimingTask implements BotTask {
                 client.player.getYRot(), client.player.getXRot(), targetVec
             );
             rotationStarted = true;
+        } else {
+            ctx.getRotationEngine().updateTarget(targetVec);
         }
-
-        // Feed mouse steps every tick
-        int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
-        ctx.setPendingMouseDelta(steps[0], steps[1]);
 
         // Rotation complete when engine goes inactive
         if (!ctx.getRotationEngine().isActive()) {

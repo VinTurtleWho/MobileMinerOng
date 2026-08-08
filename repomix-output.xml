@@ -1,0 +1,3791 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gemini/
+  skills/
+    aael-reviewer/
+      references/
+        checklist.md
+      SKILL.md
+.github/
+  workflows/
+    build.yml
+aael-reviewer/
+  references/
+    AAEL_CONTROLLER.md
+    checklist.md
+  SKILL.md
+aael-reviewer-init/
+  aael-reviewer/
+    assets/
+      example_asset.txt
+    references/
+      example_reference.md
+    scripts/
+      example_script.cjs
+    SKILL.md
+gradle/
+  wrapper/
+    gradle-wrapper.jar
+    gradle-wrapper.properties
+src/
+  main/
+    java/
+      com/
+        mobileminerong/
+          command/
+            MacroCommandHandler.java
+          context/
+            BotContext.java
+          control/
+            ActionController.java
+            ClickGenerator.java
+            RotationEngine.java
+          debug/
+            DebugLogger.java
+          diagnostic/
+            DiagnosticManager.java
+          mixin/
+            accessor/
+              InventoryAccessor.java
+            KeyMappingAccessor.java
+            MouseHandlerMixin.java
+          perception/
+            ActionBarParser.java
+            BlockScanner.java
+            PerceptionManager.java
+            ScoreboardParser.java
+          planning/
+            pathfinding/
+              AStarPathfinder.java
+              CentripetalSpline.java
+              LazyThetaPathfinder.java
+              Node.java
+              PathTrajectory.java
+            task/
+              AimingTask.java
+              BotTask.java
+              CombatFollowTask.java
+              DiagnosticTestTask.java
+              MiningTask.java
+              MovementTask.java
+              TargetSearchTask.java
+          state/
+            BotState.java
+            MacroMode.java
+            PriorityTaskEngine.java
+          util/
+            ChatLogger.java
+            ExGaussianGenerator.java
+            OrnsteinUhlenbeckDrift.java
+          MobileMinerClient.java
+    resources/
+      assets/
+        mobileminerong/
+          icon.png
+      fabric.mod.json
+      mobileminerong.accesswidener
+      mobileminerong.mixins.json
+.gitattributes
+.gitignore
+aael_state.json
+aael-reviewer.skill
+ARCHITECTURE.md
+build.gradle
+GEMINI.md
+gradle.properties
+gradlew
+gradlew.bat
+LICENSE
+README.md
+settings.gradle
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="gradle/wrapper/gradle-wrapper.properties">
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.5.1-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+</file>
+
+<file path="src/main/java/com/mobileminerong/debug/DebugLogger.java">
+package com.mobileminerong.debug;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class DebugLogger {
+    private static BufferedWriter writer;
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+    private static final DateTimeFormatter FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+    private static boolean initialized = false;
+
+    public static synchronized void init() {
+        if (initialized) return;
+        try {
+            File dir = new File("logs/mobileminerong");
+            if (!dir.exists()) dir.mkdirs();
+
+            String timestamp = LocalDateTime.now().format(FILE_NAME_FORMATTER);
+            File logFile = new File(dir, "session_" + timestamp + ".log");
+
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            initialized = true;
+            log("INFO", "SYSTEM", "=== MobileMinerOng Log Session Started ===");
+        } catch (IOException e) {
+            System.err.println("[MobileMinerOng] Failed to initialize DebugLogger: " + e.getMessage());
+        }
+    }
+
+    public static synchronized void log(String level, String category, String message) {
+        if (!initialized) init();
+        String time = LocalDateTime.now().format(TIME_FORMATTER);
+        String line = String.format("[%s] [%s] [%s] %s", time, level, category, message);
+
+        // Mirror output to stdout/console
+        System.out.println("[MobileMinerOng] " + line);
+
+        // Persist to file buffer
+        if (writer != null) {
+            try {
+                writer.write(line);
+                writer.newLine();
+                writer.flush(); // Immediate flush to ensure log persistence on crash
+            } catch (IOException ignored) {}
+        }
+    }
+
+    public static void info(String category, String message) { log("INFO", category, message); }
+    public static void debug(String category, String message) { log("DEBUG", category, message); }
+    public static void warn(String category, String message) { log("WARN", category, message); }
+    public static void error(String category, String message) { log("ERROR", category, message); }
+
+    public static synchronized void close() {
+        if (!initialized) return;
+        log("INFO", "SYSTEM", "=== MobileMinerOng Log Session Ending ===");
+        if (writer != null) {
+            try {
+                writer.flush();
+                writer.close();
+            } catch (IOException ignored) {}
+        }
+        initialized = false;
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/perception/ActionBarParser.java">
+package com.mobileminerong.perception;
+
+import com.mobileminerong.context.BotContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ActionBarParser {
+    private static final Pattern MANA_PATTERN = Pattern.compile("(\\d+)/(\\d+)✎\\s*Mana");
+
+    public static void parseActionBarText(String text, BotContext ctx) {
+        if (text == null || text.isEmpty()) return;
+
+        Matcher manaMatcher = MANA_PATTERN.matcher(text);
+        if (manaMatcher.find()) {
+            try {
+                int current = Integer.parseInt(manaMatcher.group(1));
+                int max = Integer.parseInt(manaMatcher.group(2));
+                ctx.setMana(current, max);
+            } catch (NumberFormatException ignored) {}
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/BotTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+
+public interface BotTask {
+    void onStart(BotContext ctx);
+    void onTick(BotContext ctx);
+    boolean isFinished(BotContext ctx);
+    void onFailure(BotContext ctx, String reason);
+    
+    /**
+     * Priority spectrum:
+     * 100 = Failsafe / Emergency
+     * 80  = Hazard Recovery
+     * 50  = Combat Defense
+     * 20  = Commissions
+     * 10  = Standard Mining
+     */
+    int getPriority();
+    String getName();
+}
+</file>
+
+<file path=".gitattributes">
+#
+# https://help.github.com/articles/dealing-with-line-endings/
+#
+# Linux start script should use lf
+/gradlew        text eol=lf
+
+# These are Windows script files and should use crlf
+*.bat           text eol=crlf
+</file>
+
+<file path=".gitignore">
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+
+*.DS_Store
+
+# fabric
+
+run/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+</file>
+
+<file path="gradle.properties">
+org.gradle.jvmargs=-Xmx2G
+org.gradle.parallel=true
+org.gradle.configuration-cache=false
+
+minecraft_version=26.1.2
+loader_version=0.19.3
+loom_version=1.17-SNAPSHOT
+
+mod_version=1.0.0
+maven_group=com.mobileminerong
+
+fabric_api_version=0.155.2+26.1.2
+</file>
+
+<file path="gradlew">
+#!/bin/sh
+
+#
+# Copyright © 2015 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+##############################################################################
+#
+#   Gradle start up script for POSIX generated by Gradle.
+#
+#   Important for running:
+#
+#   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
+#       noncompliant, but you have some other compliant shell such as ksh or
+#       bash, then to run this script, type that shell name before the whole
+#       command line, like:
+#
+#           ksh Gradle
+#
+#       Busybox and similar reduced shells will NOT work, because this script
+#       requires all of these POSIX shell features:
+#         * functions;
+#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,
+#           «${var#prefix}», «${var%suffix}», and «$( cmd )»;
+#         * compound commands having a testable exit status, especially «case»;
+#         * various built-in commands including «command», «set», and «ulimit».
+#
+#   Important for patching:
+#
+#   (2) This script targets any POSIX shell, so it avoids extensions provided
+#       by Bash, Ksh, etc; in particular arrays are avoided.
+#
+#       The "traditional" practice of packing multiple parameters into a
+#       space-separated string is a well documented source of bugs and security
+#       problems, so this is (mostly) avoided, by progressively accumulating
+#       options in "$@", and eventually passing that to Java.
+#
+#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
+#       see the in-line comments for details.
+#
+#       There are tweaks for specific operating systems such as AIX, CygWin,
+#       Darwin, MinGW, and NonStop.
+#
+#   (3) This script is generated from the Groovy template
+#       https://github.com/gradle/gradle/blob/3d91ce3b8caaf77ad09f381f43615b715b53f72c/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       within the Gradle project.
+#
+#       You can find Gradle at https://github.com/gradle/gradle/.
+#
+##############################################################################
+
+# Attempt to set APP_HOME
+
+# Resolve links: $0 may be a link
+app_path=$0
+
+# Need this for daisy-chained symlinks.
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # leaves a trailing /; empty if no leading path
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# This is normally unused
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# Collect all arguments for the java command, stacking in reverse order:
+#   * args from the command line
+#   * the main class name
+#   * -classpath
+#   * -D...appname settings
+#   * --module-path (only if needed)
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # don't mess with options #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # looks like a POSIX filepath
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # Roll the args list around exactly as many times as the number of
+        # args, so each arg winds up back in the position where it started, but
+        # possibly modified.
+        #
+        # NB: a `for` loop captures its iteration list before it begins, so
+        # changing the positional parameters here affects neither the number of
+        # iterations, nor the values presented in `arg`.
+        shift                   # remove old arg
+        set -- "$@" "$arg"      # push replacement arg
+    done
+fi
+
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+        "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# but POSIX shell has neither arrays nor command substitution, so instead we
+# post-process each arg (as a line of input to sed) to backslash-escape any
+# character that might be a shell metacharacter, then use eval to reverse
+# that process (while maintaining the separation between arguments), and wrap
+# the whole thing up as a single "set" statement.
+#
+# This will of course break if any of these variables contains a newline or
+# an unmatched quote.
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
+</file>
+
+<file path="gradlew.bat">
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+@rem SPDX-License-Identifier: Apache-2.0
+@rem
+
+@if "%DEBUG%"=="" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables, and ensure extensions are enabled
+setlocal EnableExtensions
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+@rem This is normally unused
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if %ERRORLEVEL% equ 0 goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+"%COMSPEC%" /c exit 1
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME% 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+"%COMSPEC%" /c exit 1
+
+:execute
+@rem Setup the command line
+
+
+
+@rem Execute Gradle
+@rem endlocal doesn't take effect until after the line is parsed and variables are expanded
+@rem which allows us to clear the local environment before executing the java command
+endlocal & "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %* & call :exitWithErrorLevel
+
+:exitWithErrorLevel
+@rem Use "%COMSPEC%" /c exit to allow operators to work properly in scripts
+"%COMSPEC%" /c exit %ERRORLEVEL%
+</file>
+
+<file path="LICENSE">
+Creative Commons Legal Code
+
+CC0 1.0 Universal
+
+    CREATIVE COMMONS CORPORATION IS NOT A LAW FIRM AND DOES NOT PROVIDE
+    LEGAL SERVICES. DISTRIBUTION OF THIS DOCUMENT DOES NOT CREATE AN
+    ATTORNEY-CLIENT RELATIONSHIP. CREATIVE COMMONS PROVIDES THIS
+    INFORMATION ON AN "AS-IS" BASIS. CREATIVE COMMONS MAKES NO WARRANTIES
+    REGARDING THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS
+    PROVIDED HEREUNDER, AND DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM
+    THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS PROVIDED
+    HEREUNDER.
+
+Statement of Purpose
+
+The laws of most jurisdictions throughout the world automatically confer
+exclusive Copyright and Related Rights (defined below) upon the creator
+and subsequent owner(s) (each and all, an "owner") of an original work of
+authorship and/or a database (each, a "Work").
+
+Certain owners wish to permanently relinquish those rights to a Work for
+the purpose of contributing to a commons of creative, cultural and
+scientific works ("Commons") that the public can reliably and without fear
+of later claims of infringement build upon, modify, incorporate in other
+works, reuse and redistribute as freely as possible in any form whatsoever
+and for any purposes, including without limitation commercial purposes.
+These owners may contribute to the Commons to promote the ideal of a free
+culture and the further production of creative, cultural and scientific
+works, or to gain reputation or greater distribution for their Work in
+part through the use and efforts of others.
+
+For these and/or other purposes and motivations, and without any
+expectation of additional consideration or compensation, the person
+associating CC0 with a Work (the "Affirmer"), to the extent that he or she
+is an owner of Copyright and Related Rights in the Work, voluntarily
+elects to apply CC0 to the Work and publicly distribute the Work under its
+terms, with knowledge of his or her Copyright and Related Rights in the
+Work and the meaning and intended legal effect of CC0 on those rights.
+
+1. Copyright and Related Rights. A Work made available under CC0 may be
+protected by copyright and related or neighboring rights ("Copyright and
+Related Rights"). Copyright and Related Rights include, but are not
+limited to, the following:
+
+  i. the right to reproduce, adapt, distribute, perform, display,
+     communicate, and translate a Work;
+ ii. moral rights retained by the original author(s) and/or performer(s);
+iii. publicity and privacy rights pertaining to a person's image or
+     likeness depicted in a Work;
+ iv. rights protecting against unfair competition in regards to a Work,
+     subject to the limitations in paragraph 4(a), below;
+  v. rights protecting the extraction, dissemination, use and reuse of data
+     in a Work;
+ vi. database rights (such as those arising under Directive 96/9/EC of the
+     European Parliament and of the Council of 11 March 1996 on the legal
+     protection of databases, and under any national implementation
+     thereof, including any amended or successor version of such
+     directive); and
+vii. other similar, equivalent or corresponding rights throughout the
+     world based on applicable law or treaty, and any national
+     implementations thereof.
+
+2. Waiver. To the greatest extent permitted by, but not in contravention
+of, applicable law, Affirmer hereby overtly, fully, permanently,
+irrevocably and unconditionally waives, abandons, and surrenders all of
+Affirmer's Copyright and Related Rights and associated claims and causes
+of action, whether now known or unknown (including existing as well as
+future claims and causes of action), in the Work (i) in all territories
+worldwide, (ii) for the maximum duration provided by applicable law or
+treaty (including future time extensions), (iii) in any current or future
+medium and for any number of copies, and (iv) for any purpose whatsoever,
+including without limitation commercial, advertising or promotional
+purposes (the "Waiver"). Affirmer makes the Waiver for the benefit of each
+member of the public at large and to the detriment of Affirmer's heirs and
+successors, fully intending that such Waiver shall not be subject to
+revocation, rescission, cancellation, termination, or any other legal or
+equitable action to disrupt the quiet enjoyment of the Work by the public
+as contemplated by Affirmer's express Statement of Purpose.
+
+3. Public License Fallback. Should any part of the Waiver for any reason
+be judged legally invalid or ineffective under applicable law, then the
+Waiver shall be preserved to the maximum extent permitted taking into
+account Affirmer's express Statement of Purpose. In addition, to the
+extent the Waiver is so judged Affirmer hereby grants to each affected
+person a royalty-free, non transferable, non sublicensable, non exclusive,
+irrevocable and unconditional license to exercise Affirmer's Copyright and
+Related Rights in the Work (i) in all territories worldwide, (ii) for the
+maximum duration provided by applicable law or treaty (including future
+time extensions), (iii) in any current or future medium and for any number
+of copies, and (iv) for any purpose whatsoever, including without
+limitation commercial, advertising or promotional purposes (the
+"License"). The License shall be deemed effective as of the date CC0 was
+applied by Affirmer to the Work. Should any part of the License for any
+reason be judged legally invalid or ineffective under applicable law, such
+partial invalidity or ineffectiveness shall not invalidate the remainder
+of the License, and in such case Affirmer hereby affirms that he or she
+will not (i) exercise any of his or her remaining Copyright and Related
+Rights in the Work or (ii) assert any associated claims and causes of
+action with respect to the Work, in either case contrary to Affirmer's
+express Statement of Purpose.
+
+4. Limitations and Disclaimers.
+
+ a. No trademark or patent rights held by Affirmer are waived, abandoned,
+    surrendered, licensed or otherwise affected by this document.
+ b. Affirmer offers the Work as-is and makes no representations or
+    warranties of any kind concerning the Work, express, implied,
+    statutory or otherwise, including without limitation warranties of
+    title, merchantability, fitness for a particular purpose, non
+    infringement, or the absence of latent or other defects, accuracy, or
+    the present or absence of errors, whether or not discoverable, all to
+    the greatest extent permissible under applicable law.
+ c. Affirmer disclaims responsibility for clearing rights of other persons
+    that may apply to the Work or any use thereof, including without
+    limitation any person's Copyright and Related Rights in the Work.
+    Further, Affirmer disclaims responsibility for obtaining any necessary
+    consents, permissions or other rights required for any use of the
+    Work.
+ d. Affirmer understands and acknowledges that Creative Commons is not a
+    party to this document and has no duty or obligation with respect to
+    this CC0 or use of the Work.
+</file>
+
+<file path="README.md">
+# MobileMinerOng
+
+## Setup
+
+For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
+
+## License
+
+This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+</file>
+
+<file path="settings.gradle">
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'mobileminerong'
+</file>
+
+<file path=".gemini/skills/aael-reviewer/references/checklist.md">
+# Adversarial Checklist: Exhaustive Multi-Pass Audit
+
+This checklist must be used for EVERY review cycle. A fix does NOT excuse the reviewer from performing the full audit. The audit must act as if the code is brand new.
+
+## Pass 1: Architecture & Invariants
+- [ ] Are layering patterns (Perception->Context->Planning->Execution) violated?
+- [ ] Is `BotContext` misused (e.g., direct field access instead of methods)?
+- [ ] Are `PriorityTaskEngine` life-cycle invariants maintained?
+- [ ] Does the implementation introduce any "god classes"?
+
+## Pass 2: State & Lifecycle
+- [ ] Are there null-pointer possibilities for `Minecraft.getInstance().player`?
+- [ ] Are there uninitialized states (e.g., `RotationController` accessed before `setTarget`)?
+- [ ] Is there stale state left over between task transitions?
+- [ ] Are `targetLostTicks` and `stallTicks` handled correctly during task re-initialization?
+
+## Pass 3: Concurrency & Environment
+- [ ] Does this logic run on the main `RenderThread` properly?
+- [ ] Are there race conditions possible between `onTick` and external game events?
+- [ ] Are there any assumptions about timing that break under varying tick-rates?
+
+## Pass 4: Integration & Regression (The "Fresh Start" Pass)
+- [ ] Does this fix break `MovementTask` or `AimingTask`?
+- [ ] Is there a code path where the bot becomes "stuck" (a no-op loop)?
+- [ ] Does this change the `ActionController` in a way that breaks other modules?
+- [ ] Are the changes *actually* applied at runtime (check Mixin application)?
+
+## Pass 5: Edge Cases & Attack
+- [ ] What happens if the target moves instantly?
+- [ ] What happens if the bot is in a `SURVIVAL` vs `null` mode?
+- [ ] Does rapid mode-switching (`!macro mode COMBAT`) cause state corruption?
+- [ ] Can an entity become non-attackable mid-task without triggering `onFailure`?
+</file>
+
+<file path=".gemini/skills/aael-reviewer/SKILL.md">
+---
+name: aael-reviewer
+description: Adversarial auditor for codebase changes. Use when a subgoal implementation is complete to perform an exhaustive, multi-pass adversarial audit against the project's invariants.
+---
+
+# Adversarial Auditor
+
+Your sole purpose is to aggressively find defects in the provided implementation. You are not a helper. You are an adversary.
+
+## Audit Mandate
+
+1.  **Exhaustiveness**: Perform a full, multi-pass audit of the codebase as defined in `references/checklist.md`.
+2.  **No Incrementalism**: Never assume that a previous review, a passed build, or a "fixed" defect means the code is safe. Every audit is a **fresh, exhaustive pass** of the entire implementation and its integration points.
+3.  **Aggressive Skepticism**: Assume every assumption (e.g., "this target is not null", "this method returns in time") is false until proven otherwise by code analysis.
+4.  **No Early Exit**: If you find one defect, you must continue auditing to find *all* possible defects.
+
+## Review Protocol
+
+For every audit request:
+
+1.  Read the current implementation and relevant context files.
+2.  Execute the multi-pass audit according to `references/checklist.md`.
+3.  Report all findings. If you find no defects after a truly exhaustive search, return ONLY: `STABLE`.
+
+## Defect Report Format
+
+If you find defects, return a list of reports in this exact format:
+
+**Type**: [e.g., Lifecycle Error, Race Condition, Architectural Violation]
+**Location**: [File:Method]
+**Technical Failure Scenario**: [Explain the exact code path and why it is a failure, not just "risky".]
+**Remediation**: [Actionable fix recommendation.]
+</file>
+
+<file path=".github/workflows/build.yml">
+name: build
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: setup jdk
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - name: build
+        run: ./gradlew build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/
+</file>
+
+<file path="aael-reviewer/references/AAEL_CONTROLLER.md">
+# AAEL Controller Procedure
+
+This file defines the strict operational procedures for the Autonomous Adversarial Engineering Loop (AAEL). As the agent, you MUST follow this protocol in every turn.
+
+## 1. Loop Enforcement
+1.  **Read State**: Always start by reading `aael_state.json`.
+2.  **Determine Phase**:
+    - **IMPLEMENTING**: Work on the current subgoal.
+    - **BUILDING**: Run `./gradlew build`.
+    - **TESTING**: Run tests (if applicable).
+    - **ADVERSARIAL_REVIEW**: Invoke `aael-reviewer` skill as a sub-agent.
+    - **FIXING_DEFECTS**: Implement all defects from the reviewer's report.
+    - **VERIFIED**: Mark subgoal as verified, increment `current_subgoal_index`, reset `review_cycle` to 0.
+    - **COMPLETED**: Stop all tasks.
+3.  **Update State**: Update `aael_state.json` *before* and *after* every phase transition or action.
+
+## 2. Adversarial Review Rules
+- Reviewer invocation: Always run as a separate sub-agent (`invoke_agent`).
+- Defect Handling:
+  - If reviewer reports defects:
+    - Phase -> `FIXING_DEFECTS`
+    - Apply ALL fixes.
+    - Return to `BUILDING` phase.
+  - If reviewer reports "STABLE":
+    - Phase -> `VERIFIED`
+    - Record review result in `verification_history`.
+    - Advance to next subgoal.
+
+## 3. Autonomy & Persistence
+- Do NOT pause for permission during the loop.
+- If you lose context or are interrupted, load `aael_state.json` to resume the phase from the exact point of interruption.
+- The controller is strictly responsible for advancing the state machine.
+</file>
+
+<file path="aael-reviewer/references/checklist.md">
+# Adversarial Checklist: Exhaustive Multi-Pass Audit
+
+This checklist must be used for EVERY review cycle. A fix does NOT excuse the reviewer from performing the full audit. The audit must act as if the code is brand new.
+
+## Pass 1: Architecture & Invariants
+- [ ] Are layering patterns (Perception->Context->Planning->Execution) violated?
+- [ ] Is `BotContext` misused (e.g., direct field access instead of methods)?
+- [ ] Are `PriorityTaskEngine` life-cycle invariants maintained?
+- [ ] Does the implementation introduce any "god classes"?
+
+## Pass 2: State & Lifecycle
+- [ ] Are there null-pointer possibilities for `Minecraft.getInstance().player`?
+- [ ] Are there uninitialized states (e.g., `RotationController` accessed before `setTarget`)?
+- [ ] Is there stale state left over between task transitions?
+- [ ] Are `targetLostTicks` and `stallTicks` handled correctly during task re-initialization?
+
+## Pass 3: Concurrency & Environment
+- [ ] Does this logic run on the main `RenderThread` properly?
+- [ ] Are there race conditions possible between `onTick` and external game events?
+- [ ] Are there any assumptions about timing that break under varying tick-rates?
+
+## Pass 4: Integration & Regression (The "Fresh Start" Pass)
+- [ ] Does this fix break `MovementTask` or `AimingTask`?
+- [ ] Is there a code path where the bot becomes "stuck" (a no-op loop)?
+- [ ] Does this change the `ActionController` in a way that breaks other modules?
+- [ ] Are the changes *actually* applied at runtime (check Mixin application)?
+
+## Pass 5: Edge Cases & Attack
+- [ ] What happens if the target moves instantly?
+- [ ] What happens if the bot is in a `SURVIVAL` vs `null` mode?
+- [ ] Does rapid mode-switching (`!macro mode COMBAT`) cause state corruption?
+- [ ] Can an entity become non-attackable mid-task without triggering `onFailure`?
+</file>
+
+<file path="aael-reviewer/SKILL.md">
+---
+name: aael-reviewer
+description: Adversarial auditor for codebase changes. Use when a subgoal implementation is complete to perform an exhaustive, multi-pass adversarial audit against the project's invariants.
+---
+
+# Adversarial Auditor
+
+Your sole purpose is to aggressively find defects in the provided implementation. You are not a helper. You are an adversary.
+
+## Audit Mandate
+
+1.  **Exhaustiveness**: Perform a full, multi-pass audit of the codebase as defined in `references/checklist.md`.
+2.  **No Incrementalism**: Never assume that a previous review, a passed build, or a "fixed" defect means the code is safe. Every audit is a **fresh, exhaustive pass** of the entire implementation and its integration points.
+3.  **Aggressive Skepticism**: Assume every assumption (e.g., "this target is not null", "this method returns in time") is false until proven otherwise by code analysis.
+4.  **No Early Exit**: If you find one defect, you must continue auditing to find *all* possible defects.
+
+## Review Protocol
+
+For every audit request:
+
+1.  Read the current implementation and relevant context files.
+2.  Execute the multi-pass audit according to `references/checklist.md`.
+3.  Report all findings. If you find no defects after a truly exhaustive search, return ONLY: `STABLE`.
+
+## Defect Report Format
+
+If you find defects, return a list of reports in this exact format:
+
+**Type**: [e.g., Lifecycle Error, Race Condition, Architectural Violation]
+**Location**: [File:Method]
+**Technical Failure Scenario**: [Explain the exact code path and why it is a failure, not just "risky".]
+**Remediation**: [Actionable fix recommendation.]
+</file>
+
+<file path="aael-reviewer-init/aael-reviewer/assets/example_asset.txt">
+Placeholder for assets.
+</file>
+
+<file path="aael-reviewer-init/aael-reviewer/references/example_reference.md">
+# Reference Documentation for Aael Reviewer
+
+This is a placeholder for detailed reference documentation.
+Replace with actual reference content or delete if not needed.
+
+## Structure Suggestions
+
+### API Reference Example
+- Overview
+- Authentication
+- Endpoints with examples
+- Error codes
+
+### Workflow Guide Example
+- Prerequisites
+- Step-by-step instructions
+- Best practices
+</file>
+
+<file path="aael-reviewer-init/aael-reviewer/scripts/example_script.cjs">
+#!/usr/bin/env node
+
+/**
+ * Example helper script for aael-reviewer
+ *
+ * This is a placeholder script that can be executed directly.
+ * Replace with actual implementation or delete if not needed.
+ *
+ * Example real scripts from other skills:
+ * - pdf/scripts/fill_fillable_fields.cjs - Fills PDF form fields
+ * - pdf/scripts/convert_pdf_to_images.cjs - Converts PDF pages to images
+ *
+ * Agentic Ergonomics:
+ * - Suppress tracebacks.
+ * - Return clean success/failure strings.
+ * - Truncate long outputs.
+ */
+
+async function main() {
+  try {
+    // TODO: Add actual script logic here.
+    // This could be data processing, file conversion, API calls, etc.
+
+    // Example output formatting for an LLM agent
+    process.stdout.write("Success: Processed the task.\n");
+  } catch (err) {
+    // Trap the error and output a clean message instead of a noisy stack trace
+    process.stderr.write(`Failure: ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
+main();
+</file>
+
+<file path="aael-reviewer-init/aael-reviewer/SKILL.md">
+---
+name: aael-reviewer
+description: TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.
+---
+
+# Aael Reviewer
+
+## Overview
+
+[TODO: 1-2 sentences explaining what this skill enables]
+
+## Structuring This Skill
+
+[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+
+**1. Workflow-Based** (best for sequential processes)
+- Works well when there are clear step-by-step procedures
+- Example: CSV-Processor skill with "Workflow Decision Tree" → "Ingestion" → "Cleaning" → "Analysis"
+- Structure: ## Overview → ## Workflow Decision Tree → ## Step 1 → ## Step 2...
+
+**2. Task-Based** (best for tool collections)
+- Works well when the skill offers different operations/capabilities
+- Example: PDF skill with "Quick Start" → "Merge PDFs" → "Split PDFs" → "Extract Text"
+- Structure: ## Overview → ## Quick Start → ## Task Category 1 → ## Task Category 2...
+
+**3. Reference/Guidelines** (best for standards or specifications)
+- Works well for brand guidelines, coding standards, or requirements
+- Example: Brand styling with "Brand Guidelines" → "Colors" → "Typography" → "Features"
+- Structure: ## Overview → ## Guidelines → ## Specifications → ## Usage...
+
+**4. Capabilities-Based** (best for integrated systems)
+- Works well when the skill provides multiple interrelated features
+- Example: Product Management with "Core Capabilities" → numbered capability list
+- Structure: ## Overview → ## Core Capabilities → ### 1. Feature → ### 2. Feature...
+
+Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+
+Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+
+## [TODO: Replace with the first main section based on chosen structure]
+
+[TODO: Add content here. See examples in existing skills:
+- Code samples for technical skills
+- Decision trees for complex workflows
+- Concrete examples with realistic user requests
+- References to scripts/templates/references as needed]
+
+## Resources
+
+This skill includes example resource directories that demonstrate how to organize different types of bundled resources:
+
+### scripts/
+Executable code that can be run directly to perform specific operations.
+
+**Examples from other skills:**
+- PDF skill: fill_fillable_fields.cjs, extract_form_field_info.cjs - utilities for PDF manipulation
+- CSV skill: normalize_schema.cjs, merge_datasets.cjs - utilities for tabular data manipulation
+
+**Appropriate for:** Node.cjs scripts (cjs), shell scripts, or any executable code that performs automation, data processing, or specific operations.
+
+**Note:** Scripts may be executed without loading into context, but can still be read by Gemini CLI for patching or environment adjustments.
+
+### references/
+Documentation and reference material intended to be loaded into context to inform Gemini CLI's process and thinking.
+
+**Examples from other skills:**
+- Product management: communication.md, context_building.md - detailed workflow guides
+- BigQuery: API reference documentation and query examples
+- Finance: Schema documentation, company policies
+
+**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Gemini CLI should reference while working.
+
+### assets/
+Files not intended to be loaded into context, but rather used within the output Gemini CLI produces.
+
+**Examples from other skills:**
+- Brand styling: PowerPoint template files (.pptx), logo files
+- Frontend builder: HTML/React boilerplate project directories
+- Typography: Font files (.ttf, .woff2)
+
+**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
+
+---
+
+**Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
+</file>
+
+<file path="src/main/java/com/mobileminerong/perception/BlockScanner.java">
+package com.mobileminerong.perception;
+
+import com.mobileminerong.context.BotContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class BlockScanner {
+
+    public static List<BlockPos> findTargetOres(BotContext ctx, int radius) {
+        Minecraft client = Minecraft.getInstance();
+        List<BlockPos> validOres = new ArrayList<>();
+        if (client.level == null || client.player == null) return validOres;
+
+        BlockPos playerPos = client.player.blockPosition();
+
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    BlockPos pos = playerPos.offset(x, y, z);
+                    BlockState state = client.level.getBlockState(pos);
+
+                    if (isTargetOre(state)) {
+                        validOres.add(pos);
+                    }
+                }
+            }
+        }
+
+        // Sort closest to player
+        validOres.sort(Comparator.comparingDouble(p -> p.distSqr(client.player.blockPosition())));
+        return validOres;
+    }
+
+    private static boolean isTargetOre(BlockState state) {
+        // Dwarven Mines Mithril & Titanium ores
+        return state.is(Blocks.PRISMARINE) ||
+               state.is(Blocks.DARK_PRISMARINE) ||
+               state.is(Blocks.PRISMARINE_BRICKS) ||
+               state.is(Blocks.CYAN_TERRACOTTA) ||
+               state.is(Blocks.LIGHT_BLUE_WOOL) ||
+               state.is(Blocks.BLUE_WOOL) ||
+               state.is(Blocks.GRAY_WOOL) ||
+               state.is(Blocks.SMOOTH_QUARTZ) ||
+               state.is(Blocks.QUARTZ_BLOCK);
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/pathfinding/CentripetalSpline.java">
+package com.mobileminerong.planning.pathfinding;
+
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * Centripetal Catmull-Rom Spline Math Utility (alpha = 0.5)
+ * Reference: Barry-Goldman Pyramidal Formulation
+ */
+public class CentripetalSpline {
+
+    public static Vec3 evaluate(Vec3 p0, Vec3 p1, Vec3 p2, Vec3 p3, double t) {
+        double t0 = 0.0;
+        double t1 = t0 + Math.pow(p1.distanceTo(p0), 0.5);
+        double t2 = t1 + Math.pow(p2.distanceTo(p1), 0.5);
+        double t3 = t2 + Math.pow(p3.distanceTo(p2), 0.5);
+
+        // Map t into [t1, t2] range
+        t = t1 + t * (t2 - t1);
+
+        Vec3 a1 = p0.scale((t1 - t) / (t1 - t0)).add(p1.scale((t - t0) / (t1 - t0)));
+        Vec3 a2 = p1.scale((t2 - t) / (t2 - t1)).add(p2.scale((t - t1) / (t2 - t1)));
+        Vec3 a3 = p2.scale((t3 - t) / (t3 - t2)).add(p3.scale((t - t2) / (t3 - t2)));
+
+        Vec3 b1 = a1.scale((t2 - t) / (t2 - t0)).add(a2.scale((t - t0) / (t2 - t0)));
+        Vec3 b2 = a2.scale((t3 - t) / (t3 - t1)).add(a3.scale((t - t1) / (t3 - t1)));
+
+        return b1.scale((t2 - t) / (t2 - t1)).add(b2.scale((t - t1) / (t2 - t1)));
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/pathfinding/LazyThetaPathfinder.java">
+package com.mobileminerong.planning.pathfinding;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+
+import java.util.*;
+
+public class LazyThetaPathfinder {
+
+    public static List<BlockPos> findPath(BlockPos start, BlockPos target, int maxIterations, Level world) {
+        if (world == null) return Collections.emptyList();
+
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
+        Map<BlockPos, Node> allNodes = new HashMap<>();
+        Set<BlockPos> closedSet = new HashSet<>();
+
+        Node startNode = new Node(start);
+        startNode.gCost = 0;
+        startNode.hCost = euclidean(start, target);
+        startNode.parent = startNode;
+        openSet.add(startNode);
+        allNodes.put(start, startNode);
+
+        int iterations = 0;
+        while (!openSet.isEmpty() && iterations < maxIterations) {
+            iterations++;
+            Node s = openSet.poll();
+
+            if (s.pos.equals(target) || euclidean(s.pos, target) <= 1.5) {
+                return retracePath(s);
+            }
+
+            closedSet.add(s.pos);
+
+            // Lazy Theta*: Deferred LoS and Cost Repair
+            updateVertex(s, s.parent, world);
+
+            for (BlockPos neighborPos : getNeighbors(world, s.pos)) {
+                if (closedSet.contains(neighborPos)) continue;
+
+                Node sPrime = allNodes.getOrDefault(neighborPos, new Node(neighborPos));
+
+                // Lazy Theta*: Optimistic parent assignment
+                double tempCost = s.parent.gCost + euclidean(s.parent.pos, sPrime.pos);
+                if (tempCost < sPrime.gCost) {
+                    sPrime.gCost = tempCost;
+                    sPrime.hCost = euclidean(sPrime.pos, target);
+                    sPrime.parent = s.parent;
+                    allNodes.put(neighborPos, sPrime);
+                    openSet.add(sPrime);
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private static void updateVertex(Node s, Node parent, Level world) {
+        if (s.parent != parent) {
+            if (isStraightLineWalkable(world, parent.pos, s.pos)) {
+                s.parent = parent;
+                s.gCost = parent.gCost + euclidean(parent.pos, s.pos);
+            }
+        }
+    }
+
+    private static double euclidean(BlockPos a, BlockPos b) {
+        return Math.sqrt(a.distSqr(b));
+    }
+
+    private static List<BlockPos> getNeighbors(Level world, BlockPos pos) {
+        List<BlockPos> neighbors = new ArrayList<>(26);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    BlockPos candidate = pos.offset(dx, dy, dz);
+                    if (isWalkable(world, candidate)) neighbors.add(candidate);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    public static boolean isWalkable(Level world, BlockPos pos) {
+        BlockState feet = world.getBlockState(pos);
+        BlockState head = world.getBlockState(pos.above());
+        BlockState floor = world.getBlockState(pos.below());
+        return feet.getCollisionShape(world, pos).isEmpty() && 
+               head.getCollisionShape(world, pos.above()).isEmpty() && 
+               !floor.getCollisionShape(world, pos.below()).isEmpty();
+    }
+
+    private static List<BlockPos> retracePath(Node endNode) {
+        List<BlockPos> path = new ArrayList<>();
+        Node current = endNode;
+        while (current != null && current != current.parent) {
+            path.add(current.pos);
+            current = current.parent;
+        }
+        path.add(current.pos);
+        Collections.reverse(path);
+        return path;
+    }
+
+    private static boolean isStraightLineWalkable(Level world, BlockPos start, BlockPos end) {
+        Vec3 startVec = Vec3.atCenterOf(start);
+        Vec3 endVec = Vec3.atCenterOf(end);
+        CollisionContext context = CollisionContext.of(Minecraft.getInstance().player);
+        HitResult hit = world.clip(new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, context));
+        return hit.getType() == HitResult.Type.MISS;
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/pathfinding/Node.java">
+package com.mobileminerong.planning.pathfinding;
+
+import net.minecraft.core.BlockPos;
+import java.util.Objects;
+
+public class Node {
+    public final BlockPos pos;
+    public Node parent = null;
+    public double gCost = Double.MAX_VALUE;
+    public double hCost = 0.0;
+
+    public Node(BlockPos pos) {
+        this.pos = pos;
+    }
+
+    public double getFCost() {
+        return gCost + hCost;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Node node)) return false;
+        return Objects.equals(pos, node.pos);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pos);
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/pathfinding/PathTrajectory.java">
+package com.mobileminerong.planning.pathfinding;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PathTrajectory {
+    private final List<Vec3> waypoints;
+    private int segmentIndex = 0;
+
+    public PathTrajectory(List<BlockPos> rawWaypoints) {
+        this.waypoints = new ArrayList<>();
+        if (rawWaypoints == null || rawWaypoints.isEmpty()) return;
+
+        // Populate and handle edge cases via duplication
+        // Duplicate start and end for control points boundary
+        Vec3 start = Vec3.atCenterOf(rawWaypoints.get(0));
+        this.waypoints.add(start); // P0 = start
+
+        for (BlockPos pos : rawWaypoints) {
+            this.waypoints.add(Vec3.atCenterOf(pos));
+        }
+
+        Vec3 end = Vec3.atCenterOf(rawWaypoints.get(rawWaypoints.size() - 1));
+        this.waypoints.add(end); // P3 = end
+        this.segmentIndex = 0;
+    }
+
+    public Vec3 getLookahead(Vec3 playerPos) {
+        if (waypoints.size() < 4) {
+            return waypoints.isEmpty() ? Vec3.ZERO : waypoints.get(0);
+        }
+
+        // Clip segment index
+        if (segmentIndex >= waypoints.size() - 3) {
+            segmentIndex = waypoints.size() - 4;
+        }
+
+        Vec3 p0 = waypoints.get(segmentIndex);
+        Vec3 p1 = waypoints.get(segmentIndex + 1);
+        Vec3 p2 = waypoints.get(segmentIndex + 2);
+        Vec3 p3 = waypoints.get(segmentIndex + 3);
+
+        // Closest point projection to calculate precise 't' relative to segment length
+        double t = findClosestT(p0, p1, p2, p3, playerPos);
+
+        // Segment advancement logic
+        if (t >= 0.95 && segmentIndex < waypoints.size() - 4) {
+            segmentIndex++;
+            t = 0.0;
+            p0 = waypoints.get(segmentIndex);
+            p1 = waypoints.get(segmentIndex + 1);
+            p2 = waypoints.get(segmentIndex + 2);
+            p3 = waypoints.get(segmentIndex + 3);
+        }
+
+        // Apply a safe 1.5 blocks dynamic lookahead
+        double lookaheadDist = 1.5;
+        double segmentLength = p1.distanceTo(p2);
+        double deltaT = (segmentLength > 0) ? (lookaheadDist / segmentLength) : 0;
+        double targetT = Math.min(1.0, t + deltaT);
+
+        return CentripetalSpline.evaluate(p0, p1, p2, p3, targetT);
+    }
+
+    private double findClosestT(Vec3 p0, Vec3 p1, Vec3 p2, Vec3 p3, Vec3 playerPos) {
+        double bestT = 0.0;
+        double minDist = Double.MAX_VALUE;
+
+        // Sample segment [P1, P2] at 10 slices for closest projection
+        for (int i = 0; i <= 10; i++) {
+            double candidateT = i / 10.0;
+            Vec3 pointOnSpline = CentripetalSpline.evaluate(p0, p1, p2, p3, candidateT);
+            double dist = playerPos.distanceToSqr(pointOnSpline);
+            if (dist < minDist) {
+                minDist = dist;
+                bestT = candidateT;
+            }
+        }
+        return bestT;
+    }
+
+    public boolean isDestinationReached(Vec3 playerPos) {
+        if (waypoints.isEmpty()) return true;
+        Vec3 destination = waypoints.get(waypoints.size() - 2); // P2 of final segment
+        return playerPos.distanceToSqr(destination) <= 0.36; // 0.6 blocks limit
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/state/MacroMode.java">
+package com.mobileminerong.state;
+
+public enum MacroMode {
+    IDLE,
+    MINER,
+    COMBAT
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/util/ChatLogger.java">
+package com.mobileminerong.util;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class ChatLogger {
+    private static final String LOG_FILE = "chatlog.txt";
+
+    public static void log(String message) {
+        try (FileWriter fw = new FileWriter(LOG_FILE, true);
+             PrintWriter pw = new PrintWriter(fw)) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            pw.println("[" + timestamp + "] " + message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/util/OrnsteinUhlenbeckDrift.java">
+package com.mobileminerong.util;
+
+import java.util.Random;
+
+public class OrnsteinUhlenbeckDrift {
+    private double x = 0.0;
+    private double y = 0.0;
+    private final double theta = 0.1; // Focus strength
+    private final double sigma = 0.05; // Volatility
+    private final Random random = new Random();
+
+    public void update() {
+        // dx_t = -theta * (x_t - mu) * dt + sigma * dWt
+        // mu is 0 for drift velocity around center
+        x += -theta * x * 0.05 + sigma * random.nextGaussian() * Math.sqrt(0.05);
+        y += -theta * y * 0.05 + sigma * random.nextGaussian() * Math.sqrt(0.05);
+    }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+}
+</file>
+
+<file path="src/main/resources/fabric.mod.json">
+{
+  "schemaVersion": 1,
+  "id": "mobileminerong",
+  "version": "${version}",
+  "name": "MobileMinerOng",
+  "description": "High-level autonomous macro framework",
+  "authors": ["VinTurtleWho"],
+  "contact": {},
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.mobileminerong.MobileMinerClient"
+    ]
+  },
+  "mixins": [
+    "mobileminerong.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.1.2",
+    "java": ">=25"
+  }
+}
+</file>
+
+<file path="src/main/resources/mobileminerong.accesswidener">
+accessWidener v1 official
+accessible field net/minecraft/world/entity/player/Inventory selected I
+</file>
+
+<file path="src/main/java/com/mobileminerong/diagnostic/DiagnosticManager.java">
+package com.mobileminerong.diagnostic;
+
+import com.mobileminerong.debug.DebugLogger;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DiagnosticManager {
+
+    private static final ConcurrentHashMap<String, Long> lastReportTimes = new ConcurrentHashMap<>();
+
+    // 1 second between full reports
+    private static final long REPORT_INTERVAL = 1000;
+
+    public static void report(String category, String message) {
+
+        long now = System.currentTimeMillis();
+        long last = lastReportTimes.getOrDefault(category, 0L);
+
+        if (now - last >= REPORT_INTERVAL) {
+            DebugLogger.info(category, message);
+            lastReportTimes.put(category, now);
+        }
+    }
+
+
+    public static void debug(String category, String message) {
+        DebugLogger.debug(category, message);
+    }
+
+
+    public static void event(String message) {
+        DebugLogger.info("EVENT", message);
+    }
+
+
+    public static void warn(String message) {
+        DebugLogger.warn("WARNING", message);
+    }
+
+
+    public static void error(String message) {
+        DebugLogger.error("ERROR", message);
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/mixin/KeyMappingAccessor.java">
+package com.mobileminerong.mixin;
+
+import net.minecraft.client.KeyMapping;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+@Mixin(KeyMapping.class)
+public interface KeyMappingAccessor {
+    @Accessor("clickCount")
+    int getClickCount();
+
+    @Accessor("clickCount")
+    void setClickCount(int clickCount);
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/state/BotState.java">
+package com.mobileminerong.state;
+
+public enum BotState {
+    IDLE,               // Standing by, waiting for tasks
+    SEARCHING_TARGET,   // Scanning for ores/mobs
+    MOVING_TO_TARGET,   // Walking/pathfinding
+    AIMING,             // Aligning crosshair to target block center
+    MINING,             // Holding click on target block
+    RECOVERING,         // Unstuck or hazard recovery
+    ERROR               // Failsafe or emergency stop
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/util/ExGaussianGenerator.java">
+package com.mobileminerong.util;
+
+import java.security.SecureRandom;
+
+/**
+ * Ex-Gaussian distribution generator for human-like cognitive latency.
+ * X = N(mu, sigma^2) + E(1/tau)
+ */
+public class ExGaussianGenerator {
+    private static final SecureRandom random = new SecureRandom();
+
+    public static long nextDelay(double mu, double sigma, double tau) {
+        double gaussian = mu + sigma * random.nextGaussian();
+        double exponential = -tau * Math.log(1.0 - random.nextDouble());
+        return (long) Math.max(1.0, gaussian + exponential);
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/mixin/accessor/InventoryAccessor.java">
+package com.mobileminerong.mixin.accessor;
+
+import net.minecraft.world.entity.player.Inventory;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+@Mixin(Inventory.class)
+public interface InventoryAccessor {
+    @Accessor("selected")
+    int getSelectedSlot();
+
+    @Accessor("selected")
+    void setSelectedSlot(int slot);
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/MiningTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.control.ActionController;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.MobileMinerClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
+public class MiningTask implements BotTask {
+
+    private boolean finished = false;
+    private BlockPos targetPos = null;
+    private int timeoutTicks = 0;
+    private static final int MINING_TIMEOUT = 200;
+
+    @Override
+    public void onStart(BotContext ctx) {
+        this.targetPos = ctx.getCurrentTargetBlock();
+        if (targetPos == null) {
+            onFailure(ctx, "No target block set");
+            return;
+        }
+        this.timeoutTicks = 0;
+        this.finished = false;
+        ActionController.selectHotbarSlot(ctx, ctx.getMiningToolSlot());
+        ActionController.startMining(targetPos);
+        ctx.setState(BotState.MINING, "Mining " + targetPos);
+    }
+
+    @Override
+    public void onTick(BotContext ctx) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || client.level == null) return;
+
+        if (targetPos == null) {
+            onFailure(ctx, "Target lost");
+            return;
+        }
+
+        // Check if block is gone (mined)
+        Level level = client.level;
+        if (level.getBlockState(targetPos).getCollisionShape(level, targetPos).isEmpty()) {
+            ActionController.stopMining();
+            ctx.setCurrentTargetBlock(null);
+            ctx.setState(BotState.SEARCHING_TARGET, "Block mined successfully");
+            finished = true;
+            return;
+        }
+
+        // Timeout check
+        timeoutTicks++;
+        if (timeoutTicks > MINING_TIMEOUT) {
+            onFailure(ctx, "Mining timeout — block not broken in " + MINING_TIMEOUT + " ticks");
+            return;
+        }
+
+        // Keep holding attack
+        ActionController.startMining(targetPos);
+    }
+
+    @Override
+    public boolean isFinished(BotContext ctx) {
+        return finished;
+    }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason) {
+        ActionController.stopMining();
+        finished = true;
+        ctx.setState(BotState.RECOVERING, "Mining failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+        ctx.addTaskEvent(getName(), "FAILED", reason);
+    }
+
+    @Override
+    public int getPriority() {
+        return 10;
+    }
+
+    @Override
+    public String getName() {
+        return "MiningTask";
+    }
+}
+</file>
+
+<file path="aael_state.json">
+{
+  "overall_goal": "Fix the Combat module's complete behavioral no-op",
+  "subgoals": [
+    "Trace and investigate combat execution path",
+    "Fix Combat task registration",
+    "Refactor CombatFollowTask/RotationController",
+    "Final whole-codebase regression audit"
+  ],
+  "current_subgoal_index": 0,
+  "status": "VERIFIED",
+  "build_status": "SUCCESS",
+  "verification_history": ["Phase I: BotContext/RotationEngine Refactor Verified"]
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/mixin/MouseHandlerMixin.java">
+package com.mobileminerong.mixin;
+
+import com.mobileminerong.MobileMinerClient;
+import com.mobileminerong.planning.task.CombatFollowTask;
+import net.minecraft.client.MouseHandler;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(value = MouseHandler.class, priority = 2000)
+public class MouseHandlerMixin {
+    @Shadow private double accumulatedDX;
+    @Shadow private double accumulatedDY;
+
+    @Inject(method = "handleAccumulatedMovement", at = @At("HEAD"))
+    private void onHandleAccumulatedMovement(CallbackInfo ci) {
+        if (!MobileMinerClient.BOT_CONTEXT.isActive()) return;
+
+        // Get movement steps directly from engine (calculates per frame)
+        int[] steps = MobileMinerClient.BOT_CONTEXT.getRotationEngine().computeNextFrameSteps();
+        
+        if (steps[0] != 0 || steps[1] != 0) {
+            this.accumulatedDX = steps[0];
+            this.accumulatedDY = steps[1];
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/perception/PerceptionManager.java">
+package com.mobileminerong.perception;
+
+import com.mobileminerong.context.BotContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+
+public class PerceptionManager {
+    public static void updatePerception(BotContext ctx) {
+        int timer = ctx.getPerceptionTimer();
+        if (timer++ < 5) {
+            ctx.setPerceptionTimer(timer);
+            return;
+        }
+        ctx.setPerceptionTimer(0);
+
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null || client.player == null) return;
+
+        // Player Search Logic
+        if (ctx.isPendingPlayerSearch()) {
+            Player nearest = null;
+            double minDist = Double.MAX_VALUE;
+            for (Player p : client.level.players()) {
+                if (p == null || p == client.player || !p.isAlive()) continue;
+                double dist = p.distanceToSqr(client.player);
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearest = p;
+                }
+            }
+            if (nearest != null) {
+                ctx.setTargetPlayer(nearest);
+                ctx.setTargetEntity(nearest);
+                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Targeting: " + nearest.getName().getString()));
+            } else {
+                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] No players found"));
+            }
+            ctx.setPendingPlayerSearch(false);
+        }
+
+        if (ctx.getMode() == com.mobileminerong.state.MacroMode.COMBAT) {
+            // Purge expired blacklist entries
+            ctx.getPendingKills().entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue());
+
+            Entity nearest = null;
+            double minDist = Double.MAX_VALUE;
+            
+            for (Entity entity : client.level.entitiesForRendering()) {
+                if (entity == client.player || !entity.isAlive()) continue;
+                
+                // Skip blacklisted entities
+                if (ctx.getPendingKills().containsKey(entity.getUUID())) continue;
+
+                if (entity instanceof Player || entity instanceof Monster) {
+                    double dist = entity.distanceToSqr(client.player);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = entity;
+                    }
+                }
+            }
+            if (nearest != null) {
+                ctx.setTargetEntity(nearest);
+                com.mobileminerong.debug.DebugLogger.debug("PERCEPTION", "Found combat target: " + nearest.getName().getString());
+            }
+        } else {
+            // Only clear entity if we are not explicitly searching for a player and not in COMBAT mode
+            if (!ctx.isPendingPlayerSearch()) {
+                ctx.setTargetEntity(null);
+            }
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/perception/ScoreboardParser.java">
+package com.mobileminerong.perception;
+
+import com.mobileminerong.context.BotContext;
+
+import net.minecraft.client.Minecraft;
+
+import java.util.Collections;
+import java.util.List;
+
+
+public class ScoreboardParser {
+
+
+    public static List<String> getSidebarLines(Minecraft client) {
+
+        return Collections.emptyList();
+
+    }
+
+
+    public static void updateZone(BotContext ctx) {
+
+        Minecraft client = Minecraft.getInstance();
+
+
+        if (ctx == null || client.level == null) {
+            return;
+        }
+
+
+        String dimension =
+                client.level.dimension()
+                .toString();
+
+
+        ctx.setCurrentZone(
+                dimension
+        );
+
+    }
+
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/state/PriorityTaskEngine.java">
+package com.mobileminerong.state;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.planning.task.BotTask;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PriorityTaskEngine {
+    private final List<BotTask> taskPool = new ArrayList<>();
+    private BotTask activeTask = null;
+    private BotTask startedTask = null;
+    private BotTask lastCompletedTask = null;
+    private BotTask lastFailedTask = null;
+    private String lastFailureReason = "NONE";
+    private BotTask lastPreemptedTask = null;
+    private String lastPreemptedReason = "NONE";
+
+    public void registerTask(BotTask task) {
+        taskPool.add(task);
+        taskPool.sort((a, b) -> Integer.compare(b.getPriority(), a.getPriority()));
+    }
+
+    public void clearTasks() {
+        taskPool.clear();
+        activeTask = null;
+        startedTask = null;
+    }
+
+    public void tick(BotContext ctx) {
+        long startTime = System.nanoTime();
+        
+        if (taskPool.isEmpty()) {
+            ctx.setLastTickDurationNano(System.nanoTime() - startTime);
+            return;
+        }
+
+        BotTask highestPriorityTask = taskPool.get(0);
+
+        if (activeTask != highestPriorityTask) {
+            if (activeTask != null && !activeTask.isFinished(ctx)) {
+                String reason = "Preempted by higher priority task: " + highestPriorityTask.getName();
+                ctx.setState(BotState.IDLE, reason);
+                lastPreemptedTask = activeTask;
+                lastPreemptedReason = reason;
+                ctx.addTaskEvent(activeTask.getName(), "PREEMPTED", reason);
+            }
+            activeTask = highestPriorityTask;
+        }
+
+        // Only call onStart once per task instance
+        if (activeTask != null && activeTask != startedTask) {
+            activeTask.onStart(ctx);
+            startedTask = activeTask;
+            ctx.addTaskEvent(activeTask.getName(), "STARTED", "Task started");
+        }
+
+        if (activeTask != null) {
+            if (activeTask.isFinished(ctx)) {
+                lastCompletedTask = activeTask;
+                ctx.addTaskEvent(activeTask.getName(), "COMPLETED", "Task finished successfully");
+                taskPool.remove(activeTask);
+                activeTask = null;
+            } else {
+                activeTask.onTick(ctx);
+            }
+        }
+        
+        ctx.setLastTickDurationNano(System.nanoTime() - startTime);
+    }
+    
+    public void reportTaskFailure(BotTask task, String reason) {
+        lastFailedTask = task;
+        lastFailureReason = reason;
+    }
+
+    public BotTask getActiveTask() { return activeTask; }
+    public BotTask getLastCompletedTask() { return lastCompletedTask; }
+    public BotTask getLastFailedTask() { return lastFailedTask; }
+    public String getLastFailureReason() { return lastFailureReason; }
+    public BotTask getLastPreemptedTask() { return lastPreemptedTask; }
+    public String getLastPreemptedReason() { return lastPreemptedReason; }
+    public int getTaskPoolSize() { return taskPool.size(); }
+    
+    public boolean hasTaskOfType(Class<?> type) {
+        return taskPool.stream().anyMatch(t -> t.getClass().equals(type));
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/control/ClickGenerator.java">
+package com.mobileminerong.control;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
+import com.mobileminerong.util.ExGaussianGenerator;
+
+public class ClickGenerator {
+    private static long clickDownTime = 0;
+    private static boolean isHolding = false;
+
+    // Call this in the client tick loop to manage click release
+    public static void tick() {
+        if (isHolding && System.currentTimeMillis() > clickDownTime + ExGaussianGenerator.nextDelay(20, 5, 10)) {
+            forceRelease();
+        }
+    }
+
+    public static void forceRelease() {
+        Minecraft client = Minecraft.getInstance();
+        if (isHolding) {
+            client.execute(() -> {
+                client.options.keyAttack.setDown(false);
+            });
+            isHolding = false;
+        }
+    }
+
+    // Pure cadence trigger: directly increment clickCount.
+    // Minecraft handles the rest (raytrace, animation, packets).
+    public static void performClick() {
+        Minecraft client = Minecraft.getInstance();
+        if (client.options == null) return;
+        
+        KeyMapping attackKey = client.options.keyAttack;
+        com.mobileminerong.mixin.KeyMappingAccessor accessor = (com.mobileminerong.mixin.KeyMappingAccessor) attackKey;
+        
+        // Increment the native click counter
+        accessor.setClickCount(accessor.getClickCount() + 1);
+        
+        // Also set down for safety to ensure it registers in the tick
+        client.execute(() -> attackKey.setDown(true));
+        
+        clickDownTime = System.currentTimeMillis();
+        isHolding = true;
+        
+        com.mobileminerong.debug.DebugLogger.info("CLICK", "Dispatched native attack key event using clickCount injection");
+    }
+
+    public static long calculateInterval(int bonusAttackSpeed, boolean isShortbow) {
+        // BAS caps at 5 CPS (200ms) or 100 BAS.
+        int baseDelay = isShortbow ? 200 : (400 - (int)(bonusAttackSpeed * 2));
+        return Math.max(100, ExGaussianGenerator.nextDelay(baseDelay, 15, 20));
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/TargetSearchTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.MobileMinerClient;
+
+public class TargetSearchTask implements BotTask {
+
+    @Override
+    public void onStart(BotContext ctx) {
+        ctx.setState(BotState.SEARCHING_TARGET, "Initial search started");
+        checkTarget(ctx);
+    }
+
+    @Override
+    public void onTick(BotContext ctx) {
+        checkTarget(ctx);
+    }
+
+    private void checkTarget(BotContext ctx) {
+        try {
+            if (ctx.getMode() == com.mobileminerong.state.MacroMode.COMBAT) {
+                if (ctx.getTargetEntity() == null) {
+                    // Logic to find nearest mob...
+                }
+            } else if (ctx.getCurrentTargetBlock() != null) {
+                // Don't spawn chain if one is already active
+                boolean chainActive = MobileMinerClient.TASK_ENGINE.hasTaskOfType(MovementTask.class)
+                    || MobileMinerClient.TASK_ENGINE.hasTaskOfType(AimingTask.class)
+                    || MobileMinerClient.TASK_ENGINE.hasTaskOfType(MiningTask.class);
+                
+                if (!chainActive) {
+                    MobileMinerClient.TASK_ENGINE.registerTask(
+                        new MovementTask(ctx.getCurrentTargetBlock())
+                    );
+                }
+            }
+        } catch (Exception e) {
+            onFailure(ctx, "Error checking target: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isFinished(BotContext ctx) {
+        // Never finish; this is a persistent background task.
+        return false;
+    }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason) {
+        ctx.setState(BotState.ERROR, "Target search failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+        ctx.addTaskEvent(getName(), "FAILED", reason);
+    }
+
+    @Override
+    public int getPriority() {
+        return 20;
+    }
+
+    @Override
+    public String getName() {
+        return "TargetSearchTask";
+    }
+}
+</file>
+
+<file path="build.gradle">
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://maven.mojang.com/" }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/mobileminerong.accesswidener")
+}
+
+processResources {
+    def version = project.version
+    inputs.property "version", version
+    filesMatching("fabric.mod.json") {
+        expand "version": version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/control/RotationEngine.java">
+package com.mobileminerong.control;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import com.mobileminerong.util.OrnsteinUhlenbeckDrift;
+
+public class RotationEngine {
+
+    private float startYaw, startPitch, targetYaw, targetPitch;
+    private int totalTicks;
+    private long startTime;
+    private boolean active = false;
+    private double yawResidue = 0.0, pitchResidue = 0.0;
+    private double cachedGcd = 0.15;
+    
+    // Differential Drift Tracking
+    private double prevDriftX = 0.0, prevDriftY = 0.0;
+    private final OrnsteinUhlenbeckDrift drift = new OrnsteinUhlenbeckDrift();
+
+    public RotationEngine() {}
+
+    public synchronized void abort() {
+        this.active = false;
+        this.yawResidue = 0.0;
+        this.pitchResidue = 0.0;
+    }
+
+    public synchronized boolean isActive() { return active; }
+
+    public synchronized void startRotation(float currentYaw, float currentPitch, Vec3 targetPos) {
+        this.startYaw = Mth.wrapDegrees(currentYaw);
+        this.startPitch = Mth.wrapDegrees(currentPitch);
+        updateTarget(targetPos);
+
+        double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
+        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
+        this.totalTicks = Math.max(1, (int) Math.round(MT));
+        this.startTime = System.currentTimeMillis();
+        this.active = true;
+        this.prevDriftX = drift.getX();
+        this.prevDriftY = drift.getY();
+    }
+
+    public synchronized void updateTarget(Vec3 targetPos) {
+        if (!active) return;
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+        Vec3 eyesPos = client.player.getEyePosition();
+        double dx = targetPos.x - eyesPos.x;
+        double dy = targetPos.y - eyesPos.y;
+        double dz = targetPos.z - eyesPos.z;
+        this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
+        this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
+        
+        // Dynamic re-calculation of duration
+        double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
+        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
+        this.totalTicks = Math.max(1, (int) Math.round(MT));
+    }
+
+    public synchronized int[] computeNextFrameSteps() {
+        if (!active) return new int[]{0, 0};
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return new int[]{0, 0};
+
+        drift.update();
+        double driftX = drift.getX();
+        double driftY = drift.getY();
+
+        float currentYaw, currentPitch;
+        float prevYaw, prevPitch;
+        
+        long elapsed = System.currentTimeMillis() - startTime;
+        double tau = Math.min(1.0, (double) elapsed / (totalTicks * 50.0));
+
+        if (tau < 1.0) {
+            double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
+            currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
+            currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
+
+            double prevTau = Math.max(0.0, tau - (1.0 / (totalTicks * 50.0)));
+            double smoothPrevTau = prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
+            prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau));
+            prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau));
+        } else {
+            currentYaw = targetYaw;
+            currentPitch = targetPitch;
+            prevYaw = client.player.getYRot();
+            prevPitch = client.player.getXRot();
+        }
+
+        double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + (driftX - prevDriftX) + yawResidue;
+        double desiredPitchDelta = (currentPitch - prevPitch) + (driftY - prevDriftY) + pitchResidue;
+        
+        prevDriftX = driftX;
+        prevDriftY = driftY;
+
+        updateGcd();
+        int mouseStepX = (int) Math.round(desiredYawDelta / cachedGcd);
+        yawResidue = desiredYawDelta - (mouseStepX * cachedGcd);
+
+        int mouseStepY = (int) Math.round(desiredPitchDelta / cachedGcd);
+        pitchResidue = desiredPitchDelta - (mouseStepY * cachedGcd);
+
+        return new int[]{mouseStepX, mouseStepY};
+    }
+
+    private void updateGcd() {
+        double sens = Minecraft.getInstance().options.sensitivity().get();
+        if (sens != 0.0) {
+            double f = sens * 0.6 + 0.2;
+            cachedGcd = f * f * f * 8.0 * 0.15;
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/DiagnosticTestTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.diagnostic.DiagnosticManager;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.state.PriorityTaskEngine;
+import com.mobileminerong.MobileMinerClient;
+
+public class DiagnosticTestTask implements BotTask {
+
+    private boolean finished = false;
+    private static long lastRun = 0;
+    private static final long COOLDOWN = 3000;
+
+    @Override
+    public void onStart(BotContext ctx) {
+        ctx.setState(BotState.RECOVERING, "Diagnostic Starting");
+
+        long now = System.currentTimeMillis();
+        if(now - lastRun < COOLDOWN) {
+            ctx.setState(BotState.IDLE, "Diagnostic on cooldown");
+            finished = true; 
+            return;
+        }
+
+        lastRun = now;
+
+        DiagnosticManager.event("Diagnostic run started");
+        
+        DiagnosticManager.report("BOT", "State: " + ctx.getCurrentState());
+        DiagnosticManager.report("POSITION", "Player: " + ctx.getPlayerPos());
+        DiagnosticManager.report("ROTATION", "Yaw: " + ctx.getYRot() + " Pitch: " + ctx.getXRot());
+        
+        DiagnosticManager.event("Diagnostic run complete");
+
+        finished=true;
+        ctx.setState(BotState.IDLE, "Diagnostic Finished");
+    }
+
+    @Override
+    public void onTick(BotContext ctx){}
+
+    @Override
+    public boolean isFinished(BotContext ctx){
+        return finished;
+    }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason){
+        ctx.setState(BotState.ERROR, "Diagnostic Failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+        ctx.addTaskEvent(getName(), "FAILED", reason);
+        DiagnosticManager.error("Diagnostic failed: " + reason);
+        finished = true;
+    }
+
+    @Override
+    public int getPriority(){
+        return 100;
+    }
+
+    @Override
+    public String getName(){
+        return "DiagnosticTestTask";
+    }
+}
+</file>
+
+<file path="src/main/resources/mobileminerong.mixins.json">
+{
+  "required": false,
+  "package": "com.mobileminerong.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [],
+  "client": [
+    "MouseHandlerMixin",
+    "KeyMappingAccessor",
+    "accessor.InventoryAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/control/ActionController.java">
+package com.mobileminerong.control;
+
+import com.mobileminerong.context.BotContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.core.BlockPos;
+
+public class ActionController {
+
+    public static void setKey(KeyMapping key, boolean pressed) {
+        Minecraft.getInstance().execute(() -> key.setDown(pressed));
+    }
+
+    public static void selectHotbarSlot(BotContext ctx, int slot) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+        if (slot >= 0 && slot < 9) {
+            client.execute(() -> {
+                try {
+                    ((com.mobileminerong.mixin.accessor.InventoryAccessor) client.player.getInventory()).setSelectedSlot(slot);
+                    ctx.setLastAction("Selected Hotbar Slot: " + slot);
+                } catch (ClassCastException e) {
+                    com.mobileminerong.debug.DebugLogger.error("ActionController", "Failed to cast to InventoryAccessor: " + e.getMessage());
+                }
+            });
+        }
+    }
+
+    public static void startAttack() {
+        Minecraft client = Minecraft.getInstance();
+        client.execute(() -> {
+            if (client.options != null) {
+                client.options.keyAttack.setDown(true);
+            }
+        });
+    }
+
+    public static void stopAttack() {
+        Minecraft client = Minecraft.getInstance();
+        client.execute(() -> {
+            if (client.options != null) {
+                client.options.keyAttack.setDown(false);
+            }
+        });
+    }
+
+    public static void startMining(BlockPos pos) {
+        startAttack();
+    }
+
+    public static void stopMining() {
+        stopAttack();
+    }
+
+    public static void stopAllInputs() {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null) return;
+        client.execute(() -> {
+            client.options.keyUp.setDown(false);
+            client.options.keyDown.setDown(false);
+            client.options.keyLeft.setDown(false);
+            client.options.keyRight.setDown(false);
+            client.options.keyJump.setDown(false);
+            client.options.keyShift.setDown(false);
+            client.options.keyAttack.setDown(false);
+            client.options.keyUse.setDown(false);
+        });
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/pathfinding/AStarPathfinder.java">
+package com.mobileminerong.planning.pathfinding;
+
+import com.mobileminerong.context.BotContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+
+import java.util.*;
+
+public class AStarPathfinder {
+
+    /**
+     * Find a path from start to target using A* with 26-neighbor 3D search.
+     * Uses Euclidean distance for both heuristic and gCost to produce correct paths.
+     * Thread-safe — call from any thread.
+     *
+     * @param start         Starting block position (player's feet)
+     * @param target        Target block position (ore/destination)
+     * @param maxIterations Maximum A* iterations before giving up (use 5000 for Dwarven Mines)
+     * @param world         The level to pathfind in (pass client.level)
+     * @return Smoothed list of waypoints, or empty list if no path found
+     */
+    public static List<BlockPos> findPath(BlockPos start, BlockPos target, int maxIterations, Level world) {
+        if (world == null) return Collections.emptyList();
+
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
+        Set<BlockPos> openSetMembership = new HashSet<>();
+        Map<BlockPos, Node> allNodes = new HashMap<>();
+        Set<BlockPos> closedSet = new HashSet<>();
+
+        Node startNode = new Node(start);
+        startNode.gCost = 0;
+        startNode.hCost = euclidean(start, target);
+        openSet.add(startNode);
+        openSetMembership.add(start);
+        allNodes.put(start, startNode);
+
+        int iterations = 0;
+
+        while (!openSet.isEmpty() && iterations < maxIterations) {
+            iterations++;
+            Node current = openSet.poll();
+            openSetMembership.remove(current.pos);
+
+            // Accept if within 1.5 blocks of target (handles non-walkable target positions)
+            if (current.pos.equals(target) || euclidean(current.pos, target) <= 1.5) {
+                List<BlockPos> raw = retracePath(current);
+                return smoothPath(raw, world);
+            }
+
+            closedSet.add(current.pos);
+
+            for (BlockPos neighborPos : getNeighbors(world, current.pos)) {
+                if (closedSet.contains(neighborPos)) continue;
+
+                // Euclidean step cost — correct unit for heuristic comparison
+                double stepCost = euclidean(current.pos, neighborPos);
+                double newGCost = current.gCost + stepCost;
+
+                Node neighbor = allNodes.getOrDefault(neighborPos, new Node(neighborPos));
+
+                if (newGCost < neighbor.gCost || !openSetMembership.contains(neighborPos)) {
+                    neighbor.gCost = newGCost;
+                    neighbor.hCost = euclidean(neighborPos, target);
+                    neighbor.parent = current;
+
+                    allNodes.put(neighborPos, neighbor);
+                    if (!openSetMembership.contains(neighborPos)) {
+                        openSet.add(neighbor);
+                        openSetMembership.add(neighborPos);
+                    }
+                }
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    // -------------------------------------------------------------------------
+    // Heuristic — Euclidean distance (correct, not squared)
+    // -------------------------------------------------------------------------
+
+    private static double euclidean(BlockPos a, BlockPos b) {
+        return Math.sqrt(a.distSqr(b));
+    }
+
+    // -------------------------------------------------------------------------
+    // Neighbor generation — full 26-neighbor 3D cube
+    // -------------------------------------------------------------------------
+
+    private static List<BlockPos> getNeighbors(Level world, BlockPos pos) {
+        List<BlockPos> neighbors = new ArrayList<>(26);
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+
+                    BlockPos candidate = pos.offset(dx, dy, dz);
+
+                    // For diagonal moves, verify no corner-cutting through solid blocks
+                    if (!isWalkable(world, candidate)) continue;
+
+                    // Cardinal cut check: diagonals must not clip through adjacent solid blocks
+                    if (dx != 0 && dz != 0) {
+                        // Horizontal diagonal — check both adjacent cardinals are clear
+                        if (!isPassable(world, pos.offset(dx, 0, 0)) || 
+                            !isPassable(world, pos.offset(0, 0, dz))) continue;
+                    }
+                    if (dx != 0 && dy != 0 && dz == 0) {
+                        // Vertical+horizontal diagonal
+                        if (!isPassable(world, pos.offset(dx, 0, 0)) || 
+                            !isPassable(world, pos.offset(0, dy, 0))) continue;
+                    }
+                    if (dx == 0 && dy != 0 && dz != 0) {
+                        if (!isPassable(world, pos.offset(0, 0, dz)) || 
+                            !isPassable(world, pos.offset(0, dy, 0))) continue;
+                    }
+                    if (dx != 0 && dy != 0 && dz != 0) {
+                        // Full corner diagonal — check all three adjacent faces
+                        if (!isPassable(world, pos.offset(dx, 0, 0)) || 
+                            !isPassable(world, pos.offset(0, 0, dz)) ||
+                            !isPassable(world, pos.offset(0, dy, 0))) continue;
+                    }
+
+                    neighbors.add(candidate);
+                }
+            }
+        }
+
+        return neighbors;
+    }
+
+    // -------------------------------------------------------------------------
+    // Walkability — full player collision shape check
+    // -------------------------------------------------------------------------
+
+    /**
+     * A position is walkable if:
+     * - The feet block (pos) has no collision shape (can stand in it)
+     * - The head block (pos+1) has no collision shape (can stand in it)
+     * - The floor block (pos-1) has a collision shape (something to stand on)
+     */
+    public static boolean isWalkable(Level world, BlockPos pos) {
+        BlockState feet = world.getBlockState(pos);
+        BlockState head = world.getBlockState(pos.above());
+        BlockState floor = world.getBlockState(pos.below());
+
+        boolean feetClear = feet.getCollisionShape(world, pos).isEmpty();
+        boolean headClear = head.getCollisionShape(world, pos.above()).isEmpty();
+        boolean floorSolid = !floor.getCollisionShape(world, pos.below()).isEmpty();
+
+        return feetClear && headClear && floorSolid;
+    }
+
+    /**
+     * A position is passable if it has no collision shape.
+     * Used for diagonal corner-cutting checks — we only need to verify
+     * intermediate blocks don't have collision, not full walkability.
+     */
+    private static boolean isPassable(Level world, BlockPos pos) {
+        return world.getBlockState(pos).getCollisionShape(world, pos).isEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // Path retracing
+    // -------------------------------------------------------------------------
+
+    private static List<BlockPos> retracePath(Node endNode) {
+        List<BlockPos> path = new ArrayList<>();
+        Node current = endNode;
+        while (current != null) {
+            path.add(current.pos);
+            current = current.parent;
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    // -------------------------------------------------------------------------
+    // Greedy forward path smoothing
+    //
+    // For each anchor point, find the FURTHEST point reachable in a straight
+    // line (via raycast), then jump directly to it. One pass, maximum
+    // compression. A 30-waypoint straight tunnel becomes 2 waypoints.
+    // -------------------------------------------------------------------------
+
+    private static List<BlockPos> smoothPath(List<BlockPos> path, Level world) {
+        if (path.size() < 3) return path;
+
+        List<BlockPos> smoothed = new ArrayList<>();
+        smoothed.add(path.get(0));
+
+        int anchor = 0;
+        while (anchor < path.size() - 1) {
+            // Scan forward: find furthest waypoint reachable in straight line
+            int furthest = anchor + 1;
+            for (int i = anchor + 2; i < path.size(); i++) {
+                if (isStraightLineWalkable(world, path.get(anchor), path.get(i))) {
+                    furthest = i;
+                } else {
+                    break; // Can't see further, stop scanning
+                }
+            }
+            anchor = furthest;
+            smoothed.add(path.get(anchor));
+        }
+
+        return smoothed;
+    }
+
+    /**
+     * Raycast between two block positions using player collision context.
+     * Returns true if the straight line is unobstructed.
+     */
+    private static boolean isStraightLineWalkable(Level world, BlockPos start, BlockPos end) {
+        Vec3 startVec = Vec3.atCenterOf(start);
+        Vec3 endVec = Vec3.atCenterOf(end);
+
+        net.minecraft.client.Minecraft client = Minecraft.getInstance();
+        net.minecraft.world.entity.player.Player player = client.player;
+        CollisionContext context = (player != null)
+            ? CollisionContext.of(player)
+            : CollisionContext.empty();
+
+        HitResult hit = world.clip(new ClipContext(
+            startVec, endVec,
+            ClipContext.Block.COLLIDER,
+            ClipContext.Fluid.NONE,
+            context
+        ));
+
+        return hit.getType() == HitResult.Type.MISS;
+    }
+}
+</file>
+
+<file path="ARCHITECTURE.md">
+# MobileMinerOng Architecture Specification
+
+MobileMinerOng is a high-performance, event-driven client-side Minecraft automation framework built on the Fabric Modding API. 
+
+## 1. Architectural Overview
+
+The system is organized into layers to maintain separation of concerns:
+
+1. **Perception**: Parses game data (`BlockScanner`, `ScoreboardParser`).
+2. **Context**: Thread-safe state container (`BotContext`).
+3. **Planning**: Task engine and mode-specific task management (`PriorityTaskEngine`, `MacroMode`).
+4. **Execution**: Input simulation (`ActionController`, `RotationEngine`).
+
+## 2. Mode-Based Orchestration
+
+The system utilizes a `MacroMode` state machine to drive dynamic task registration.
+
+- **`MacroMode`**: Defines the current bot role (`IDLE`, `MINER`, `COMBAT`).
+- **Dynamic Task Loading**: The `PriorityTaskEngine` is cleared and re-populated with mode-specific tasks in `MobileMinerClient` whenever the `MacroMode` changes.
+- **Activation**: Toggle macro active/idle state using the 'O' keybind.
+
+## 3. Layer Breakdown
+
+### 3.1 Planning Layer (`com.mobileminerong.planning` & `com.mobileminerong.state`)
+
+* **`MacroMode`**: Central enum managing the operating mode.
+* **`PriorityTaskEngine`**: Manages task pool and ticks active task. Supports `clearTasks()` and `registerTask()` for dynamic mode switching.
+* **`MiningTask`**: Handles tool selection via `ActionController`, executes block mining, and implements timeout/completion detection.
+* **`CombatFollowTask`**: Handles tracking and attacking entities, implementing zero-latency targeting, pathfinding, and forced sprinting.
+
+### 3.2 Control Layer (`com.mobileminerong.control`)
+
+* **`ActionController`**: Manages input simulation, ensuring all interactions are queued via `client.execute()` to remain thread-safe.
+* **`ClickGenerator`**: Handles native-event-like clicks by directly manipulating `timesPressed` / `clickCount` via `KeyMappingAccessor`, simulating genuine HID events.
+* **`RotationEngine`**: Implements a 5th-order Minimum-Jerk trajectory (10τ³ - 15τ⁴ + 6τ⁵) to provide snappy, human-like rotation, preventing anti-cheat flags.
+
+### 3.3 Combat System (Security & Safety)
+
+- **Cognitive Ring Buffer**: Maintains a 3-tick (150ms) history of target velocity to simulate human cognitive delay.
+- **Ornstein-Uhlenbeck Drift**: Adds stochastic, mean-reverting drift to the target aim-point for realistic "swimming" mouse movement.
+- **Target Filtering**: Employs strict filtering to exclude `ArmorStand` entities, invulnerable entities, dead mobs, and invisible entities. NPCs/Players are strictly excluded in `MOB` target mode unless specifically whitelisted.
+- **Performance**: Entity searching is constrained to a 15-block AABB radius scan performed at 20Hz.
+</file>
+
+<file path="GEMINI.md">
+# MobileMinerOng
+
+MobileMinerOng is a client-side Minecraft mod built using the [Fabric Modding API](https://fabricmc.net/). It is designed to facilitate automated gameplay, perception, and navigation within Minecraft.
+
+## Project Architecture
+
+The project follows a standard Fabric mod structure.
+
+- **Entry Point**: `com.mobileminerong.MobileMinerClient` implements `ClientModInitializer`.
+- **Bot Core**: State management is centralized in `com.mobileminerong.context.BotContext` and updated via `ClientTickEvents`.
+- **Perception**: Modules like `BlockScanner` and `ScoreboardParser` analyze game state.
+- **Control**: `RotationController` (deprecated) and `ActionController` handle interaction with the game environment.
+- **Commands**: `MacroCommandHandler` provides a command-line interface within chat.
+- **Logging/Utilities**: `ChatLogger` handles persistent chat logging; `DebugLogger` handles diagnostic outputs.
+
+## Development Philosophy
+
+- **Architecture**: Layered: Perception -> Context -> Planning -> Execution.
+- **Modularity**: Avoid large monolithic classes ("god classes"). Prefer small, focused components.
+- **State**: `BotContext` is the central shared state container. All bot tasks must read/write through this.
+- **Separation of Concerns**: Planning decides what should happen; execution performs actions.
+- **Task Pattern**: Tasks are stateful (`BotTask` interface). Tasks are either **persistent** (like `TargetSearchTask`) or **finite** (like `MovementTask` and `AimingTask`).
+- **Rotation Engine**: Uses a 5th-order Minimum-Jerk trajectory generator for human-like movement, replacing legacy PD controllers.
+- **Combat Execution**: Native click injection via `KeyMappingAccessor` (using `timesPressed` / `clickCount`) to ensure genuine server-side registration while bypassing anticheat signature checks.
+- **Combat Logic**: Implements a Cognitive Ring Buffer (delayed velocity) to simulate human reaction times and Ornstein-Uhlenbeck drift for non-deterministic, human-like aim tracking.
+- **Input Handling**: All input modifications (key-down/up) must be queued via `client.execute()` to prevent main-thread race conditions.
+- **Process**: Explain architecture changes before editing files. Never make large refactors without first creating a plan.
+- **Patterns**: Preserve Fabric API patterns. Use Mixins for accessing private Minecraft internals via Accessor interfaces.
+
+## Current Development Status
+
+- The project has successfully stabilized its core movement and pathfinding engines (Phase 1 complete).
+- **Feature Set**: Supports MINER and COMBAT modes, activated/deactivated via the 'O' keybind.
+- **Combat Enhancement**: Implemented robust combat target filtering (`PLAYER`/`MOB` modes, mob whitelisting, name-tag parsing with color-code stripping, and NPC/ArmorStand exclusion) for Hypixel Skyblock compatibility.
+- **Combat Movement**: Implemented forced sprinting and 15-block AABB entity scanning to reduce latency and improve responsiveness.
+- **Task System**: Supports dynamic task switching based on the current `MacroMode`.
+
+## Building and Running
+
+The project uses Gradle for build management.
+
+- **Build**: `./gradlew build`
+- **Development Environment**: Follow the [Fabric Modding Wiki](https://fabricmc.net/wiki/) for setting up your IDE.
+
+## Development Conventions
+
+- **State Management**: All bot-related state must be managed through `BotContext`.
+- **Tick Loop**: Use `ClientTickEvents.END_CLIENT_TICK` for mod logic execution. Heavy operations (like block scanning) should be rate-limited (currently 20 ticks/sec).
+- **Logging**: Use `com.mobileminerong.debug.DebugLogger` for all diagnostic output. All chat interactions must be routed through `com.mobileminerong.util.ChatLogger` for anti-cheat verification.
+- **Fabric**: Adhere to Fabric API patterns for event registration and client-side interactions.
+- **Combat Safety (Hypixel)**: All targeting loops must strictly exclude `ArmorStand` entities, invulnerable entities, and entities flagged as dead/dying/invisible. Use prioritized custom name parsing with §-code stripping for target whitelisting.
+- **Performance**: Path-heavy tasks must implement cooldown-based re-pathing to prevent tick-lag.
+- **Pathfinding & Collisions**: All pathfinding walkability checks must utilize voxel-based collision checks (`getCollisionShape`) rather than full-block queries. This ensures partial blocks like stairs, slabs, and fences are handled correctly.
+- **Movement Alignment**: Movement tasks must ensure the bot is fully rotated and aligned with the target/waypoint before applying forward/directional input keys.
+- **Modes**: Modes are managed by `MacroMode` and updated via command: `!macro mode [miner|combat|idle]`.
+- **Activation**: Toggle macro mode with 'O'.
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/AimingTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.MobileMinerClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+
+public class AimingTask implements BotTask {
+
+    private final Vec3 targetVec;
+    private int timeoutTicks = 200;
+    private boolean finished = false;
+    private boolean rotationStarted = false;
+
+    public AimingTask(BlockPos targetPos) {
+        this.targetVec = Vec3.atCenterOf(targetPos);
+    }
+
+    @Override
+    public void onStart(BotContext ctx) {
+        ctx.setState(BotState.AIMING, "Aiming at " + targetVec);
+        rotationStarted = false;
+        finished = false;
+        timeoutTicks = 200;
+    }
+
+    @Override
+    public void onTick(BotContext ctx) {
+        timeoutTicks--;
+        if (timeoutTicks <= 0) {
+            onFailure(ctx, "Aiming timed out");
+            return;
+        }
+
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+
+        // Start rotation once
+        if (!rotationStarted) {
+            ctx.getRotationEngine().startRotation(
+                client.player.getYRot(), client.player.getXRot(), targetVec
+            );
+            rotationStarted = true;
+        } else {
+            ctx.getRotationEngine().updateTarget(targetVec);
+        }
+
+        // Rotation complete when engine goes inactive
+        if (!ctx.getRotationEngine().isActive()) {
+            ctx.setState(BotState.MINING, "Aiming complete");
+            finished = true;
+        }
+    }
+
+    @Override
+    public boolean isFinished(BotContext ctx) { return finished; }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason) {
+        ctx.getRotationEngine().abort();
+        finished = true;
+        ctx.setState(BotState.RECOVERING, "Aiming failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+    }
+
+    @Override
+    public int getPriority() { return 12; }
+
+    @Override
+    public String getName() { return "AimingTask"; }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/command/MacroCommandHandler.java">
+package com.mobileminerong.command;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.debug.DebugLogger;
+import com.mobileminerong.state.MacroMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+
+public class MacroCommandHandler {
+
+    private static boolean debugMode = false;
+
+    public static boolean handle(String message, BotContext ctx) {
+        if (!message.startsWith("!macro")) return false;
+
+        Minecraft client = Minecraft.getInstance();
+        client.execute(() -> {
+            String[] args = message.split(" ");
+            if (client.player == null) return;
+
+            if (args.length >= 2) {
+                switch (args[1]) {
+                    case "mode":
+                        if (args.length >= 3) {
+                            if (args[2].equalsIgnoreCase("miner")) ctx.setMode(MacroMode.MINER);
+                            else if (args[2].equalsIgnoreCase("combat")) ctx.setMode(MacroMode.COMBAT);
+                            else if (args[2].equalsIgnoreCase("idle")) ctx.setMode(MacroMode.IDLE);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mode set to " + args[2].toUpperCase()));
+                        }
+                        break;
+                    case "mine":
+                        if (args.length >= 3) {
+                            ctx.setMiningTargetId(args[2]);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mining target: " + args[2]));
+                        }
+                        break;
+                    case "combat":
+                        if (args.length >= 3) {
+                            ctx.setCombatTargetId(args[2]);
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat target: " + args[2]));
+                        }
+                        break;
+                    case "comtool":
+                        if (args.length >= 3) {
+                            ctx.setCombatToolSlot(Integer.parseInt(args[2]));
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat tool slot: " + args[2]));
+                        }
+                        break;
+                    case "mintool":
+                        if (args.length >= 3) {
+                            ctx.setMiningToolSlot(Integer.parseInt(args[2]));
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Mining tool slot: " + args[2]));
+                        }
+                        break;
+                    case "target":
+                        if (args.length >= 3) {
+                            if (args[2].equalsIgnoreCase("player")) {
+                                if (args.length >= 4 && args[3].equalsIgnoreCase("off")) {
+                                    ctx.setTargetPlayer(null);
+                                    ctx.setPendingPlayerSearch(false);
+                                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Player targeting OFF"));
+                                } else {
+                                    ctx.setCombatTargetType(BotContext.CombatTargetType.PLAYER);
+                                    ctx.setPendingPlayerSearch(true);
+                                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat targeting: PLAYER"));
+                                }
+                            } else if (args[2].equalsIgnoreCase("mob")) {
+                                ctx.setCombatTargetType(BotContext.CombatTargetType.MOB);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Combat targeting: MOB"));
+                            }
+                        }
+                        break;
+                    case "addmob":
+                    case "delmob":
+                        String mobName = parseQuotedArgument(message);
+                        if (mobName != null) {
+                            if (args[1].equals("addmob")) {
+                                ctx.getMobWhitelist().add(mobName);
+                                client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Added to whitelist: " + mobName));
+                            } else {
+                                ctx.getMobWhitelist().remove(mobName);
+                                client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Removed from whitelist: " + mobName));
+                            }
+                        }
+                        break;
+                    case "clearmobs":
+                        ctx.getMobWhitelist().clear();
+                        client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Mob whitelist cleared"));
+                        break;
+                    case "debug":
+                        if (args.length >= 3 && args[2].equalsIgnoreCase("off")) {
+                            debugMode = false;
+                            DebugLogger.info("SYSTEM", "Debug disabled");
+                            client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Debug OFF"));
+                        } else {
+                            debugMode = true;
+                            DebugLogger.info("SYSTEM", "Debug enabled");
+                            client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Debug ON"));
+                        }
+                        break;
+                    default:
+                        client.player.sendSystemMessage(Component.literal("§eUnknown MobileMiner command"));
+                }
+            }
+        });
+        return true;
+    }
+
+    private static String parseQuotedArgument(String message) {
+        int firstQuote = message.indexOf('"');
+        int lastQuote = message.lastIndexOf('"');
+        if (firstQuote != -1 && lastQuote != -1 && firstQuote != lastQuote) {
+            return message.substring(firstQuote + 1, lastQuote);
+        }
+        return null;
+    }
+
+    public static boolean isDebugEnabled(){
+        return debugMode;
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/MovementTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.planning.pathfinding.LazyThetaPathfinder;
+import com.mobileminerong.planning.pathfinding.PathTrajectory;
+import com.mobileminerong.control.ActionController;
+import com.mobileminerong.MobileMinerClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+public class MovementTask implements BotTask {
+
+    private static final int MAX_ITERATIONS = 5000;
+    private final BlockPos targetPos;
+    private PathTrajectory trajectory = null;
+    private boolean finished = false;
+
+    // Async pathfinding
+    private CompletableFuture<List<BlockPos>> pathFuture = null;
+    private boolean waitingForPath = false;
+
+    // Stuck detection
+    private Vec3 lastPos = Vec3.ZERO;
+    private int stuckTicks = 0;
+    private int pathCooldown = 0;
+
+    public MovementTask(BlockPos targetPos) {
+        this.targetPos = targetPos;
+    }
+
+    @Override
+    public void onStart(BotContext ctx) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || client.level == null) {
+            onFailure(ctx, "No player or world context");
+            return;
+        }
+
+        this.finished = false;
+        this.stuckTicks = 0;
+        this.pathCooldown = 0;
+        this.lastPos = client.player.position();
+        this.trajectory = null;
+
+        ctx.setState(BotState.MOVING_TO_TARGET, "Computing path to " + targetPos);
+        requestPath(client.player.blockPosition(), client.level);
+    }
+
+    @Override
+    public void onTick(BotContext ctx) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || client.level == null) return;
+
+        // Process async path results
+        if (waitingForPath) {
+            if (pathFuture != null && pathFuture.isDone()) {
+                try {
+                    List<BlockPos> result = pathFuture.get();
+                    waitingForPath = false;
+                    pathFuture = null;
+
+                    if (result.isEmpty()) {
+                        onFailure(ctx, "No path found to " + targetPos);
+                        return;
+                    }
+
+                    this.trajectory = new PathTrajectory(result);
+                    ctx.setState(BotState.MOVING_TO_TARGET, "Spline mapped, engaging momentum");
+                } catch (Exception e) {
+                    onFailure(ctx, "Spline computation failed: " + e.getMessage());
+                    return;
+                }
+            } else {
+                return; // Wait for path
+            }
+        }
+
+        if (trajectory == null) return;
+
+        // Stuck detection
+        Vec3 currentPlayerPos = client.player.position();
+        if (currentPlayerPos.distanceToSqr(lastPos) < 0.005) {
+            stuckTicks++;
+        } else {
+            stuckTicks = 0;
+            lastPos = currentPlayerPos;
+        }
+
+        if (stuckTicks > 80 && pathCooldown == 0) {
+            ctx.getRotationEngine().abort();
+            ActionController.stopAllInputs();
+            stuckTicks = 0;
+            pathCooldown = 60;
+            requestPath(client.player.blockPosition(), client.level);
+            return;
+        }
+
+        if (stuckTicks > 160) {
+            onFailure(ctx, "Stuck - Alternative pathfinding exhausted");
+            return;
+        }
+
+        if (pathCooldown > 0) pathCooldown--;
+
+        // Destination reached check
+        if (trajectory.isDestinationReached(currentPlayerPos)) {
+            ActionController.stopAllInputs();
+            ctx.getRotationEngine().abort();
+            ctx.setState(BotState.AIMING, "Destination achieved smoothly");
+            finished = true;
+            return;
+        }
+
+        // Fetch dynamic lookahead point
+        Vec3 aimPoint = trajectory.getLookahead(currentPlayerPos);
+
+        // Feed rotation steps directly into Mouse Pipeline
+        if (!ctx.getRotationEngine().isActive()) {
+            ctx.getRotationEngine().startRotation(
+                client.player.getYRot(),
+                client.player.getXRot(),
+                aimPoint
+            );
+        } else {
+            ctx.getRotationEngine().updateTarget(aimPoint);
+        }
+
+        // Maintain forward sprint momentum
+        client.options.keyUp.setDown(true);
+        client.options.keySprint.setDown(true);
+        client.player.setSprinting(true);
+    }
+
+    private void requestPath(BlockPos from, Level world) {
+        waitingForPath = true;
+        pathFuture = CompletableFuture.supplyAsync(() ->
+            LazyThetaPathfinder.findPath(from, targetPos, MAX_ITERATIONS, world)
+        );
+    }
+
+    @Override
+    public boolean isFinished(BotContext ctx) {
+        return finished;
+    }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason) {
+        ctx.getRotationEngine().abort();
+        ActionController.stopAllInputs();
+        if (pathFuture != null) {
+            pathFuture.cancel(true);
+            pathFuture = null;
+        }
+        waitingForPath = false;
+        finished = true;
+        ctx.setState(BotState.RECOVERING, "Movement failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+    }
+
+    @Override
+    public int getPriority() {
+        return 15;
+    }
+
+    @Override
+    public String getName() {
+        return "MovementTask";
+    }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/context/BotContext.java">
+package com.mobileminerong.context;
+
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.state.MacroMode;
+import com.mobileminerong.control.RotationEngine;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class BotContext {
+    private BotState currentState = BotState.IDLE;
+    private MacroMode currentMode = MacroMode.IDLE;
+    private boolean isActive = false;
+    private final RotationEngine rotationEngine = new RotationEngine();
+    private final Map<UUID, Long> pendingKills = new ConcurrentHashMap<>();
+    private int pendingMouseDeltaX = 0;
+    private int pendingMouseDeltaY = 0;
+
+    // Perception & Position
+    private Vec3 playerPos = Vec3.ZERO;
+    private float yaw = 0f;
+    private float pitch = 0f;
+
+    // Targets
+    private BlockPos currentTargetBlock = null;
+    private BlockPos lastSeenTargetBlock = null;
+    private String miningTargetId = null;
+    private int miningToolSlot = 0;
+    private Player targetPlayer = null;
+    private Entity targetEntity = null;
+    private String combatTargetId = null;
+    private int combatToolSlot = 0;
+
+    public enum CombatTargetType { PLAYER, MOB }
+    private CombatTargetType combatTargetType = CombatTargetType.PLAYER;
+    private final Set<String> mobWhitelist = Collections.synchronizedSet(new HashSet<>());
+
+    private boolean pendingPlayerSearch = false; 
+
+    // Getters and Setters
+    public synchronized Entity getTargetEntity() { return targetEntity; }
+    public synchronized void setTargetEntity(Entity entity) { this.targetEntity = entity; }
+
+    public synchronized CombatTargetType getCombatTargetType() { return combatTargetType; }
+    public synchronized void setCombatTargetType(CombatTargetType type) { this.combatTargetType = type; }
+    public synchronized Set<String> getMobWhitelist() { return mobWhitelist; }
+
+    // Skyblock Parsed Stats
+    private String currentZone = "Unknown";
+    private int currentMana = 0;
+    private int maxMana = 0;
+
+    // Diagnostics & Flags
+    private String lastAction = "NONE";
+    private String stateChangeReason = "Initialization";
+    public synchronized MacroMode getMode() { return currentMode; }
+    public synchronized void setMode(MacroMode mode) { this.currentMode = mode; }
+    public synchronized boolean isActive() { return isActive; }
+    public synchronized void setActive(boolean active) { this.isActive = active; }
+    public synchronized RotationEngine getRotationEngine() { return rotationEngine; }
+    public Map<UUID, Long> getPendingKills() { return pendingKills; }
+    public synchronized void setPendingMouseDelta(int x, int y) {
+        this.pendingMouseDeltaX = x;
+        this.pendingMouseDeltaY = y;
+    }
+    public synchronized int[] getAndClearPendingMouseDelta() {
+        int[] delta = new int[]{pendingMouseDeltaX, pendingMouseDeltaY};
+        this.pendingMouseDeltaX = 0;
+        this.pendingMouseDeltaY = 0;
+        return delta;
+    }
+
+
+    public synchronized String getMiningTargetId() { return miningTargetId; }
+    public synchronized void setMiningTargetId(String id) { this.miningTargetId = id; }
+
+    public synchronized int getMiningToolSlot() { return miningToolSlot; }
+    public synchronized void setMiningToolSlot(int slot) { this.miningToolSlot = slot; }
+
+    public synchronized String getCombatTargetId() { return combatTargetId; }
+    public synchronized void setCombatTargetId(String id) { this.combatTargetId = id; }
+
+    public synchronized int getCombatToolSlot() { return combatToolSlot; }
+    public synchronized void setCombatToolSlot(int slot) { this.combatToolSlot = slot; }
+    
+    // Observability
+    public record StateEvent(BotState state, String reason, long timestamp) {}
+    private final Deque<StateEvent> stateHistory = new ArrayDeque<>(10);
+    private long lastPerceptionUpdate = 0;
+    private int perceptionTimer = 0;
+    private int perceptionFailures = 0;
+    private long lastTickDurationNano = 0;
+
+    public synchronized int getPerceptionTimer() { return perceptionTimer; }
+    public synchronized void setPerceptionTimer(int timer) { this.perceptionTimer = timer; }
+
+    public record TaskEvent(String name, String status, String reason, long timestamp) {}
+    private final Deque<TaskEvent> taskHistory = new ArrayDeque<>(10);
+
+    public synchronized BotState getCurrentState() { return currentState; }
+    public synchronized void setState(BotState state, String reason) {
+        if (this.currentState != state) {
+            this.stateChangeReason = reason;
+            this.currentState = state;
+            
+            if (stateHistory.size() >= 10) stateHistory.removeFirst();
+            stateHistory.addLast(new StateEvent(state, reason, System.currentTimeMillis()));
+        }
+    }
+
+    public synchronized Vec3 getPlayerPos() { return playerPos; }
+    public synchronized void setPlayerPos(Vec3 pos) { this.playerPos = pos; }
+
+    public synchronized float getYRot() { return yaw; }
+    public synchronized float getXRot() { return pitch; }
+    public synchronized void setRotations(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
+    public synchronized BlockPos getCurrentTargetBlock() { return currentTargetBlock; }
+    public synchronized void setCurrentTargetBlock(BlockPos pos) { 
+        if (pos != null) this.lastSeenTargetBlock = pos;
+        this.currentTargetBlock = pos; 
+    }
+
+    public synchronized Player getTargetPlayer() { return targetPlayer; }
+    public synchronized void setTargetPlayer(Player player) { this.targetPlayer = player; }
+
+    public synchronized boolean isPendingPlayerSearch() { return pendingPlayerSearch; }
+    public synchronized void setPendingPlayerSearch(boolean pending) { this.pendingPlayerSearch = pending; }
+
+    public synchronized String getCurrentZone() { return currentZone; }
+    public synchronized void setCurrentZone(String zone) { this.currentZone = zone; }
+
+    public synchronized int getCurrentMana() { return currentMana; }
+    public synchronized void setMana(int current, int max) { 
+        this.currentMana = current; 
+        this.maxMana = max; 
+    }
+
+    public synchronized String getLastAction() { return lastAction; }
+    public synchronized void setLastAction(String action) { this.lastAction = action; }
+    public synchronized String getStateChangeReason() { return stateChangeReason; }
+
+    // Observability Getters/Setters
+    public synchronized void updatePerceptionHealth(boolean success) {
+        this.lastPerceptionUpdate = System.currentTimeMillis();
+        if (!success) this.perceptionFailures++;
+    }
+    public synchronized void setLastTickDurationNano(long durationNano) { this.lastTickDurationNano = durationNano; }
+    public synchronized long getLastTickDurationMicros() { return lastTickDurationNano / 1000; }
+    public synchronized int getPerceptionFailures() { return perceptionFailures; }
+    public synchronized long getLastPerceptionUpdate() { return lastPerceptionUpdate; }
+
+    public synchronized void addTaskEvent(String name, String status, String reason) {
+        if (taskHistory.size() >= 10) taskHistory.removeFirst();
+        taskHistory.addLast(new TaskEvent(name, status, reason, System.currentTimeMillis()));
+    }
+    public synchronized List<StateEvent> getStateHistory() { return new ArrayList<>(stateHistory); }
+    public synchronized List<TaskEvent> getTaskHistory() { return new ArrayList<>(taskHistory); }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/planning/task/CombatFollowTask.java">
+package com.mobileminerong.planning.task;
+
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.control.ActionController;
+import com.mobileminerong.state.BotState;
+import com.mobileminerong.MobileMinerClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
+
+public class CombatFollowTask implements BotTask {
+
+    private boolean finished = false;
+    private int targetLostTicks = 0;
+    private int lastSelectedSlot = -1;
+    private boolean hasAttackedOnce = false;
+    private Entity lockedTarget = null;
+
+    private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
+    private Vec3 lastPos = null;
+    private long lastClickTime = 0;
+    private long nextAttackDelay = 0;
+
+    @Override
+    public void onStart(BotContext ctx) {
+        ctx.setState(BotState.MOVING_TO_TARGET, "Engaging combat");
+        lastSelectedSlot = ctx.getCombatToolSlot();
+        ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
+        this.lockedTarget = ctx.getTargetEntity();
+        this.finished = false;
+        this.targetLostTicks = 0;
+        this.lastPos = lockedTarget != null ? lockedTarget.position() : null;
+        this.velocityHistory.clear();
+        this.lastClickTime = 0;
+        this.hasAttackedOnce = false;
+        this.nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
+    }
+
+    @Override
+    public void onTick(BotContext ctx) {
+        try {
+            Minecraft client = Minecraft.getInstance();
+            if (client == null || client.player == null) return;
+
+            // Weapon check
+            if (lastSelectedSlot != ctx.getCombatToolSlot()) {
+                lastSelectedSlot = ctx.getCombatToolSlot();
+                ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
+            }
+
+            // Target filtering
+            if (lockedTarget == null || !isValidTarget(ctx, lockedTarget)) {
+                Entity newTarget = findTarget(ctx);
+                if (newTarget != null) { lockedTarget = newTarget; hasAttackedOnce = false; }
+                else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
+            }
+
+            // Aiming (AimPoint logic)
+            Vec3 currentTargetPos = lockedTarget.position();
+            if (lastPos != null) {
+                Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
+                velocityHistory.addLast(currentVelocity);
+                if (velocityHistory.size() > 3) velocityHistory.removeFirst();
+            }
+            lastPos = currentTargetPos;
+
+            Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
+            Vec3 aimPoint = lockedTarget.getEyePosition()
+                .add(delayedVelocity.scale(5.0));
+
+            double distance = client.player.distanceTo(lockedTarget);
+            
+            // Movement logic with Forced Sprinting
+            if (distance > 2.5) {
+                if (!ctx.getRotationEngine().isActive()) {
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                } else {
+                    ctx.getRotationEngine().updateTarget(aimPoint);
+                }
+                ActionController.setKey(client.options.keyUp, true);
+                ActionController.setKey(client.options.keySprint, true);
+                client.player.setSprinting(true);
+            } else {
+                ActionController.setKey(client.options.keyUp, false);
+                ActionController.setKey(client.options.keyDown, false);
+                ActionController.setKey(client.options.keySprint, false);
+                if (!ctx.getRotationEngine().isActive()) {
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                } else {
+                    ctx.getRotationEngine().updateTarget(aimPoint);
+                }
+            }
+
+            // Attack logic (BAS-Synced)
+            if (distance <= 3.0) {
+                // Get player attack speed attribute
+                double attackSpeed = client.player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
+                int bonusAttackSpeed = (int) ((attackSpeed - 4.0) * 20); // Conversion logic
+
+                if (System.currentTimeMillis() > lastClickTime + nextAttackDelay) {
+                    com.mobileminerong.control.ClickGenerator.performClick();
+                    lastClickTime = System.currentTimeMillis();
+                    nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(bonusAttackSpeed, false);
+                }
+            }
+
+        } catch (Exception e) {
+            com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error: " + e.getMessage());
+            onFailure(ctx, "Exception: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidTarget(BotContext ctx, Entity entity) {
+        if (entity == null || !entity.isAlive() || entity.isRemoved() || entity.isInvulnerable() || entity instanceof net.minecraft.world.entity.decoration.ArmorStand) return false;
+        if (entity.isInvisible()) return false;
+        
+        boolean isPlayer = entity instanceof net.minecraft.world.entity.player.Player;
+        if (ctx.getCombatTargetType() == BotContext.CombatTargetType.PLAYER) {
+            return isPlayer && entity != Minecraft.getInstance().player;
+        } else { // MOB MODE
+            // Hard-block real players in MOB mode unless whitelist is populated
+            if (isPlayer && ctx.getMobWhitelist().isEmpty()) return false;
+            return entity != Minecraft.getInstance().player;
+        }
+    }
+
+    private Entity findTarget(BotContext ctx) {
+        Minecraft client = Minecraft.getInstance();
+        Entity bestTarget = null;
+        double minDistance = Double.MAX_VALUE;
+        
+        // Optimize search to 15-block radius AABB
+        net.minecraft.world.phys.AABB searchBox = client.player.getBoundingBox().inflate(15.0);
+
+        for (Entity entity : client.level.getEntities(null, searchBox)) {
+            if (!isValidTarget(ctx, entity)) continue;
+            
+            if (ctx.getCombatTargetType() == BotContext.CombatTargetType.MOB) {
+                boolean isPlayer = entity instanceof net.minecraft.world.entity.player.Player;
+                
+                if (ctx.getMobWhitelist().isEmpty()) {
+                    // NPC Exclusion Fix: Restrict fallback to Mob/Slime
+                    boolean isMobOrSlime = (entity instanceof Mob || entity instanceof Slime);
+                    if (!isMobOrSlime) continue;
+                } else {
+                    // Name-Tag Retrieval Fix
+                    String rawName = (entity.hasCustomName() && entity.getCustomName() != null) 
+                        ? entity.getCustomName().getString() 
+                        : entity.getName().getString();
+                    String strippedName = rawName.replaceAll("§.", "");
+                    
+                    boolean whitelisted = false;
+                    for (String allowed : ctx.getMobWhitelist()) {
+                        if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
+                    }
+                    if (!whitelisted) continue; // Block players/NPCs if not specifically whitelisted
+                }
+            }
+
+            double dist = client.player.distanceTo(entity);
+            if (dist < minDistance) { minDistance = dist; bestTarget = entity; }
+        }
+        return bestTarget;
+    }
+
+    @Override
+    public boolean isFinished(BotContext ctx) {
+        return finished;
+    }
+
+    @Override
+    public void onFailure(BotContext ctx, String reason) {
+        ctx.getRotationEngine().abort();
+        ActionController.stopAllInputs();
+        finished = true;
+        ctx.setState(BotState.RECOVERING, "Combat failed: " + reason);
+        MobileMinerClient.TASK_ENGINE.reportTaskFailure(this, reason);
+    }
+
+    @Override
+    public int getPriority() { return 50; }
+
+    @Override
+    public String getName() { return "CombatFollowTask"; }
+}
+</file>
+
+<file path="src/main/java/com/mobileminerong/MobileMinerClient.java">
+package com.mobileminerong;
+
+import com.mobileminerong.command.MacroCommandHandler;
+import com.mobileminerong.context.BotContext;
+import com.mobileminerong.state.MacroMode;
+import com.mobileminerong.debug.DebugLogger;
+import com.mobileminerong.perception.BlockScanner;
+import com.mobileminerong.perception.ScoreboardParser;
+import com.mobileminerong.planning.task.DiagnosticTestTask;
+import com.mobileminerong.planning.task.TargetSearchTask;
+import com.mobileminerong.planning.task.MiningTask;
+import com.mobileminerong.planning.task.CombatFollowTask;
+import com.mobileminerong.control.ActionController;
+import com.mobileminerong.state.PriorityTaskEngine;
+import com.mobileminerong.util.ChatLogger;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class MobileMinerClient implements ClientModInitializer {
+
+    public static final BotContext BOT_CONTEXT = new BotContext();
+    public static final PriorityTaskEngine TASK_ENGINE = new PriorityTaskEngine();
+    private static KeyMapping toggleKey;
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+        Identifier.fromNamespaceAndPath("mobileminerong", "main")
+    );
+    private static MacroMode lastMode = MacroMode.IDLE;
+
+    private static void syncTasks(MacroMode mode) {
+        TASK_ENGINE.clearTasks();
+        if (mode == MacroMode.MINER) {
+            TASK_ENGINE.registerTask(new TargetSearchTask());
+            TASK_ENGINE.registerTask(new MiningTask());
+        } else if (mode == MacroMode.COMBAT) {
+            TASK_ENGINE.registerTask(new CombatFollowTask());
+        }
+    }
+
+    private static int debugTimer = 0;
+    private static int perceptionTimer = 0;
+
+    @Override
+    public void onInitializeClient() {
+        DebugLogger.init();
+        TASK_ENGINE.registerTask(new DiagnosticTestTask());
+        TASK_ENGINE.registerTask(new TargetSearchTask());
+
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.mobileminerong.toggle",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_O,
+            CATEGORY
+        ));
+
+        DebugLogger.info("SYSTEM", "MobileMinerOng initialized");
+
+        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
+            ChatLogger.log("[SENT] " + message);
+            if(message.startsWith("!macro")) {
+                return !MacroCommandHandler.handle(message, BOT_CONTEXT);
+            }
+            return true;
+        });
+
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            ChatLogger.log("[RECEIVED] " + message.getString());
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if(client.player == null || client.level == null)
+                return;
+
+            while (toggleKey.consumeClick()) {
+                if (BOT_CONTEXT.isActive()) {
+                    // Deactivate: stop tasks and release inputs
+                    BOT_CONTEXT.setActive(false);
+                    TASK_ENGINE.clearTasks();
+                    ActionController.stopAllInputs();
+                    com.mobileminerong.control.ClickGenerator.forceRelease();
+                    client.player.sendSystemMessage(Component.literal("§c[MobileMinerOng] Macro Stopped"));
+                } else {
+                    // Activate
+                    BOT_CONTEXT.setActive(true);
+                    syncTasks(BOT_CONTEXT.getMode());
+                    client.player.sendSystemMessage(Component.literal("§a[MobileMinerOng] Macro Started"));
+                }
+            }
+
+            if (BOT_CONTEXT.isActive()) {
+                if (BOT_CONTEXT.getMode() != lastMode) {
+                    lastMode = BOT_CONTEXT.getMode();
+                    syncTasks(lastMode);
+                    client.player.sendSystemMessage(Component.literal("§e[MobileMinerOng] Tasks updated for " + lastMode));
+                }
+                
+                updateContext(client);
+                com.mobileminerong.perception.PerceptionManager.updatePerception(BOT_CONTEXT);
+                com.mobileminerong.control.ClickGenerator.tick();
+                TASK_ENGINE.tick(BOT_CONTEXT);
+
+                perceptionTimer++;
+                if(perceptionTimer >= 20) {
+                    perceptionTimer = 0;
+                    updatePerception();
+                }
+            }
+
+            if(MacroCommandHandler.isDebugEnabled()) {
+                debugTimer++;
+                if(debugTimer >= 20) {
+                    debugTimer = 0;
+                    DebugLogger.info("DEBUG", buildDebugReport());
+                }
+            }
+        });
+    }
+
+    private void updateContext(Minecraft client) {
+        BOT_CONTEXT.setPlayerPos(client.player.position());
+        BOT_CONTEXT.setRotations(client.player.getYRot(), client.player.getXRot());
+    }
+
+    private void updatePerception() {
+        try {
+            ScoreboardParser.updateZone(BOT_CONTEXT);
+            List<BlockPos> targets = BlockScanner.findTargetOres(BOT_CONTEXT, 20);
+            if(!targets.isEmpty()) {
+                BOT_CONTEXT.setCurrentTargetBlock(targets.get(0));
+                BOT_CONTEXT.updatePerceptionHealth(true);
+            } else {
+                BOT_CONTEXT.updatePerceptionHealth(true);
+            }
+        } catch(Exception e) {
+            BOT_CONTEXT.updatePerceptionHealth(false);
+            DebugLogger.error("PERCEPTION", e.toString());
+        }
+    }
+
+    private String buildDebugReport(){
+        String stateHistory = BOT_CONTEXT.getStateHistory().stream()
+            .map(e -> String.format("...->%s (%s)", e.state(), e.reason()))
+            .collect(Collectors.joining("\n"));
+
+        return
+            "\n===== MOBILEMINER DIAGNOSTIC =====" +
+            "\nBOT" +
+            "\n- State: " + BOT_CONTEXT.getCurrentState() + " (" + BOT_CONTEXT.getStateChangeReason() + ")" +
+            "\n- Active Task: " + (TASK_ENGINE.getActiveTask() != null ? TASK_ENGINE.getActiveTask().getName() : "None") +
+            "\nTASK" +
+            "\n- Pool Size: " + TASK_ENGINE.getTaskPoolSize() +
+            "\n- Last Completed: " + (TASK_ENGINE.getLastCompletedTask() != null ? TASK_ENGINE.getLastCompletedTask().getName() : "None") +
+            "\n- Last Failed: " + (TASK_ENGINE.getLastFailedTask() != null ? TASK_ENGINE.getLastFailedTask().getName() + " (" + TASK_ENGINE.getLastFailureReason() + ")" : "None") +
+            "\nPLAYER" +
+            "\n- Pos: " + BOT_CONTEXT.getPlayerPos() +
+            "\nPERCEPTION" +
+            "\n- Target: " + BOT_CONTEXT.getCurrentTargetBlock() +
+            "\n- Failures: " + BOT_CONTEXT.getPerceptionFailures() +
+            "\nENGINE" +
+            "\n- Last Tick: " + BOT_CONTEXT.getLastTickDurationMicros() + "µs" +
+            "\nRECENT STATE TRANSITIONS" +
+            "\n" + stateHistory +
+            "\n============================";
+    }
+}
+</file>
+
+</files>
