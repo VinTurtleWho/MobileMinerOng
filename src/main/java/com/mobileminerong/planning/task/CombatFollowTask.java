@@ -29,7 +29,6 @@ public class CombatFollowTask implements BotTask {
         ctx.setState(BotState.MOVING_TO_TARGET, "Engaging combat");
         lastSelectedSlot = ctx.getCombatToolSlot();
         ActionController.selectHotbarSlot(ctx, lastSelectedSlot);
-        ctx.getRotationEngine().setActive(true);
         this.lockedTarget = ctx.getTargetEntity();
         this.finished = false;
         this.targetLostTicks = 0;
@@ -94,8 +93,6 @@ public class CombatFollowTask implements BotTask {
                     ctx.getRotationEngine().updateTarget(aimPoint);
                 }
             }
-            int[] steps = ctx.getRotationEngine().computeNextFrameSteps();
-            ctx.setPendingMouseDelta(steps[0], steps[1]);
 
             // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
