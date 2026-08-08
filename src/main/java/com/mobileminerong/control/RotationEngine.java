@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import com.mobileminerong.util.OrnsteinUhlenbeckDrift;
+import com.mobileminerong.debug.DebugLogger;
 
 public class RotationEngine {
 
@@ -53,10 +54,7 @@ public class RotationEngine {
         this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
         this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
         
-        // Dynamic re-calculation of duration
-        double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
-        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
-        this.totalTicks = Math.max(1, (int) Math.round(MT));
+        DebugLogger.debug("ROTATION", "Target updated to: " + targetYaw + "/" + targetPitch);
     }
 
     public synchronized int[] computeNextFrameSteps() {
@@ -73,6 +71,8 @@ public class RotationEngine {
         
         long elapsed = System.currentTimeMillis() - startTime;
         double tau = Math.min(1.0, (double) elapsed / (totalTicks * 50.0));
+        
+        DebugLogger.debug("ROTATION", "Tau: " + tau + " Active: " + active);
 
         if (tau < 1.0) {
             double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
@@ -90,6 +90,7 @@ public class RotationEngine {
             prevPitch = client.player.getXRot();
         }
 
+        // Apply Differential Drift: Delta = (P_n - P_n-1) + (D_n - D_n-1)
         double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + (driftX - prevDriftX) + yawResidue;
         double desiredPitchDelta = (currentPitch - prevPitch) + (driftY - prevDriftY) + pitchResidue;
         
