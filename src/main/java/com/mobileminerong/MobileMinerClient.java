@@ -70,7 +70,8 @@ public class MobileMinerClient implements ClientModInitializer {
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
             ChatLogger.log("[SENT] " + message);
             if(message.startsWith("!macro")) {
-                return !MacroCommandHandler.handle(message, BOT_CONTEXT);
+                MacroCommandHandler.handle(message, BOT_CONTEXT);
+                return false; // Swallow the command from server
             }
             return true;
         });
