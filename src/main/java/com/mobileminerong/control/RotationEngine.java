@@ -5,11 +5,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import com.mobileminerong.util.OrnsteinUhlenbeckDrift;
 import com.mobileminerong.debug.DebugLogger;
+import java.util.Random;
 
 public class RotationEngine {
 
     private float startYaw, startPitch, targetYaw, targetPitch;
     private float internalYaw, internalPitch;
+    private int totalTicks;
     private long startTimeNanos;
     private long lastFrameTimeNanos;
     private double durationNanos;
@@ -18,7 +20,7 @@ public class RotationEngine {
     private double yawResidue = 0.0, pitchResidue = 0.0;
     private double cachedGcd = 0.15;
     
-    // Differential Drift Tracking
+    private final Random random = new Random();
     private double prevDriftX = 0.0, prevDriftY = 0.0;
     private final OrnsteinUhlenbeckDrift drift = new OrnsteinUhlenbeckDrift();
 
@@ -40,9 +42,15 @@ public class RotationEngine {
         
         updateTarget(targetPos);
 
+        // Introduce random overshoot for human-like error
+        float overshootYaw = (random.nextBoolean() ? 1 : -1) * (2.0f + random.nextFloat() * 3.0f);
+        float overshootPitch = (random.nextBoolean() ? 1 : -1) * (2.0f + random.nextFloat() * 3.0f);
+        this.targetYaw += overshootYaw;
+        this.targetPitch += overshootPitch;
+
         double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
         double MT_ticks = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
-        this.durationNanos = MT_ticks * 50_000_000.0; // 50ms per tick
+        this.durationNanos = MT_ticks * 50_000_000.0;
         
         this.startTimeNanos = System.nanoTime();
         this.lastFrameTimeNanos = this.startTimeNanos;
@@ -64,6 +72,8 @@ public class RotationEngine {
 
     public synchronized int[] computeNextFrameSteps() {
         if (!active) return new int[]{0, 0};
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return new int[]{0, 0};
 
         long now = System.nanoTime();
         double dt = (now - lastFrameTimeNanos) / 1_000_000_000.0;
@@ -84,14 +94,15 @@ public class RotationEngine {
             internalYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
             internalPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
         } else {
-            // Infinite-Horizon Regulation Phase (Proportional Controller)
+            // Noisy Proportional Drag
             float yawErr = Mth.wrapDegrees(targetYaw - internalYaw);
             float pitchErr = targetPitch - internalPitch;
             
-            // Smoothing constant: 15.0 * dt
-            double alpha = 1.0 - Math.exp(-15.0 * dt);
-            internalYaw += yawErr * alpha;
-            internalPitch += pitchErr * alpha;
+            float basePull = 6.0f * (float) dt;
+            float noisyPull = basePull + (float)(random.nextGaussian() * 1.5 * dt);
+            
+            internalYaw += yawErr * noisyPull;
+            internalPitch += pitchErr * noisyPull;
         }
 
         // Apply Differential Drift & Quantization
