@@ -18,11 +18,10 @@ public class CombatFollowTask implements BotTask {
     private int lastSelectedSlot = -1;
     private boolean hasAttackedOnce = false;
     private Entity lockedTarget = null;
-
-    private java.util.Deque<Vec3> velocityHistory = new java.util.ArrayDeque<>();
-    private Vec3 lastPos = null;
     private long lastClickTime = 0;
     private long nextAttackDelay = 0;
+    private long lastHitboxSampleTime = 0;
+    private Vec3 currentAimPoint = null;
 
     @Override
     public void onStart(BotContext ctx) {
@@ -32,11 +31,11 @@ public class CombatFollowTask implements BotTask {
         this.lockedTarget = ctx.getTargetEntity();
         this.finished = false;
         this.targetLostTicks = 0;
-        this.lastPos = lockedTarget != null ? lockedTarget.position() : null;
-        this.velocityHistory.clear();
         this.lastClickTime = 0;
         this.hasAttackedOnce = false;
         this.nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
+        this.lastHitboxSampleTime = 0;
+        this.currentAimPoint = null;
     }
 
     @Override
@@ -54,31 +53,30 @@ public class CombatFollowTask implements BotTask {
             // Target filtering
             if (lockedTarget == null || !isValidTarget(ctx, lockedTarget)) {
                 Entity newTarget = findTarget(ctx);
-                if (newTarget != null) { lockedTarget = newTarget; hasAttackedOnce = false; }
+                if (newTarget != null) { 
+                    lockedTarget = newTarget; 
+                    hasAttackedOnce = false;
+                    lastHitboxSampleTime = 0; 
+                    currentAimPoint = null;
+                }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            // Aiming (AimPoint logic)
-            Vec3 currentTargetPos = lockedTarget.position();
-            if (lastPos != null) {
-                Vec3 currentVelocity = currentTargetPos.subtract(lastPos);
-                velocityHistory.addLast(currentVelocity);
-                if (velocityHistory.size() > 3) velocityHistory.removeFirst();
+            // Update aim-point surface scan (every 300ms)
+            if (currentAimPoint == null || System.currentTimeMillis() > lastHitboxSampleTime + 300) {
+                currentAimPoint = com.mobileminerong.util.TargetSurfaceScanner.samplePoint(lockedTarget);
+                lastHitboxSampleTime = System.currentTimeMillis();
             }
-            lastPos = currentTargetPos;
 
-            Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
-            Vec3 aimPoint = lockedTarget.getEyePosition()
-                .add(delayedVelocity.scale(1.5));
-
+            // Aiming
             double distance = client.player.distanceTo(lockedTarget);
             
             // Movement logic with Forced Sprinting
             if (distance > 2.5) {
                 if (!ctx.getRotationEngine().isActive()) {
-                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), currentAimPoint);
                 } else {
-                    ctx.getRotationEngine().updateTarget(aimPoint);
+                    ctx.getRotationEngine().updateTarget(currentAimPoint);
                 }
                 ActionController.setKey(client.options.keyUp, true);
                 ActionController.setKey(client.options.keySprint, true);
@@ -88,17 +86,16 @@ public class CombatFollowTask implements BotTask {
                 ActionController.setKey(client.options.keyDown, false);
                 ActionController.setKey(client.options.keySprint, false);
                 if (!ctx.getRotationEngine().isActive()) {
-                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), aimPoint);
+                    ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), currentAimPoint);
                 } else {
-                    ctx.getRotationEngine().updateTarget(aimPoint);
+                    ctx.getRotationEngine().updateTarget(currentAimPoint);
                 }
             }
 
             // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
-                // Get player attack speed attribute
                 double attackSpeed = client.player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
-                int bonusAttackSpeed = (int) ((attackSpeed - 4.0) * 20); // Conversion logic
+                int bonusAttackSpeed = (int) ((attackSpeed - 4.0) * 20);
 
                 if (System.currentTimeMillis() > lastClickTime + nextAttackDelay) {
                     com.mobileminerong.control.ClickGenerator.performClick();
@@ -121,7 +118,6 @@ public class CombatFollowTask implements BotTask {
         if (ctx.getCombatTargetType() == BotContext.CombatTargetType.PLAYER) {
             return isPlayer && entity != Minecraft.getInstance().player;
         } else { // MOB MODE
-            // Hard-block real players in MOB mode unless whitelist is populated
             if (isPlayer && ctx.getMobWhitelist().isEmpty()) return false;
             return entity != Minecraft.getInstance().player;
         }
@@ -132,7 +128,6 @@ public class CombatFollowTask implements BotTask {
         Entity bestTarget = null;
         double minDistance = Double.MAX_VALUE;
         
-        // Optimize search to 15-block radius AABB
         net.minecraft.world.phys.AABB searchBox = client.player.getBoundingBox().inflate(15.0);
 
         for (Entity entity : client.level.getEntities(null, searchBox)) {
@@ -142,11 +137,9 @@ public class CombatFollowTask implements BotTask {
                 boolean isPlayer = entity instanceof net.minecraft.world.entity.player.Player;
                 
                 if (ctx.getMobWhitelist().isEmpty()) {
-                    // NPC Exclusion Fix: Restrict fallback to Mob/Slime
                     boolean isMobOrSlime = (entity instanceof Mob || entity instanceof Slime);
                     if (!isMobOrSlime) continue;
                 } else {
-                    // Name-Tag Retrieval Fix
                     String rawName = (entity.hasCustomName() && entity.getCustomName() != null) 
                         ? entity.getCustomName().getString() 
                         : entity.getName().getString();
@@ -156,7 +149,7 @@ public class CombatFollowTask implements BotTask {
                     for (String allowed : ctx.getMobWhitelist()) {
                         if (strippedName.toLowerCase().contains(allowed.toLowerCase())) { whitelisted = true; break; }
                     }
-                    if (!whitelisted) continue; // Block players/NPCs if not specifically whitelisted
+                    if (!whitelisted) continue; 
                 }
             }
 
@@ -167,9 +160,7 @@ public class CombatFollowTask implements BotTask {
     }
 
     @Override
-    public boolean isFinished(BotContext ctx) {
-        return finished;
-    }
+    public boolean isFinished(BotContext ctx) { return finished; }
 
     @Override
     public void onFailure(BotContext ctx, String reason) {
