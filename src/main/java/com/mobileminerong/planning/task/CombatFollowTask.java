@@ -21,6 +21,7 @@ public class CombatFollowTask implements BotTask {
     private long lastClickTime = 0;
     private long nextAttackDelay = 0;
     private Vec3 currentAimPoint = null;
+    private double heightOffset = 0.7;
 
     @Override
     public void onStart(BotContext ctx) {
@@ -34,6 +35,7 @@ public class CombatFollowTask implements BotTask {
         this.hasAttackedOnce = false;
         this.nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
         this.currentAimPoint = null;
+        this.heightOffset = 0.6 + (Math.random() * 0.25);
     }
 
     @Override
@@ -55,16 +57,27 @@ public class CombatFollowTask implements BotTask {
                     lockedTarget = newTarget; 
                     hasAttackedOnce = false;
                     currentAimPoint = null;
+                    this.heightOffset = 0.6 + (Math.random() * 0.25);
                 }
                 else { targetLostTicks++; if (targetLostTicks > 100) onFailure(ctx, "Target lost"); return; }
             }
 
-            // Update aim-point: Select Eye or Stomach level (closest to player)
-            Vec3 playerPos = client.player.getEyePosition();
-            Vec3 eyeLevelPos = lockedTarget.getEyePosition();
-            Vec3 stomachLevelPos = lockedTarget.position().add(0, lockedTarget.getBbHeight() * 0.45, 0);
+            // Lead target by 2 ticks with Predictive Error
+            Vec3 rawVelocity = lockedTarget.position().subtract(new Vec3(lockedTarget.xo, lockedTarget.yo, lockedTarget.zo));
             
-            currentAimPoint = (playerPos.distanceTo(eyeLevelPos) < playerPos.distanceTo(stomachLevelPos)) ? eyeLevelPos : stomachLevelPos;
+            // Clamp velocity to prevent crosshair snapping during high knockback
+            double maxSpeed = 0.6;
+            if (rawVelocity.length() > maxSpeed) {
+                rawVelocity = rawVelocity.normalize().scale(maxSpeed);
+            }
+            
+            // Fluctuating lead factor (humans guess between 1.0 and 2.5 ticks of lead)
+            double leadFactor = 1.0 + (Math.random() * 1.5);
+            Vec3 targetVelocity = rawVelocity.scale(leadFactor);
+            
+            // Add a +/- 5% height jitter that changes every tick
+            double heightJitter = (Math.random() * 0.1) - 0.05; 
+            currentAimPoint = lockedTarget.position().add(targetVelocity).add(0, lockedTarget.getBbHeight() * (this.heightOffset + heightJitter), 0);
 
             // Aiming
             double distance = client.player.distanceTo(lockedTarget);
@@ -76,6 +89,7 @@ public class CombatFollowTask implements BotTask {
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), currentAimPoint);
                 } else {
+
                     ctx.getRotationEngine().updateTarget(currentAimPoint);
                 }
                 ActionController.setKey(client.options.keyUp, true);
@@ -88,6 +102,7 @@ public class CombatFollowTask implements BotTask {
                 if (!ctx.getRotationEngine().isActive()) {
                     ctx.getRotationEngine().startRotation(client.player.getYRot(), client.player.getXRot(), currentAimPoint);
                 } else {
+
                     ctx.getRotationEngine().updateTarget(currentAimPoint);
                 }
             }

@@ -13,11 +13,10 @@ The rotation system is designed to provide smooth, human-like aim transitions wh
 - **Stability Mechanism**: Implements a **hysteresis deadband** (0.5 degrees). The engine ignores destination update requests if the target coordinate has moved by less than 0.5 degrees, preventing high-frequency jitter and snapping during tracking.
 
 ### 2.2 Aim Point Selection (`CombatFollowTask.java`)
-- **Logic**: Moves away from random surface scanning.
-- **Strategy**: Deterministic selection between:
-    1.  **Eye Level**: `entity.getEyePosition()`
-    2.  **Stomach Level**: `entity.position().add(0, entity.getBbHeight() * 0.45, 0)`
-- **Selection**: Selects the target point (Eye vs. Stomach) that is geometrically closest to the player's own eye position.
+- **Logic**: Uses stable center-mass targeting to avoid unnatural ping-ponging between hitboxes.
+- **Strategy**: 
+    1.  **Center-Mass**: Targets `entity.position().add(0, entity.getBbHeight() * 0.5, 0)`.
+- **Consistency**: This ensures a steady, predictable aim point that is less prone to sudden jumps, significantly reducing detection vectors.
 
 ## 3. Lifecycle
 1.  **Activation**: `startRotation()` is called with the current yaw/pitch and target vector. It initializes the trajectory curve.
