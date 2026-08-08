@@ -7,19 +7,15 @@ import com.mobileminerong.util.OrnsteinUhlenbeckDrift;
 
 public class RotationEngine {
 
-    // State maintained per target/task
-    private float startYaw;
-    private float startPitch;
-    private float targetYaw;
-    private float targetPitch;
+    private float startYaw, startPitch, targetYaw, targetPitch;
     private int totalTicks;
-    private int currentTick = 0;
+    private long startTime;
     private boolean active = false;
-    private double yawResidue = 0.0;
-    private double pitchResidue = 0.0;
+    private double yawResidue = 0.0, pitchResidue = 0.0;
     private double cachedGcd = 0.15;
-
-    // Biological Drift (Continuous Resting Tremor)
+    
+    // Differential Drift Tracking
+    private double prevDriftX = 0.0, prevDriftY = 0.0;
     private final OrnsteinUhlenbeckDrift drift = new OrnsteinUhlenbeckDrift();
 
     public RotationEngine() {}
@@ -30,8 +26,21 @@ public class RotationEngine {
         this.pitchResidue = 0.0;
     }
 
-    public synchronized void setActive(boolean active) { this.active = active; }
     public synchronized boolean isActive() { return active; }
+
+    public synchronized void startRotation(float currentYaw, float currentPitch, Vec3 targetPos) {
+        this.startYaw = Mth.wrapDegrees(currentYaw);
+        this.startPitch = Mth.wrapDegrees(currentPitch);
+        updateTarget(targetPos);
+
+        double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
+        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
+        this.totalTicks = Math.max(1, (int) Math.round(MT));
+        this.startTime = System.currentTimeMillis();
+        this.active = true;
+        this.prevDriftX = drift.getX();
+        this.prevDriftY = drift.getY();
+    }
 
     public synchronized void updateTarget(Vec3 targetPos) {
         if (!active) return;
@@ -43,82 +52,54 @@ public class RotationEngine {
         double dz = targetPos.z - eyesPos.z;
         this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
         this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
-    }
-
-    public synchronized void startRotation(float currentYaw, float currentPitch, Vec3 targetPos) {
-        Minecraft client = Minecraft.getInstance();
-        if (client.player == null) return;
-
-        Vec3 eyesPos = client.player.getEyePosition();
-        double dx = targetPos.x - eyesPos.x;
-        double dy = targetPos.y - eyesPos.y;
-        double dz = targetPos.z - eyesPos.z;
-
-        this.startYaw = Mth.wrapDegrees(currentYaw);
-        this.startPitch = Mth.wrapDegrees(currentPitch);
-        this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
-        this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
-
-        // Fitts' Law Duration Calculation: MT = a + b * log2(1 + A / W)
+        
+        // Dynamic re-calculation of duration
         double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
-        double targetWidth = 5.0; // Dynamic bounding-width approximation constant (5.0 degrees)
-        double a = 2.0; // Empirical min latency in ticks
-        double b = 3.5; // Logarithmic scaling parameter in ticks
-        double indexOfDifficulty = Math.log(1.0 + (amplitude / targetWidth)) / Math.log(2.0);
-        double movementTimeTicks = a + b * indexOfDifficulty;
-
-        this.totalTicks = Math.max(1, (int) Math.round(movementTimeTicks));
-        this.currentTick = 0;
-        this.active = true;
+        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
+        this.totalTicks = Math.max(1, (int) Math.round(MT));
     }
 
     public synchronized int[] computeNextFrameSteps() {
         if (!active) return new int[]{0, 0};
-
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return new int[]{0, 0};
 
-        float currentYaw;
-        float currentPitch;
-
-        float prevYaw;
-        float prevPitch;
-
-        updateGcd();
         drift.update();
-
-        // Apply stochastic physiological hand tremor
         double driftX = drift.getX();
         double driftY = drift.getY();
 
-        if (currentTick < totalTicks) {
-            // Finite-Horizon Reaching Phase (Minimum-Jerk)
-            currentTick++;
-            double tau = (double) currentTick / totalTicks;
+        float currentYaw, currentPitch;
+        float prevYaw, prevPitch;
+        
+        long elapsed = System.currentTimeMillis() - startTime;
+        double tau = Math.min(1.0, (double) elapsed / (totalTicks * 50.0));
+
+        if (tau < 1.0) {
             double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
+            currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
+            currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
 
-            currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau) + driftX);
-            currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau) + driftY);
-
-            double prevTau = (double) (currentTick - 1) / totalTicks;
-            double smoothPrevTau = (currentTick == 1) ? 0.0 : prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
-
-            prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau) + driftX);
-            prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau) + driftY);
+            double prevTau = Math.max(0.0, tau - (1.0 / (totalTicks * 50.0)));
+            double smoothPrevTau = prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
+            prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau));
+            prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau));
         } else {
-            // Infinite-Horizon Regulation Phase (Lock-on & micro-tremor)
-            currentYaw = (float) (targetYaw + driftX);
-            currentPitch = (float) (targetPitch + driftY);
-
+            currentYaw = targetYaw;
+            currentPitch = targetPitch;
             prevYaw = client.player.getYRot();
             prevPitch = client.player.getXRot();
         }
 
-        double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + yawResidue;
+        double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + (driftX - prevDriftX) + yawResidue;
+        double desiredPitchDelta = (currentPitch - prevPitch) + (driftY - prevDriftY) + pitchResidue;
+        
+        prevDriftX = driftX;
+        prevDriftY = driftY;
+
+        updateGcd();
         int mouseStepX = (int) Math.round(desiredYawDelta / cachedGcd);
         yawResidue = desiredYawDelta - (mouseStepX * cachedGcd);
 
-        double desiredPitchDelta = (currentPitch - prevPitch) + pitchResidue;
         int mouseStepY = (int) Math.round(desiredPitchDelta / cachedGcd);
         pitchResidue = desiredPitchDelta - (mouseStepY * cachedGcd);
 

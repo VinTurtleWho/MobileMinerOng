@@ -96,12 +96,17 @@ public class CombatFollowTask implements BotTask {
 
             // Attack logic (BAS-Synced)
             if (distance <= 3.0) {
+                // Get player attack speed attribute
+                double attackSpeed = client.player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
+                int bonusAttackSpeed = (int) ((attackSpeed - 4.0) * 20); // Conversion logic
+
                 if (System.currentTimeMillis() > lastClickTime + nextAttackDelay) {
                     com.mobileminerong.control.ClickGenerator.performClick();
                     lastClickTime = System.currentTimeMillis();
-                    nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(0, false);
+                    nextAttackDelay = com.mobileminerong.control.ClickGenerator.calculateInterval(bonusAttackSpeed, false);
                 }
             }
+
         } catch (Exception e) {
             com.mobileminerong.debug.DebugLogger.error("COMBAT", "Error: " + e.getMessage());
             onFailure(ctx, "Exception: " + e.getMessage());
