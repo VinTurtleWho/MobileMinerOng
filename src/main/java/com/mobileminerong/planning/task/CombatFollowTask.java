@@ -69,7 +69,7 @@ public class CombatFollowTask implements BotTask {
 
             Vec3 delayedVelocity = velocityHistory.size() >= 3 ? velocityHistory.peekFirst() : Vec3.ZERO;
             Vec3 aimPoint = lockedTarget.getEyePosition()
-                .add(delayedVelocity.scale(5.0));
+                .add(delayedVelocity.scale(1.5));
 
             double distance = client.player.distanceTo(lockedTarget);
             
