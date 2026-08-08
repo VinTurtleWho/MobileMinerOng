@@ -9,8 +9,11 @@ import com.mobileminerong.debug.DebugLogger;
 public class RotationEngine {
 
     private float startYaw, startPitch, targetYaw, targetPitch;
-    private int totalTicks;
-    private long startTime;
+    private float internalYaw, internalPitch;
+    private long startTimeNanos;
+    private long lastFrameTimeNanos;
+    private double durationNanos;
+    
     private boolean active = false;
     private double yawResidue = 0.0, pitchResidue = 0.0;
     private double cachedGcd = 0.15;
@@ -32,19 +35,23 @@ public class RotationEngine {
     public synchronized void startRotation(float currentYaw, float currentPitch, Vec3 targetPos) {
         this.startYaw = Mth.wrapDegrees(currentYaw);
         this.startPitch = Mth.wrapDegrees(currentPitch);
+        this.internalYaw = this.startYaw;
+        this.internalPitch = this.startPitch;
+        
         updateTarget(targetPos);
 
         double amplitude = Math.sqrt(Math.pow(Mth.wrapDegrees(targetYaw - startYaw), 2) + Math.pow(targetPitch - startPitch, 2));
-        double MT = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
-        this.totalTicks = Math.max(1, (int) Math.round(MT));
-        this.startTime = System.currentTimeMillis();
+        double MT_ticks = 1.0 + 1.8 * Math.log(1.0 + (amplitude / 5.0)) / Math.log(2.0);
+        this.durationNanos = MT_ticks * 50_000_000.0; // 50ms per tick
+        
+        this.startTimeNanos = System.nanoTime();
+        this.lastFrameTimeNanos = this.startTimeNanos;
         this.active = true;
         this.prevDriftX = drift.getX();
         this.prevDriftY = drift.getY();
     }
 
     public synchronized void updateTarget(Vec3 targetPos) {
-        if (!active) return;
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
         Vec3 eyesPos = client.player.getEyePosition();
@@ -53,46 +60,43 @@ public class RotationEngine {
         double dz = targetPos.z - eyesPos.z;
         this.targetYaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f);
         this.targetPitch = Mth.clamp((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx*dx + dz*dz))), -90.0f, 90.0f);
-        
-        DebugLogger.debug("ROTATION", "Target updated to: " + targetYaw + "/" + targetPitch);
     }
 
     public synchronized int[] computeNextFrameSteps() {
         if (!active) return new int[]{0, 0};
-        Minecraft client = Minecraft.getInstance();
-        if (client.player == null) return new int[]{0, 0};
+
+        long now = System.nanoTime();
+        double dt = (now - lastFrameTimeNanos) / 1_000_000_000.0;
+        lastFrameTimeNanos = now;
 
         drift.update();
         double driftX = drift.getX();
         double driftY = drift.getY();
 
-        float currentYaw, currentPitch;
-        float prevYaw, prevPitch;
-        
-        long elapsed = System.currentTimeMillis() - startTime;
-        double tau = Math.min(1.0, (double) elapsed / (totalTicks * 50.0));
-        
-        DebugLogger.debug("ROTATION", "Tau: " + tau + " Active: " + active);
+        float prevInternalYaw = internalYaw;
+        float prevInternalPitch = internalPitch;
+
+        double tau = Math.min(1.0, (double) (now - startTimeNanos) / durationNanos);
 
         if (tau < 1.0) {
+            // Minimum-Jerk Reaching Phase
             double smoothTau = tau * tau * tau * (10.0 - 15.0 * tau + 6.0 * tau * tau);
-            currentYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
-            currentPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
-
-            double prevTau = Math.max(0.0, tau - (1.0 / (totalTicks * 50.0)));
-            double smoothPrevTau = prevTau * prevTau * prevTau * (10.0 - 15.0 * prevTau + 6.0 * prevTau * prevTau);
-            prevYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothPrevTau));
-            prevPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothPrevTau));
+            internalYaw = (float) (startYaw + (Mth.wrapDegrees(targetYaw - startYaw) * smoothTau));
+            internalPitch = (float) (startPitch + (Mth.wrapDegrees(targetPitch - startPitch) * smoothTau));
         } else {
-            currentYaw = targetYaw;
-            currentPitch = targetPitch;
-            prevYaw = client.player.getYRot();
-            prevPitch = client.player.getXRot();
+            // Infinite-Horizon Regulation Phase (Proportional Controller)
+            float yawErr = Mth.wrapDegrees(targetYaw - internalYaw);
+            float pitchErr = targetPitch - internalPitch;
+            
+            // Smoothing constant: 15.0 * dt
+            double alpha = 1.0 - Math.exp(-15.0 * dt);
+            internalYaw += yawErr * alpha;
+            internalPitch += pitchErr * alpha;
         }
 
-        // Apply Differential Drift: Delta = (P_n - P_n-1) + (D_n - D_n-1)
-        double desiredYawDelta = Mth.wrapDegrees(currentYaw - prevYaw) + (driftX - prevDriftX) + yawResidue;
-        double desiredPitchDelta = (currentPitch - prevPitch) + (driftY - prevDriftY) + pitchResidue;
+        // Apply Differential Drift & Quantization
+        double desiredYawDelta = (internalYaw - prevInternalYaw) + (driftX - prevDriftX) + yawResidue;
+        double desiredPitchDelta = (internalPitch - prevInternalPitch) + (driftY - prevDriftY) + pitchResidue;
         
         prevDriftX = driftX;
         prevDriftY = driftY;
